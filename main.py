@@ -42,11 +42,9 @@ def fetch_open_issues(repo_name: str) -> list:
 
 def main() -> None:
     """Main function to handle program execution."""
-    print("What change would you like to make?")
-    prompt = input()
-
-    path = "main.py"
-    write_file(path, gpt_query(f"{prompt}\n{read_file(path)}"))
+    for prompt in fetch_open_issues("reitzensteinm/duopoly"):
+        path = "main.py"
+        write_file(path, gpt_query(f"{prompt}\n{read_file(path)}"))
 
 
 if __name__ == '__main__':
