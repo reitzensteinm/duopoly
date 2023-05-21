@@ -1,4 +1,5 @@
 import os
+from github import Github
 import openai
 
 
@@ -27,6 +28,16 @@ def write_file(path: str, contents: str) -> None:
     """Writes the contents to a file."""
     with open(path, 'w', encoding='utf-8') as file:
         file.write(contents)
+
+
+def fetch_open_issues(repo_name: str) -> list:
+    """Fetches open issues from a given repository."""
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    issues = repo.get_issues(state='open')
+    descriptions = [issue.body for issue in issues]
+    return descriptions
 
 
 def main() -> None:
