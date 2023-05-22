@@ -11,7 +11,9 @@ def gpt_query(message: str) -> str:
         {"role": "system", "content": "You are a helpful programming assistant. \
         You will be given code as well as instructions to modify it. \
         Please make ONLY the changes requested, and respond only with code and no extra information or formatting \
-        and follow PEP-8 formatting standards. Do not quote the output in markdown."},
+        and follow PEP-8 formatting standards. Do not quote the output in markdown.\
+        Unless specifically asked, do not ever delete or remove or modify any of the original code. \
+        Your response should be as long as is needed to fit the resulting code in."},
         {"role": "user", "content": message}
     ])
 
