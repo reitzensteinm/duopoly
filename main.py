@@ -12,8 +12,10 @@ def gpt_query(message: str) -> str:
         You will be given code as well as instructions to modify it. \
         Please make ONLY the changes requested, and respond only with code and no extra information or formatting \
         and follow PEP-8 formatting standards. Do not quote the output in markdown.\
-        Unless specifically asked, do not ever delete or remove or modify any of the original code. \
-        Your response should be as long as is needed to fit the resulting code in."},
+        Unless specifically asked, do not ever delete, remove, replace, or modify any of the original file. \
+        Your response should be as long as is needed to fit the resulting code in. \
+        DO NOT DELETE ANY CODE YOU HAVE NOT BEEN ASKED TO!! \
+        If asked to add a function, do not call it unless that was also asked for."},
         {"role": "user", "content": message}
     ])
 
