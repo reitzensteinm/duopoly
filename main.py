@@ -16,7 +16,8 @@ def find_python_files() -> list[str]:
 
     for root, dirnames, filenames in os.walk("."):
         for filename in fnmatch.filter(filenames, "*.py"):
-            python_files.append(os.path.join(root, filename))
+            if "venv" not in root:
+                python_files.append(os.path.join(root, filename))
 
     return python_files
 
@@ -123,8 +124,12 @@ def apply_patch(file: str, patch: str) -> str:
 def main() -> None:
     """Main function to handle program execution."""
     for prompt in fetch_open_issues("reitzensteinm/duopoly"):
+        file_info = ""
+        for f in find_python_files():
+            file_info += f"{f}:\n{add_line_numbers(read_file(f))}\n"
+
         path = "main.py"
-        patch = gpt_query(f"{prompt}\n{add_line_numbers(read_file(path))}")
+        patch = gpt_query(f"{prompt}\n{file_info}")
         print(patch)
         write_file(path, format_python_code(apply_patch(read_file(path), patch)))
 
