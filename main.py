@@ -114,7 +114,7 @@ def main() -> None:
         path = "main.py"
         patch = gpt_query(f"{prompt}\n{add_line_numbers(read_file(path))}")
         print(patch)
-        write_file(path, apply_patch(read_file(path), patch))
+        write_file(path, format_python_code(apply_patch(read_file(path), patch)))
 
 
 if __name__ == '__main__':
