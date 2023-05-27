@@ -98,7 +98,7 @@ def add_line_numbers(file_contents: str) -> str:
     return "\n".join(numbered_lines)
 
 
-def patch_prepass(patch: str) -> str:
+def patch_prepass(patch: str):
     # This is a hack - patches will be ignored if the file doesn't exist
     pattern = r"@@PATCH@@ (.+) (\d+) (\d+)"
     for l in patch.split("\n"):
