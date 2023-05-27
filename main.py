@@ -98,6 +98,17 @@ def add_line_numbers(file_contents: str) -> str:
     return "\n".join(numbered_lines)
 
 
+def patch_prepass(patch: str) -> str:
+    # This is a hack - patches will be ignored if the file doesn't exist
+    pattern = r"@@PATCH@@ (.+) (\d+) (\d+)"
+    for l in patch.split("\n"):
+        match = re.search(pattern, l)
+        if match:
+            file = match.group(1)
+            if not os.path.exists(file):
+                write_file(file, "")
+
+
 def apply_patch(file_name: str, file: str, patch: str) -> str:
     """Applies the given patch to the file contents."""
     pattern = r"@@PATCH@@ (.+) (\d+) (\d+)"
@@ -134,6 +145,7 @@ def main() -> None:
             file_info += f"{f}:\n{add_line_numbers(read_file(f))}\n"
 
         patch = gpt_query(f"{prompt}\n{file_info}")
+        patch_prepass(patch)
         print(patch)
 
         for f in find_python_files():
