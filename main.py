@@ -2,7 +2,11 @@ import os
 from github import Github
 import openai
 import re
+from black import FileMode, format_str
 
+def format_python_code(code: str) -> str:
+    formatted_code = format_str(code, mode=FileMode())
+    return formatted_code
 import fnmatch
 
 def find_python_files() -> list[str]:
