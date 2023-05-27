@@ -3,7 +3,16 @@ from github import Github
 import openai
 import re
 
+import fnmatch
 
+def find_python_files() -> list[str]:
+    python_files = []
+
+    for root, dirnames, filenames in os.walk('.'):
+        for filename in fnmatch.filter(filenames, '*.py'):
+            python_files.append(os.path.join(root, filename))
+
+    return python_files
 def partition_by_predicate(sequence, predicate):
     result = []
     current_group = []
