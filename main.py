@@ -3,6 +3,25 @@ from github import Github
 import openai
 
 
+def partition_by_predicate(sequence, predicate):
+    result = []
+    current_group = []
+    
+    for item in sequence:
+        if predicate(item):
+            if current_group:
+                result.append(current_group)
+                current_group = []
+            current_group.append(item)
+        else:
+            current_group.append(item)
+            
+    if current_group:
+        result.append(current_group)
+        
+    return result
+
+
 def gpt_query(message: str) -> str:
     """Queries GPT-4 with a given message."""
     openai.api_key = os.environ["OPENAI_API_KEY"]
