@@ -91,8 +91,6 @@ def fetch_open_issues(repo_name: str) -> list[str]:
     descriptions = [issue.body for issue in issues]
     return descriptions
 
-    return descriptions
-
 
 def add_line_numbers(file_contents: str) -> str:
     """Returns the file contents with line numbers added."""
@@ -121,7 +119,6 @@ def apply_patch(file: str, patch: str) -> str:
     for p in patches:
         offset, file_lines = apply_patch_inner(file_lines, p, offset)
 
-    return "\n".join(file_lines)
     return "\n".join(file_lines)
 
 
