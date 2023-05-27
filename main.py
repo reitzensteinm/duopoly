@@ -4,6 +4,7 @@ import openai
 import re
 from black import FileMode, format_str
 import fnmatch
+from utils import read_file, write_file
 
 
 def format_python_code(code: str) -> str:
@@ -68,18 +69,6 @@ def gpt_query(message: str) -> str:
     )
 
     return completion.choices[0].message.content
-
-
-def read_file(path: str) -> str:
-    """Reads and returns the content of a file."""
-    with open(path, "r", encoding="utf-8") as file:
-        return file.read()
-
-
-def write_file(path: str, contents: str) -> None:
-    """Writes the contents to a file."""
-    with open(path, "w", encoding="utf-8") as file:
-        file.write(contents)
 
 
 def fetch_open_issues(repo_name: str) -> list[str]:
