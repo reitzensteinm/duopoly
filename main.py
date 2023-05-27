@@ -44,6 +44,13 @@ def fetch_open_issues(repo_name: str) -> list:
     return descriptions
 
 
+def add_line_numbers(file_contents: str) -> str:
+    """Returns the file contents with line numbers added."""
+    lines = file_contents.split('\n')
+    numbered_lines = [f"{idx+1}: {line}" for idx, line in enumerate(lines)]
+    return '\n'.join(numbered_lines)
+
+
 def main() -> None:
     """Main function to handle program execution."""
     for prompt in fetch_open_issues("reitzensteinm/duopoly"):
