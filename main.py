@@ -58,6 +58,7 @@ def gpt_query(message: str) -> str:
         The format for the patch should contain one line with start and end lines of the original file to replace, \
         followed by the new lines. Do not include the line numbers from the input. \
         Do not include any unnecessary blank lines in the patches. \
+        RESPOND ONLY IN THE FOLLOWING FORMAT, AND DO NOT INCLUDE ANY OTHER COMMENTARY: \
         @@PATCH@@ <file name including relative path> <start-line> <end-line> \
         <new line 1>\
         <new line 2> ...",
