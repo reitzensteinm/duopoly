@@ -131,6 +131,7 @@ def apply_patch(file_name: str, file: str, patch: str) -> str:
     offset = 0
 
     patches = partition_by_predicate(patch_lines, lambda l: re.search(pattern, l))
+    patches.sort(key=lambda p: int(re.search(pattern, p[0]).group(2)))
 
     for p in patches:
         offset, file_lines = apply_patch_inner(file_lines, p, offset)
