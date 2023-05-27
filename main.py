@@ -58,7 +58,7 @@ def gpt_query(message: str) -> str:
         The format for the patch should contain one line with start and end lines of the original file to replace, \
         followed by the new lines. Do not include the line numbers from the input. \
         Do not include any unnecessary blank lines in the patches. \
-        @@PATCH@@ <start-line> <end-line> \
+        @@PATCH@@ <file name including relative path> <start-line> <end-line> \
         <new line 1>\
         <new line 2> ...",
             },
@@ -98,14 +98,19 @@ def add_line_numbers(file_contents: str) -> str:
     return "\n".join(numbered_lines)
 
 
-def apply_patch(file: str, patch: str) -> str:
+def apply_patch(file_name: str, file: str, patch: str) -> str:
     """Applies the given patch to the file contents."""
-    pattern = r"@@PATCH@@ (\d+) (\d+)"
+    pattern = r"@@PATCH@@ (.+) (\d+) (\d+)"
 
     def apply_patch_inner(file_lines, patch_lines, off):
         match = re.search(pattern, patch_lines[0])
-        start = int(match.group(1)) + off
-        end = int(match.group(2)) + off
+        patch_file = match.group(1)
+
+        if patch_file != file_name:
+            return off, file_lines
+
+        start = int(match.group(2)) + off
+        end = int(match.group(3)) + off
         off = off + ((len(patch_lines) - 1) - (1 + end - start))
         return off, file_lines[0 : start - 1] + patch_lines[1:] + file_lines[end:]
 
@@ -128,10 +133,11 @@ def main() -> None:
         for f in find_python_files():
             file_info += f"{f}:\n{add_line_numbers(read_file(f))}\n"
 
-        path = "main.py"
         patch = gpt_query(f"{prompt}\n{file_info}")
         print(patch)
-        write_file(path, format_python_code(apply_patch(read_file(path), patch)))
+
+        for f in find_python_files():
+            write_file(f, format_python_code(apply_patch(f, read_file(f), patch)))
 
 
 if __name__ == "__main__":
