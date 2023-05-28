@@ -2,17 +2,7 @@ import os
 import openai
 from utils import read_file, write_file, partition_by_predicate
 
-
-def gpt_query(message: str) -> str:
-    """Sends a message to GPT-4 and returns the response."""
-    openai.api_key = os.environ["OPENAI_API_KEY"]
-
-    completion = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a helpful programming assistant. \
+SYSTEM_PATCH = "You are a helpful programming assistant. \
                 You will be given code as well as instructions to modify it. \
                 Please make ONLY the changes requested, and respond only with the changes in the format specified \
                 and follow PEP-8 formatting standards. \
@@ -22,7 +12,19 @@ def gpt_query(message: str) -> str:
                 RESPOND ONLY IN THE FOLLOWING FORMAT, AND DO NOT INCLUDE ANY OTHER COMMENTARY: \
                 @@PATCH@@ <file name including relative path> <start-line> <end-line> \
                 <new line 1>\
-                <new line 2> ...",
+                <new line 2> ..."
+
+
+def gpt_query(message: str, system: str = SYSTEM_PATCH) -> str:
+    """Sends a message to GPT-4 and returns the response."""
+    openai.api_key = os.environ["OPENAI_API_KEY"]
+
+    completion = openai.ChatCompletion.create(
+        model="gpt-4",
+        messages=[
+            {
+                "role": "system",
+                "content": system,
             },
             {"role": "user", "content": message},
         ],
