@@ -47,15 +47,13 @@ def add_line_numbers(file_contents: str) -> str:
     return "\n".join(numbered_lines)
 
 
-def patch_prepass(patch: str):
+def patch_files(patch: str):
     # This is a hack - patches will be ignored if the file doesn't exist
     pattern = r"@@PATCH@@ (.+) (\d+) (\d+)"
     for l in patch.split("\n"):
         match = re.search(pattern, l)
         if match:
-            file = match.group(1)
-            if not os.path.exists(file):
-                write_file(file, "")
+            yield match.group(1)
 
 
 def apply_patch(file_name: str, file: str, patch: str) -> str:
@@ -99,23 +97,38 @@ def check_result(old, new, prompt) -> bool:
     return True
 
 
+def list_files(files):
+    file_info = ""
+    for k, v in files.items():
+        file_info += f"{k}:\n{add_line_numbers(v)}\n"
+    return file_info
+
+
 def main() -> None:
     """Main function to handle program execution."""
     for prompt in fetch_open_issues("reitzensteinm/duopoly"):
-        file_info = ""
-        for f in find_python_files():
-            file_info += f"{f}:\n{add_line_numbers(read_file(f))}\n"
-
-        patch = gpt_query(f"{prompt}\n{file_info}")
-        patch_prepass(patch)
-        print(patch)
+        old_files = {}
 
         for f in find_python_files():
-            old = read_file(f)
+            old_files[f] = read_file(f)
+
+        patch = gpt_query(f"{prompt}\n{list_files(old_files)}")
+
+        new_files = old_files.copy()
+
+        for f in patch_files(patch):
+            if f not in new_files:
+                new_files[f] = ""
+
+        for f in new_files:
+            old = new_files[f]
             new = format_python_code(apply_patch(f, old, patch))
+            new_files[f] = new
 
-            if old != new and check_result(old, new, prompt):
-                write_file(f, new)
+        check_result(list_files(old_files), list_files(new_files), prompt)
+
+        for k, v in new_files.items():
+            write_file(k, v)
 
 
 if __name__ == "__main__":
