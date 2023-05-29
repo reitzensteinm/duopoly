@@ -40,11 +40,7 @@ def fetch_open_issues(repo_name: str) -> list[str]:
     return descriptions
 
 
-def add_line_numbers(file_contents: str) -> str:
-    """Returns the file contents with line numbers added."""
-    lines = file_contents.split("\n")
-    numbered_lines = [f"{idx+1}: {line}" for idx, line in enumerate(lines)]
-    return "\n".join(numbered_lines)
+from utils import read_file, write_file, partition_by_predicate, add_line_numbers
 
 
 def patch_files(patch: str):
@@ -87,8 +83,8 @@ def apply_patch(file_name: str, file: str, patch: str) -> str:
 
 def check_result(old, new, prompt) -> bool:
     result = gpt_query(
-        f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}",
-        SYSTEM_CHECK)
+        f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}", SYSTEM_CHECK
+    )
 
     if not "VERDICT: OK" in result:
         print(new)
