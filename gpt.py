@@ -14,6 +14,15 @@ SYSTEM_PATCH = "You are a helpful programming assistant. \
                 <new line 1>\
                 <new line 2> ..."
 
+SYSTEM_CHECK = "You are a helpful programming assistant. \
+                You will be given original and modified versions of code. \
+                You will also be given a description of the change that was intended. \
+                Was the change that was made correct? \
+                Please write a paragraph explaining your reasoning using this format: 'REASONING: <reasoning>'. \
+                Afterwards, give a verdict, either by saying 'VERDICT: OK' or 'VERDICT: ERROR'. \
+                This should be the last line of your response. \
+                Are you absolutely sure? If you have any doubt at all, tell me there is an error."
+
 
 def gpt_query(message: str, system: str = SYSTEM_PATCH) -> str:
     """Sends a message to GPT-4 and returns the response."""

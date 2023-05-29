@@ -4,6 +4,7 @@ import openai
 import re
 from black import FileMode, format_str
 import fnmatch
+from gpt import SYSTEM_CHECK
 from utils import read_file, write_file
 
 
@@ -86,6 +87,18 @@ def apply_patch(file_name: str, file: str, patch: str) -> str:
     return "\n".join(file_lines)
 
 
+def check_result(old, new, prompt) -> bool:
+    result = gpt_query(
+        f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}",
+        SYSTEM_CHECK)
+
+    if not "VERDICT: OK" in result:
+        print(new)
+        raise Exception(result)
+
+    return True
+
+
 def main() -> None:
     """Main function to handle program execution."""
     for prompt in fetch_open_issues("reitzensteinm/duopoly"):
@@ -98,7 +111,11 @@ def main() -> None:
         print(patch)
 
         for f in find_python_files():
-            write_file(f, format_python_code(apply_patch(f, read_file(f), patch)))
+            old = read_file(f)
+            new = format_python_code(apply_patch(f, old, patch))
+
+            if old != new and check_result(old, new, prompt):
+                write_file(f, new)
 
 
 if __name__ == "__main__":
