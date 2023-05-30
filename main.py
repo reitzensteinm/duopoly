@@ -30,14 +30,7 @@ from utils import read_file, write_file, partition_by_predicate
 from gpt import gpt_query
 
 
-def fetch_open_issues(repo_name: str) -> list[str]:
-    """Fetches open issues from a given repository."""
-    api_key = os.environ["GITHUB_API_KEY"]
-    g = Github(api_key)
-    repo = g.get_repo(repo_name)
-    issues = repo.get_issues(state="open")
-    descriptions = [issue.body for issue in issues]
-    return descriptions
+from repo import fetch_open_issues
 
 
 from utils import read_file, write_file, partition_by_predicate, add_line_numbers
