@@ -1,0 +1,4 @@
+import repo
+# repo.switch_and_reset_branch("issue-2")
+# repo.push_local_branch("issue-2")
+repo.create_pull_request("reitzensteinm/duopoly", "issue-2", "PR Test", "Test of automated PR functionality")
