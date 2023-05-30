@@ -25,3 +25,10 @@ MOVE = """To move code from one file to another, the following steps must be tak
  * Add an import to the source file to be able to call the code in the destination file"""
 
 create_recipe("MOVE", "Move code between files", MOVE)
+
+
+def get_recipe_by_id(recipe_id: str) -> Recipe:
+    for recipe in recipes_list:
+        if recipe.id == recipe_id:
+            return recipe
+    return None
