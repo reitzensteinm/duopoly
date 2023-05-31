@@ -113,14 +113,20 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     return new_files
 
 
-def main() -> None:
-    """Main function to handle program execution."""
-    for issue in fetch_open_issues("reitzensteinm/duopoly"):
-        files = {f: read_file(f) for f in find_python_files()}
-        updated_files = apply_prompt_to_files(issue.description, files)
+from repo import Issue
 
-        for k, v in updated_files.items():
-            write_file(k, v)
+
+def process_issue(issue: Issue) -> None:
+    files = {f: read_file(f) for f in find_python_files()}
+    updated_files = apply_prompt_to_files(issue.description, files)
+
+    for k, v in updated_files.items():
+        write_file(k, v)
+
+
+def main() -> None:
+    for issue in fetch_open_issues("reitzensteinm/duopoly"):
+        process_issue(issue)
 
 
 if __name__ == "__main__":
