@@ -114,6 +114,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
 
 
 from repo import Issue
+import repo
 
 
 def process_issue(issue: Issue) -> None:
