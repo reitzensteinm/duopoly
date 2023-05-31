@@ -93,32 +93,33 @@ def list_files(files):
     return file_info
 
 
+def apply_prompt_to_files(prompt: str, files: dict) -> dict:
+    old_files = files
+    patch = gpt_query(f"{prompt}\n{list_files(old_files)}")
+
+    new_files = old_files.copy()
+
+    for f in patch_files(patch):
+        if f not in new_files:
+            new_files[f] = ""
+
+    for f in new_files:
+        old = new_files[f]
+        new = format_python_code(apply_patch(f, old, patch))
+        new_files[f] = new
+
+    check_result(list_files(old_files), list_files(new_files), prompt)
+
+    return new_files
+
+
 def main() -> None:
     """Main function to handle program execution."""
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
-        
-        prompt = issue.description
-        old_files = {}
+        files = {f: read_file(f) for f in find_python_files()}
+        updated_files = apply_prompt_to_files(issue.description, files)
 
-        for f in find_python_files():
-            old_files[f] = read_file(f)
-
-        patch = gpt_query(f"{prompt}\n{list_files(old_files)}")
-
-        new_files = old_files.copy()
-
-        for f in patch_files(patch):
-            if f not in new_files:
-                new_files[f] = ""
-
-        for f in new_files:
-            old = new_files[f]
-            new = format_python_code(apply_patch(f, old, patch))
-            new_files[f] = new
-
-        check_result(list_files(old_files), list_files(new_files), prompt)
-
-        for k, v in new_files.items():
+        for k, v in updated_files.items():
             write_file(k, v)
 
 
