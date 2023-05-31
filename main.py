@@ -95,7 +95,9 @@ def list_files(files):
 
 def main() -> None:
     """Main function to handle program execution."""
-    for prompt in fetch_open_issues("reitzensteinm/duopoly"):
+    for issue in fetch_open_issues("reitzensteinm/duopoly"):
+        
+        prompt = issue.description
         old_files = {}
 
         for f in find_python_files():

@@ -1,6 +1,7 @@
 from git import Repo
 from github import Github
 import os
+from dataclasses import dataclass
 
 
 def switch_and_reset_branch(branch_id: str):
@@ -27,6 +28,13 @@ def create_pull_request(repo_name: str, branch_id: str, title: str, body: str):
     repo.create_pull(title=title, body=body, head=branch_id, base="main")
 
 
+@dataclass
+class Issue:
+    id: int
+    title: str
+    description: str
+
+
 def fetch_open_issues(repo_name: str) -> list[Issue]:
     """Fetches open issues from a given repository."""
     api_key = os.environ["GITHUB_API_KEY"]
@@ -47,16 +55,6 @@ def check_pull_request_title_exists(repo_name: str, pr_title: str) -> bool:
     repo = g.get_repo(repo_name)
     pull_requests = repo.get_pulls(state="open")
     return any(pr_title == pr.title for pr in pull_requests)
-
-
-from dataclasses import dataclass
-
-
-@dataclass
-class Issue:
-    id: int
-    title: str
-    description: str
 
 
 def commit_local_modifications():
