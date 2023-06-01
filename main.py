@@ -137,7 +137,15 @@ def process_issue(issue: Issue) -> None:
 
 def main() -> None:
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
-        process_issue(issue)
+        retries = 0
+        while retries < 5:
+            try:
+                process_issue(issue)
+                break
+            except Exception as e:
+                retries += 1
+                if retries == 5:
+                    print(f"Failed to process issue {issue.id} after 5 retries")
     repo.switch_and_reset_branch("main")
 
 
