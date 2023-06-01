@@ -59,5 +59,5 @@ def check_pull_request_title_exists(repo_name: str, pr_title: str) -> bool:
 
 def commit_local_modifications(commit_subject: str, commit_body: str):
     repo = Repo(os.getcwd())
-    repo.git.add(update=True)
+    repo.git.add("--all")
     repo.index.commit(f"{commit_subject}\n\n{commit_body}")
