@@ -28,6 +28,7 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH) -> str:
     """Sends a message to GPT-4 and returns the response."""
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
+    print(message)
     completion = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[

@@ -56,7 +56,7 @@ def check_pull_request_title_exists(repo_name: str, pr_title: str) -> bool:
     return any(pr_title == pr.title for pr in pull_requests)
 
 
-def commit_local_modifications():
+def commit_local_modifications(commit_title: str, commit_body: str):
     repo = Repo(os.getcwd())
     repo.git.add(update=True)
-    repo.index.commit("Local modifications committed")
+    repo.index.commit(commit_title, message=commit_body)
