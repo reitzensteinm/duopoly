@@ -39,4 +39,8 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH) -> str:
         ],
     )
 
-    return completion.choices[0].message.content
+    content = completion.choices[0].message.content
+
+    print(content)
+
+    return content
