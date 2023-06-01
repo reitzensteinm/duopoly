@@ -56,7 +56,7 @@ def apply_patch(file_name: str, file: str, patch: str) -> str:
         start = int(match.group(2)) + off
         end = int(match.group(3)) + off
         off = off + ((len(patch_lines) - 1) - (1 + end - start))
-        return off, file_lines[0: start - 1] + patch_lines[1:] + file_lines[end:]
+        return off, file_lines[0 : start - 1] + patch_lines[1:] + file_lines[end:]
 
     file_lines = file.split("\n")
     patch_lines = patch.split("\n")
@@ -127,9 +127,12 @@ def process_issue(issue: Issue) -> None:
     repo.push_local_branch_to_origin(branch_id)
 
     if not repo.check_pull_request_title_exists("reitzensteinm/duopoly", issue.title):
-        repo.create_pull_request(repo_name="reitzensteinm/duopoly",
-                                 branch_id=branch_id, title=issue.title, body=issue.description
-                                 )
+        repo.create_pull_request(
+            repo_name="reitzensteinm/duopoly",
+            branch_id=branch_id,
+            title=issue.title,
+            body=issue.description,
+        )
 
 
 def main() -> None:
