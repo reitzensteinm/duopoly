@@ -123,9 +123,8 @@ def process_issue(issue: Issue) -> None:
     for k, v in updated_files.items():
         write_file(k, v)
 
-    repo.commit_local_modifications()
+    repo.commit_local_modifications(issue.title, issue.description)
     repo.push_local_branch_to_origin(branch_id)
-
     if not repo.check_pull_request_title_exists("reitzensteinm/duopoly", issue.title):
         repo.create_pull_request(
             repo_name="reitzensteinm/duopoly",
