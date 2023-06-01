@@ -42,7 +42,8 @@ def fetch_open_issues(repo_name: str) -> list[Issue]:
     issues = repo.get_issues(state="open")
     issue_data = [
         Issue(id=issue.id, title=issue.title, description=issue.body)
-        for issue in issues if issue.pull_request is None
+        for issue in issues
+        if issue.pull_request is None
     ]
     return issue_data
 
@@ -56,7 +57,7 @@ def check_pull_request_title_exists(repo_name: str, pr_title: str) -> bool:
     return any(pr_title == pr.title for pr in pull_requests)
 
 
-def commit_local_modifications():
+def commit_local_modifications(commit_subject: str, commit_body: str):
     repo = Repo(os.getcwd())
     repo.git.add(update=True)
-    repo.index.commit("Local modifications committed")
+    repo.index.commit(f"{commit_subject}\n\n{commit_body}")
