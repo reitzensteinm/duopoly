@@ -11,6 +11,7 @@ def switch_and_reset_branch(branch_id: str):
         repo.create_head(branch_id)
 
     repo.git.checkout(branch_id)
+    repo.git.checkout("main")
     repo.git.reset("--hard", "origin/main")
 
 
