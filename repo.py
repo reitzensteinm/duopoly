@@ -42,7 +42,7 @@ def fetch_open_issues(repo_name: str) -> list[Issue]:
     issues = repo.get_issues(state="open")
     issue_data = [
         Issue(id=issue.id, title=issue.title, description=issue.body)
-        for issue in issues
+        for issue in issues if issue.pull_request is None
     ]
     return issue_data
 
