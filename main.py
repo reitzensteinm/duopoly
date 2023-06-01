@@ -129,7 +129,7 @@ def process_issue(issue: Issue) -> None:
     repo.commit_local_modifications()
     repo.push_local_branch_to_origin(branch_id)
 
-    if not repo.check_pull_request_title_exists(issue.title):
+    if not repo.check_pull_request_title_exists("reitzensteinm/duopoly", issue.title):
         repo.create_pull_request(
             branch_id=branch_id, title=issue.title, body=issue.description
         )
