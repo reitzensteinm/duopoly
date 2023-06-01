@@ -92,7 +92,7 @@ def list_files(files):
 
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     old_files = files
-    patch = gpt_query(f"{prompt}\n{list_files(old_files)}")
+    patch = gpt_query(f"Instructions: {prompt}\nFiles:\n{list_files(old_files)}")
 
     new_files = old_files.copy()
 
