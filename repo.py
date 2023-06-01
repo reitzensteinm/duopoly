@@ -17,7 +17,9 @@ def switch_and_reset_branch(branch_id: str):
 def push_local_branch_to_origin(branch_id: str):
     repo = Repo(os.getcwd())
     repo.git.checkout(branch_id)
-    repo.git.push("origin", branch_id)
+
+
+repo.git.push("origin", branch_id, "--force")
 
 
 def create_pull_request(repo_name: str, branch_id: str, title: str, body: str):
