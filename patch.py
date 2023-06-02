@@ -1,3 +1,7 @@
+from utils import partition_by_predicate
+import re
+
+
 def patch_files(patch: str):
     # This is a hack - patches will be ignored if the file doesn't exist
     pattern = r"@@PATCH@@ (.+) (\d+) (\d+)"
