@@ -104,7 +104,7 @@ def process_issue(issue: Issue) -> None:
         )
 
 
-def main() -> None:
+def main2() -> None:
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
         retries = 0
         while retries < 5:
@@ -119,4 +119,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main2()
