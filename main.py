@@ -24,15 +24,6 @@ def find_python_files() -> list[str]:
     return python_files
 
 
-from utils import read_file, write_file, partition_by_predicate
-
-from gpt import gpt_query
-
-from repo import fetch_open_issues
-
-from utils import read_file, write_file, partition_by_predicate, add_line_numbers
-
-
 from utils import read_file, write_file, partition_by_predicate, add_line_numbers
 
 from gpt import gpt_query
