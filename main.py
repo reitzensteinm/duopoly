@@ -75,6 +75,13 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
         new_files[f] = new
 
     check_result(list_files(old_files), list_files(new_files), prompt)
+    old_files_filtered = {
+        k: v for k, v in old_files.items() if k in new_files and v != new_files[k]
+    }
+    new_files_filtered = {
+        k: v for k, v in new_files.items() if k in old_files and v != old_files[k]
+    }
+    check_result(list_files(old_files_filtered), list_files(new_files_filtered), prompt)
 
     return new_files
 
