@@ -112,20 +112,31 @@ def process_issue(issue: Issue) -> None:
 from termcolor import cprint
 
 
-def main() -> None:
+def main(retries=5) -> None:
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
-        retries = 0
-        while retries < 5:
-            cprint(f"Attempt {retries + 1}", "magenta")
+        retry_count = 0
+        while retry_count < retries:
+            cprint(f"Attempt {retry_count + 1}", "magenta")
             try:
                 process_issue(issue)
                 break
             except Exception as e:
-                retries += 1
+                retry_count += 1
                 cprint(str(e), "red")
-                if retries == 5:
-                    print(f"Failed to process issue {issue.id} after 5 retries")
+                if retry_count == retries:
+                    print(f"Failed to process issue {issue.id} after {retries} retries")
     repo.switch_and_reset_branch("main")
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-r", "--retries", type=int, default=5, help="number of retries (default is 5)"
+    )
+    args = parser.parse_args()
+    main(retries=args.retries)
 
 
 if __name__ == "__main__":
