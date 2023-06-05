@@ -95,7 +95,7 @@ def process_issue(issue: Issue) -> None:
 
     import subprocess
 
-    result = subprocess.run(["pytest"], capture_output=True, text=True)
+    result = subprocess.run(["pytest", "-ra"], capture_output=True, text=True)
     if result.returncode != 0:
         raise Exception("Pytest failed\n" + result.stderr)
     repo.commit_local_modifications(issue.title, f'Prompt: "{issue.description}"')
