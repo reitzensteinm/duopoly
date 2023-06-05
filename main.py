@@ -97,8 +97,7 @@ def process_issue(issue: Issue) -> None:
 
     result = subprocess.run(["pytest"], capture_output=True, text=True)
     if result.returncode != 0:
-        raise Exception("Pytest failed")
-
+        raise Exception("Pytest failed\n" + result.stderr)
     repo.commit_local_modifications(issue.title, f'Prompt: "{issue.description}"')
     repo.push_local_branch_to_origin(branch_id)
     if not repo.check_pull_request_title_exists("reitzensteinm/duopoly", issue.title):
