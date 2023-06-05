@@ -12,7 +12,18 @@ def add_line_numbers(file_contents: str) -> str:
 
 
 def partition_by_predicate(sequence: list, predicate: callable) -> list:
-    """Splits the given sequence into groups based on the predicate."""
+    """Takes a list(sequence) and a predicate(function that evaluates to a boolean),
+    returns a list of lists. The function loops over the input sequence, adding each
+    element to a list. Each time the predicate returns true, it starts on a new list
+    with that element.
+
+    Args:
+        sequence (list): A list of items to be partitioned.
+        predicate (callable): A function that returns a boolean.
+
+    Returns:
+        list: A list of lists containing partitioned items based on the predicate.
+    """
     result = []
     current_group = []
 
