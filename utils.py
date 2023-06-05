@@ -28,7 +28,14 @@ def partition_by_predicate(sequence: list, predicate: callable) -> list:
     if current_group:
         result.append(current_group)
 
-    return result
+
+def test_partition_by_predicate():
+    test_data = ["A", "B", 1, 2, "C", 3, "D", 4]
+    expected_result = [["A", "B"], [1, 2], ["C"], [3], ["D"], [4]]
+
+    result = partition_by_predicate(test_data, lambda x: isinstance(x, int))
+
+    assert result == expected_result, f"Expected {expected_result}, but got {result}"
 
 
 def write_file(path: str, contents: str) -> None:
