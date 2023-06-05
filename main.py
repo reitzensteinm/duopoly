@@ -128,15 +128,14 @@ def main(retries=5) -> None:
     repo.switch_and_reset_branch("main")
 
 
-if __name__ == "__main__":
-    import argparse
+import argparse
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-r", "--retries", type=int, default=5, help="number of retries (default is 5)"
-    )
-    args = parser.parse_args()
-    main(retries=args.retries)
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "-r", "--retries", type=int, default=5, help="number of retries (default is 5)"
+)
+args = parser.parse_args()
+main(retries=args.retries)
 
 
 if __name__ == "__main__":
