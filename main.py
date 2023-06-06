@@ -95,9 +95,15 @@ def process_issue(issue: Issue) -> None:
 
     import subprocess
 
-    result = subprocess.run(["pytest", "-ra"], capture_output=True, text=True)
+    result = subprocess.run(
+        ["pytest", "-ra", "--log-file=pytest_errors.log"],
+        capture_output=True,
+        text=True,
+    )
     if result.returncode != 0:
-        raise Exception("Pytest failed\n" + result.stderr)
+        with open("pytest_errors.log", "r") as file:
+            errors = file.read()
+        raise Exception("Pytest failed\n" + errors)
     repo.commit_local_modifications(issue.title, f'Prompt: "{issue.description}"')
     repo.push_local_branch_to_origin(branch_id)
     if not repo.check_pull_request_title_exists("reitzensteinm/duopoly", issue.title):
