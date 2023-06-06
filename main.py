@@ -137,7 +137,3 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     main(retries=args.retries)
-
-
-if __name__ == "__main__":
-    main()
