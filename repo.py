@@ -12,6 +12,7 @@ def switch_and_reset_branch(branch_id: str):
 
     repo.git.checkout(branch_id)
     repo.git.reset("--hard", "origin/main")
+    repo.git.clean("-f", "-d")
 
 
 def push_local_branch_to_origin(branch_id: str):
