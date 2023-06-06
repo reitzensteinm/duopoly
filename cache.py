@@ -1,5 +1,6 @@
 import os
 import hashlib
+import json
 
 
 class KeyValueStore:
@@ -15,7 +16,7 @@ class KeyValueStore:
             raise FileNotFoundError(f"Key not found: {key}")
 
         with open(file_path, "r") as file:
-            value = file.read()
+            value = json.load(file)
         return value
 
     def write(self, key, value):
@@ -23,7 +24,7 @@ class KeyValueStore:
         file_path = self.cache_dir + key_hash
 
         with open(file_path, "w") as file:
-            file.write(value)
+            json.dump(value, file)
 
     def _hash_key(self, key):
         md5_hash = hashlib.md5()
