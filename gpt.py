@@ -24,8 +24,11 @@ SYSTEM_CHECK = "You are a helpful programming assistant. \
                 Are you absolutely sure? If you have any doubt at all, tell me there is an error."
 
 
+from cache import memoize
+
+
+@memoize
 def gpt_query(message: str, system: str = SYSTEM_PATCH) -> str:
-    """Sends a message to GPT-4 and returns the response."""
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
     completion = openai.ChatCompletion.create(
