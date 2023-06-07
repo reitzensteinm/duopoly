@@ -1,13 +1,25 @@
+"""
+Commands in Python are stored as dicts. The "command" key stores the id of the key. The optional "body" key stores the body of the command. All other keys are a key/value pair, which are all string/strings.
+
+In text, the format of a command is as follows:
+
+@@COMMAND_ID@@ key_a=value_a key_b=value_b
+OPTIONAL
+BODY
+OVER
+MULTIPLE
+LINES
+"""
+
+
 def command_to_str(command: dict) -> str:
     formatted_command = f"@@{command['command']}@@"
-    if "response" in command:
-        formatted_command = f"> {formatted_command}"
     for key, value in command.items():
-        if key not in ["command", "body", "response"]:
+        if key not in ["command", "body"]:
             formatted_command += f" {key}={value}"
     if "body" in command:
         formatted_lines = "\n".join(
-            [f"> {line}" for line in command["body"].splitlines()]
+            [f"{line}" for line in command["body"].splitlines()]
         )
         formatted_command += f"\n{formatted_lines}"
     return formatted_command
@@ -15,13 +27,8 @@ def command_to_str(command: dict) -> str:
 
 def parse_command_string(command_string: str) -> list[dict]:
     command_list = []
-    response_flag = False
 
     for line in command_string.split("\n"):
-        if line.startswith("> @@"):
-            response_flag = True
-            line = line[2:].lstrip()
-
         if line.startswith("@@") and line.endswith("@@"):
             idx = line.index("@@", 2)
             command_id = line[2:idx]
@@ -34,12 +41,12 @@ def parse_command_string(command_string: str) -> list[dict]:
                 command_dict[key] = value
 
             command_list.append(command_dict)
-        elif line.startswith(">"):
-            body_line = line[1:].lstrip()
-            command_list[-1].setdefault("body", []).append(body_line)
         else:
-            if not response_flag:
-                if command_list[-1].get("body"):
-                    command_list[-1]["body"] = "\n".join(command_list[-1]["body"])
-                command_list[-1]["response"] = line
+            body_line = line.lstrip()
+            command_list[-1].setdefault("body", []).append(body_line)
+
+    for command in command_list:
+        if "body" in command:
+            command["body"] = "\n".join(command["body"])
+
     return command_list
