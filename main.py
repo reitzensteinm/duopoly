@@ -50,9 +50,15 @@ def list_files(files):
     return file_info
 
 
+import uuid
+
+
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
+    issue_description = f"{str(uuid.uuid4())}\n{prompt}"
     old_files = files
-    patch = gpt_query(f"Instructions: {prompt}\nFiles:\n{list_files(old_files)}")
+    patch = gpt_query(
+        f"Instructions: {issue_description}\nFiles:\n{list_files(old_files)}"
+    )
 
     new_files = old_files.copy()
 
@@ -75,7 +81,11 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
         for k, v in new_files.items()
         if k in old_files and v != old_files[k] or k not in old_files
     }
-    check_result(list_files(old_files_filtered), list_files(new_files_filtered), prompt)
+    check_result(
+        list_files(old_files_filtered),
+        list_files(new_files_filtered),
+        issue_description,
+    )
 
     return new_files
 
