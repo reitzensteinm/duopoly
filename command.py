@@ -37,8 +37,9 @@ def parse_command_string(command_string: str) -> list[dict]:
             command_dict = {"command": command_id}
 
             for item in command_values:
-                key, value = item.split("=")
-                command_dict[key] = value
+                if item:  # Ignore empty string
+                    key, value = item.split("=")
+                    command_dict[key] = value
 
             command_list.append(command_dict)
         else:
