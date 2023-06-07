@@ -29,7 +29,7 @@ def parse_command_string(command_string: str) -> list[dict]:
     command_list = []
 
     for line in command_string.split("\n"):
-        if line.startswith("@@") and line.endswith("@@"):
+        if line.startswith("@@"):
             idx = line.index("@@", 2)
             command_id = line[2:idx]
 
