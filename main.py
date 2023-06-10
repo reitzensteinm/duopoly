@@ -59,7 +59,7 @@ import uuid
 def command_loop(prompt: str, files: dict) -> dict:
     new_files = files.copy()
 
-    scratch = ""
+    scratch = "Available files: " + ", ".join(files.keys()) + "\n"
 
     # Sanity limit of 10
     for _ in range(10):
@@ -71,7 +71,7 @@ def command_loop(prompt: str, files: dict) -> dict:
             scratch += "\n".join([">> " + line for line in command.command_to_str(c).split("\n")]) + "\n"
 
             if comm == "FILE":
-                scratch += add_line_numbers(files[c["path"]]) + "\n"
+                scratch += files[c["path"]] + "\n"
             elif comm == "UPDATE":
                 new_files[c["path"]] = c["body"]
             elif comm == "FINISH":
@@ -79,11 +79,10 @@ def command_loop(prompt: str, files: dict) -> dict:
 
 
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
-    issue_description = prompt  # f"{str(uuid.uuid4())}\n{prompt}"
     old_files = files
 
     new_files = command_loop(
-        f"Instructions: {issue_description}\nFiles:\n{list_files(old_files)}", files
+        f"{str(uuid.uuid4())}\n{prompt}", files
     )
 
     old_files_filtered = {
@@ -99,7 +98,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     check_result(
         list_files(old_files_filtered),
         list_files(new_files_filtered),
-        issue_description,
+        prompt,
     )
 
     return new_files

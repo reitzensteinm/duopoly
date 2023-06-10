@@ -32,6 +32,10 @@ You should:
 1) Request any information required that you don't already have
 2) Only if all necessary information has been supplied, list updates to make
 
+IF YOU UPDATE A FILE, INCLUDE ALL LINES. DO NOT LEAVE OUT ANY CONTENT, EVEN IF IT IS LONG.
+
+Once you have made all modifications, always add a FINISH command at the end.
+
 Respond with at least one command. The format is:
 
 @@COMMAND@@ key1=value1 key2=value2
@@ -43,10 +47,12 @@ The commands available are:
 Request the source code to a file:
 @@FILE@@ path=<path>
 
-Supply a new version of a file:
+Replace THE ENTIRE FILE with the specified lines:
 @@UPDATE@@ path=<path>
 <file line 1>
 <file line 2>
+...
+<last line of file>
 
 Indicate you're finished:
 @@FINISH@@
