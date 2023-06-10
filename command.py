@@ -43,8 +43,7 @@ def parse_command_string(command_string: str) -> list[dict]:
 
             command_list.append(command_dict)
         else:
-            body_line = line.lstrip()
-            command_list[-1].setdefault("body", []).append(body_line)
+            command_list[-1].setdefault("body", []).append(line)
 
     for command in command_list:
         if "body" in command:

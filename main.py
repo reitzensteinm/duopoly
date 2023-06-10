@@ -4,6 +4,9 @@ import openai
 import re
 from black import FileMode, format_str
 import fnmatch
+import command
+
+import gpt
 from gpt import SYSTEM_CHECK
 from utils import read_file, write_file
 
@@ -53,23 +56,35 @@ def list_files(files):
 import uuid
 
 
+def command_loop(prompt: str, files: dict) -> dict:
+    new_files = files.copy()
+
+    scratch = ""
+
+    # Sanity limit of 10
+    for _ in range(10):
+        response = gpt_query(f"Instructions: {prompt}\n{scratch}", gpt.SYSTEM_COMMAND)
+        commands = command.parse_command_string(response)
+
+        for c in commands:
+            comm = c["command"]
+            scratch += "\n".join([">> " + line for line in command.command_to_str(c).split("\n")]) + "\n"
+
+            if comm == "FILE":
+                scratch += add_line_numbers(files[c["path"]]) + "\n"
+            elif comm == "UPDATE":
+                new_files[c["path"]] = c["body"]
+            elif comm == "FINISH":
+                return new_files
+
+
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
-    issue_description = f"{str(uuid.uuid4())}\n{prompt}"
+    issue_description = prompt  # f"{str(uuid.uuid4())}\n{prompt}"
     old_files = files
-    patch = gpt_query(
-        f"Instructions: {issue_description}\nFiles:\n{list_files(old_files)}"
+
+    new_files = command_loop(
+        f"Instructions: {issue_description}\nFiles:\n{list_files(old_files)}", files
     )
-
-    new_files = old_files.copy()
-
-    for f in patch_files(patch):
-        if f not in new_files:
-            new_files[f] = ""
-
-    for f in new_files:
-        old = new_files[f]
-        new = format_python_code(apply_patch(f, old, patch))
-        new_files[f] = new
 
     old_files_filtered = {
         k: v

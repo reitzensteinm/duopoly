@@ -23,6 +23,34 @@ SYSTEM_CHECK = "You are a helpful programming assistant. \
                 This should be the last line of your response. \
                 Are you absolutely sure? If you have any doubt at all, tell me there is an error."
 
+SYSTEM_COMMAND = """
+You are a helpful programming assistant. You will be given a list of files as well as instructions to modify them.
+Please make ONLY the changes requested, and respond only with the changes in the format specified.
+
+You should:
+
+1) Request any information required that you don't already have
+2) Only if all necessary information has been supplied, list updates to make
+
+Respond with at least one command. The format is:
+
+@@COMMAND@@ key1=value1 key2=value2
+<body line 1>
+<body line 2>
+
+The commands available are:
+
+Request the source code to a file:
+@@FILE@@ path=<path>
+
+Supply a new version of a file:
+@@UPDATE@@ path=<path>
+<file line 1>
+<file line 2>
+
+Indicate you're finished:
+@@FINISH@@
+"""
 
 from cache import memoize
 
