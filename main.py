@@ -1,20 +1,24 @@
 import os
+import re
+import fnmatch
+import uuid
+import subprocess
+import argparse
 from github import Github
 import openai
-import re
 from black import FileMode, format_str
-import fnmatch
+from termcolor import cprint
 import command
-
 import gpt
-from gpt import SYSTEM_CHECK
-from utils import read_file, write_file
-
+import repo
+from utils import read_file, write_file, partition_by_predicate, add_line_numbers
+from gpt import SYSTEM_CHECK, gpt_query
+from repo import fetch_open_issues, Issue
+from patch import patch_files, apply_patch
 
 def format_python_code(code: str) -> str:
     formatted_code = format_str(code, mode=FileMode())
     return formatted_code
-
 
 def find_python_files() -> list[str]:
     python_files = []
@@ -25,14 +29,6 @@ def find_python_files() -> list[str]:
                 python_files.append(os.path.join(root, filename))
 
     return python_files
-
-
-from utils import read_file, write_file, partition_by_predicate, add_line_numbers
-
-from gpt import gpt_query
-from repo import fetch_open_issues
-from patch import patch_files, apply_patch
-
 
 def check_result(old, new, prompt) -> bool:
     result = gpt_query(
@@ -45,16 +41,11 @@ def check_result(old, new, prompt) -> bool:
 
     return True
 
-
 def list_files(files):
     file_info = ""
     for k, v in files.items():
         file_info += f"{k}:\n{add_line_numbers(v)}\n"
     return file_info
-
-
-import uuid
-
 
 def command_loop(prompt: str, files: dict) -> dict:
     new_files = files.copy()
@@ -77,7 +68,6 @@ def command_loop(prompt: str, files: dict) -> dict:
                 new_files[c["path"]] = c["body"]
             elif comm == "FINISH":
                 return new_files
-
 
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     old_files = files
@@ -104,11 +94,6 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
 
     return new_files
 
-
-from repo import Issue
-import repo
-
-
 def process_issue(issue: Issue) -> None:
     files = {f: read_file(f) for f in find_python_files()}
     branch_id = f"issue-{issue.id}"
@@ -117,8 +102,6 @@ def process_issue(issue: Issue) -> None:
 
     for k, v in updated_files.items():
         write_file(k, v)
-
-    import subprocess
 
     result = subprocess.run(
         ["pytest", "-ra", "--log-file=pytest_errors.log"],
@@ -139,10 +122,6 @@ def process_issue(issue: Issue) -> None:
             body=issue.description,
         )
 
-
-from termcolor import cprint
-
-
 def main(retries=5) -> None:
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
         retry_count = 0
@@ -158,13 +137,11 @@ def main(retries=5) -> None:
                     print(f"Failed to process issue {issue.id} after {retries} retries")
     repo.switch_and_reset_branch("main")
 
-
 if __name__ == "__main__":
-    import argparse
-
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-r", "--retries", type=int, default=5, help="number of retries (default is 5)"
     )
     args = parser.parse_args()
     main(retries=args.retries)
+    
