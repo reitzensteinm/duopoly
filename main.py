@@ -71,7 +71,8 @@ def command_loop(prompt: str, files: dict) -> dict:
             scratch += "\n".join([">> " + line for line in command.command_to_str(c).split("\n")]) + "\n"
 
             if comm == "FILE":
-                scratch += files[c["path"]] + "\n"
+                contents = files[c["path"]]
+                scratch += f"```python\n{contents}\n```\n"
             elif comm == "UPDATE":
                 new_files[c["path"]] = c["body"]
             elif comm == "FINISH":
