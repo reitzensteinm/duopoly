@@ -1,5 +1,6 @@
 import os
 import openai
+import time
 from utils import read_file, write_file, partition_by_predicate
 
 SYSTEM_PATCH = "You are a helpful programming assistant. \
@@ -76,16 +77,28 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") ->
 
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
-    completion = openai.ChatCompletion.create(
-        model=model,
-        messages=[
-            {
-                "role": "system",
-                "content": system,
-            },
-            {"role": "user", "content": message},
-        ],
-    )
+    retries = 5
+    backoff = 1
+
+    for i in range(retries):
+        try:
+            completion = openai.ChatCompletion.create(
+                model=model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": system,
+                    },
+                    {"role": "user", "content": message},
+                ],
+            )
+            break
+        except Exception as e:
+            if i == retries - 1:
+                raise e
+
+            time.sleep(backoff)
+            backoff *= 2
 
     content = completion.choices[0].message.content
 
