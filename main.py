@@ -165,9 +165,8 @@ def main(retries=5, dry_run=False) -> None:
                 cprint(f"{str(e)}\n{traceback.format_exc()}", "red")
                 if retry_count == retries:
                     print(f"Failed to process issue {issue.id} after {retries} retries")
-
-    if not dry_run:
-        repo.switch_and_reset_branch("main")
+        if not dry_run:
+            repo.switch_and_reset_branch("main")
 
 
 if __name__ == "__main__":
