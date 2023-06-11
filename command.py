@@ -28,13 +28,14 @@ def command_to_str(command: dict) -> str:
 def parse_command_string(command_string: str) -> list[dict]:
     command_list = []
     inside_multiline_string = False
+    found_first_command = False
 
     for line in command_string.split("\n"):
-
         if '"""' in line:
             inside_multiline_string = not inside_multiline_string
 
         if not inside_multiline_string and line.startswith("@@"):
+            found_first_command = True
             idx = line.index("@@", 2)
             command_id = line[2:idx]
 
@@ -47,7 +48,7 @@ def parse_command_string(command_string: str) -> list[dict]:
                     command_dict[key] = value
 
             command_list.append(command_dict)
-        else:
+        elif found_first_command:
             command_list[-1].setdefault("body", []).append(line)
 
     for command in command_list:
