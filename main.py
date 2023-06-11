@@ -4,6 +4,7 @@ import fnmatch
 import uuid
 import subprocess
 import argparse
+import traceback
 from github import Github
 import openai
 from black import FileMode, format_str
@@ -161,7 +162,7 @@ def main(retries=5, dry_run=False) -> None:
                 break
             except Exception as e:
                 retry_count += 1
-                cprint(str(e), "red")
+                cprint(f"{str(e)}\n{traceback.format_exc()}", "red")
                 if retry_count == retries:
                     print(f"Failed to process issue {issue.id} after {retries} retries")
 
