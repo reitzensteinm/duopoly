@@ -28,6 +28,35 @@ def create_pull_request(repo_name: str, branch_id: str, title: str, body: str):
     repo.create_pull(title=title, body=body, head=branch_id, base="main")
 
 
+def find_approved_prs(repo_name: str) -> list[int]:
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    open_pulls = repo.get_pulls(state="open")
+    approved_prs_ids = []
+
+    for pr in open_pulls:
+        reviews = pr.get_reviews()
+
+        if any(review.state == "APPROVED" for review in reviews):
+            approved_prs_ids.append(pr.id)
+
+    return approved_prs_ids
+
+
+def merge_with_rebase_if_possible(repo_name: str, pr_id: int) -> bool:
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    pr = repo.get_pull(pr_id)
+
+    if pr.mergeable and pr.rebaseable:
+        pr.merge(merge_method="rebase")
+        return True
+
+    return False
+
+
 @dataclass
 class Issue:
     id: int
