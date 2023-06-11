@@ -148,7 +148,17 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
             )
 
 
+def merge_approved_prs() -> None:
+    approved_prs = repo.find_approved_prs("reitzensteinm/duopoly")
+    for pr_id in approved_prs:
+        if repo.merge_with_rebase_if_possible("reitzensteinm/duopoly", pr_id):
+            print(f"Merged PR: {pr_id}")
+        else:
+            print(f"Could not merge PR: {pr_id}")
+
+
 def main(retries=3, dry_run=False) -> None:
+    merge_approved_prs()
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
         retry_count = 0
         while retry_count < retries:
