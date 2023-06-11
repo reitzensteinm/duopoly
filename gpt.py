@@ -37,6 +37,8 @@ IF YOU UPDATE A FILE, INCLUDE ALL LINES. DO NOT LEAVE OUT ANY CONTENT, EVEN IF I
 
 Once you have made all modifications, always add a FINISH command at the end.
 
+Do not add markdown quotes around code in your responses.
+
 Do not include anything in the response that is not a command. Respond with at least one command. The format is:
 
 @@COMMAND@@ key1=value1 key2=value2
