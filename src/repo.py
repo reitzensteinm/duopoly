@@ -39,16 +39,16 @@ def find_approved_prs(repo_name: str) -> list[int]:
         reviews = pr.get_reviews()
 
         if any(review.state == "APPROVED" for review in reviews):
-            approved_prs_ids.append(pr.id)
+            approved_prs_ids.append(pr.number)
 
     return approved_prs_ids
 
 
-def merge_with_rebase_if_possible(repo_name: str, pr_id: int) -> bool:
+def merge_with_rebase_if_possible(repo_name: str, pr_number: int) -> bool:
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
-    pr = repo.get_pull(pr_id)
+    pr = repo.get_pull(pr_number)
 
     if pr.mergeable and pr.rebaseable:
         pr.merge(merge_method="rebase")
