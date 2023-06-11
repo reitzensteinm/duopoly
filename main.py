@@ -159,7 +159,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
             )
 
 
-def main(retries=5, dry_run=False) -> None:
+def main(retries=3, dry_run=False) -> None:
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
         retry_count = 0
         while retry_count < retries:
@@ -179,7 +179,7 @@ def main(retries=5, dry_run=False) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-r", "--retries", type=int, default=5, help="number of retries (default is 5)"
+        "-r", "--retries", type=int, default=3, help="number of retries (default is 3)"
     )
     parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
     args = parser.parse_args()
