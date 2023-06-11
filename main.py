@@ -14,24 +14,13 @@ import gpt
 import repo
 from utils import read_file, write_file, partition_by_predicate, add_line_numbers
 from gpt import SYSTEM_CHECK, gpt_query
-from repo import fetch_open_issues, Issue
+from repo import fetch_open_issues, Issue, get_all_checked_in_files
 from patch import patch_files, apply_patch
 
 
 def format_python_code(code: str) -> str:
     formatted_code = format_str(code, mode=FileMode())
     return formatted_code
-
-
-def find_python_files() -> list[str]:
-    python_files = []
-
-    for root, dirnames, filenames in os.walk("."):
-        for filename in fnmatch.filter(filenames, "*.py"):
-            if "venv" not in root:
-                python_files.append(f"{root}/{filename}")
-
-    return python_files
 
 
 def check_result(old, new, prompt) -> bool:
@@ -120,7 +109,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
-    files = {f: read_file(f) for f in find_python_files()}
+    files = {f: read_file(f) for f in get_all_checked_in_files()}
     branch_id = f"issue-{issue.id}"
 
     if not dry_run:
