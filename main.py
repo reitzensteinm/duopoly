@@ -16,9 +16,11 @@ from gpt import SYSTEM_CHECK, gpt_query
 from repo import fetch_open_issues, Issue
 from patch import patch_files, apply_patch
 
+
 def format_python_code(code: str) -> str:
     formatted_code = format_str(code, mode=FileMode())
     return formatted_code
+
 
 def find_python_files() -> list[str]:
     python_files = []
@@ -29,6 +31,7 @@ def find_python_files() -> list[str]:
                 python_files.append(os.path.join(root, filename))
 
     return python_files
+
 
 def check_result(old, new, prompt) -> bool:
     result = gpt_query(
@@ -41,43 +44,57 @@ def check_result(old, new, prompt) -> bool:
 
     return True
 
+
 def list_files(files):
     file_info = ""
     for k, v in files.items():
         file_info += f"{k}:\n{add_line_numbers(v)}\n"
     return file_info
 
+
+def remove_markdown_quotes(string: str) -> str:
+    lines = string.split("\n")
+    if lines[0].startswith("```") and lines[-1].startswith("```"):
+        return "\n".join(lines[1:-1])
+    else:
+        return string
+
+
 def command_loop(prompt: str, files: dict) -> dict:
     new_files = files.copy()
 
     scratch = "Available files: " + ", ".join(files.keys()) + "\n"
 
-    # Sanity limit of 10
     for _ in range(10):
         response = gpt_query(f"Instructions: {prompt}\n{scratch}", gpt.SYSTEM_COMMAND)
         commands = command.parse_command_string(response)
 
         for c in commands:
             comm = c["command"]
-            scratch += "\n".join([">> " + line for line in command.command_to_str(c).split("\n")]) + "\n"
+            scratch += (
+                "\n".join(
+                    [">> " + line for line in command.command_to_str(c).split("\n")]
+                )
+                + "\n"
+            )
 
             if comm == "FILE":
                 contents = files[c["path"]]
                 scratch += f"```python\n{contents}\n```\n"
             elif comm == "UPDATE":
                 updated_content = c["body"]
+                updated_content = remove_markdown_quotes(updated_content)
                 if c["path"].endswith(".py"):
                     updated_content = format_python_code(updated_content)
                 new_files[c["path"]] = updated_content
             elif comm == "FINISH":
                 return new_files
 
+
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     old_files = files
 
-    new_files = command_loop(
-        f"{str(uuid.uuid4())}\n{prompt}", files
-    )
+    new_files = command_loop(f"{str(uuid.uuid4())}\n{prompt}", files)
 
     old_files_filtered = {
         k: v
@@ -96,6 +113,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     )
 
     return new_files
+
 
 def process_issue(issue: Issue) -> None:
     files = {f: read_file(f) for f in find_python_files()}
@@ -125,6 +143,7 @@ def process_issue(issue: Issue) -> None:
             body=issue.description,
         )
 
+
 def main(retries=5) -> None:
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
         retry_count = 0
@@ -139,6 +158,7 @@ def main(retries=5) -> None:
                 if retry_count == retries:
                     print(f"Failed to process issue {issue.id} after {retries} retries")
     repo.switch_and_reset_branch("main")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
