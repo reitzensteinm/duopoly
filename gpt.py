@@ -2,6 +2,7 @@ import os
 import openai
 import time
 from utils import read_file, write_file, partition_by_predicate
+from termcolor import cprint
 
 SYSTEM_PATCH = "You are a helpful programming assistant. \
                 You will be given code as well as instructions to modify it. \
@@ -82,6 +83,7 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") ->
 
     for i in range(retries):
         try:
+            cprint(f"GPT Input: {message}", "blue")
             completion = openai.ChatCompletion.create(
                 model=model,
                 messages=[
@@ -102,6 +104,6 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") ->
 
     content = completion.choices[0].message.content
 
-    print(content)
+    cprint(f"GPT Output: {content}", "aqua")
 
     return content
