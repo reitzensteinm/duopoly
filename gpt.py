@@ -107,6 +107,6 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") ->
 
     content = completion.choices[0].message.content
 
-    cprint(f"GPT Output: {content}", "aqua")
+    cprint(f"GPT Output: {content}", "cyan")
 
     return content
