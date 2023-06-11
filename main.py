@@ -28,7 +28,7 @@ def find_python_files() -> list[str]:
     for root, dirnames, filenames in os.walk("."):
         for filename in fnmatch.filter(filenames, "*.py"):
             if "venv" not in root:
-                python_files.append(os.path.join(root, filename))
+                python_files.append(f"{root}/{filename}")
 
     return python_files
 
