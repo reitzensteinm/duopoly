@@ -18,6 +18,7 @@ SYSTEM_PATCH = "You are a helpful programming assistant. \
 
 SYSTEM_CHECK = "You are a helpful programming assistant. \
                 You will be given original and modified versions of code. \
+                If a file isn't present in the modified version, you can assume it was deleted. \
                 You will also be given a description of the change that was intended. \
                 Was the change that was made correct? \
                 Please write a paragraph explaining your reasoning using this format: 'REASONING: <reasoning>'. \
