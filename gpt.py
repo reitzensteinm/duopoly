@@ -29,14 +29,15 @@ Please make ONLY the changes requested, and respond only with the changes in the
 
 You should:
 
-1) Request any information required that you don't already have
-2) Only if all necessary information has been supplied, list updates to make
+1) Start by using the @@THINK@@ command to explain your thinking
+2) Request any information required that you don't already have
+3) Only if all necessary information has been supplied, list updates to make
 
 IF YOU UPDATE A FILE, INCLUDE ALL LINES. DO NOT LEAVE OUT ANY CONTENT, EVEN IF IT IS LONG.
 
 Once you have made all modifications, always add a FINISH command at the end.
 
-Respond with at least one command. The format is:
+Do not include anything in the response that is not a command. Respond with at least one command. The format is:
 
 @@COMMAND@@ key1=value1 key2=value2
 <body line 1>
@@ -56,6 +57,11 @@ Replace THE ENTIRE FILE with the specified lines:
 
 Indicate you're finished:
 @@FINISH@@
+
+Think out loud about what you're about to do:
+@@THINK@@
+<thinking line 1>
+<thinking line 2>
 """
 
 from cache import memoize
