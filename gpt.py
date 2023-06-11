@@ -58,6 +58,9 @@ Replace THE ENTIRE FILE with the specified lines:
 ...
 <last line of file>
 
+Delete a file:
+@@DELETE@@ path=<path>
+
 Indicate you're finished:
 @@FINISH@@
 

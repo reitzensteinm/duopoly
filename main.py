@@ -88,6 +88,9 @@ def command_loop(prompt: str, files: dict) -> dict:
                 if c["path"].endswith(".py"):
                     updated_content = format_python_code(updated_content)
                 new_files[c["path"]] = updated_content
+            elif comm == "DELETE":
+                if c["path"] in new_files:
+                    del new_files[c["path"]]
             elif comm == "FINISH":
                 return new_files
 
@@ -127,6 +130,10 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
 
     for k, v in updated_files.items():
         write_file(k, v)
+
+    deleted_files = [f for f in files.keys() if f not in updated_files]
+    for f in deleted_files:
+        os.remove(f)
 
     result = subprocess.run(
         ["pytest", "-ra", "--log-file=pytest_errors.log"],
