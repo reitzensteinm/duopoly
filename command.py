@@ -27,9 +27,14 @@ def command_to_str(command: dict) -> str:
 
 def parse_command_string(command_string: str) -> list[dict]:
     command_list = []
+    inside_multiline_string = False
 
     for line in command_string.split("\n"):
-        if line.startswith("@@"):
+
+        if '"""' in line:
+            inside_multiline_string = not inside_multiline_string
+
+        if not inside_multiline_string and line.startswith("@@"):
             idx = line.index("@@", 2)
             command_id = line[2:idx]
 
