@@ -115,10 +115,13 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     return new_files
 
 
-def process_issue(issue: Issue) -> None:
+def process_issue(issue: Issue, dry_run: bool) -> None:
     files = {f: read_file(f) for f in find_python_files()}
     branch_id = f"issue-{issue.id}"
-    repo.switch_and_reset_branch(branch_id)
+
+    if not dry_run:
+        repo.switch_and_reset_branch(branch_id)
+
     updated_files = apply_prompt_to_files(issue.description, files)
 
     for k, v in updated_files.items():
@@ -133,31 +136,37 @@ def process_issue(issue: Issue) -> None:
         with open("pytest_errors.log", "r") as file:
             errors = file.read()
         raise Exception("Pytest failed\n" + errors)
-    repo.commit_local_modifications(issue.title, f'Prompt: "{issue.description}"')
-    repo.push_local_branch_to_origin(branch_id)
-    if not repo.check_pull_request_title_exists("reitzensteinm/duopoly", issue.title):
-        repo.create_pull_request(
-            repo_name="reitzensteinm/duopoly",
-            branch_id=branch_id,
-            title=issue.title,
-            body=issue.description,
-        )
+
+    if not dry_run:
+        repo.commit_local_modifications(issue.title, f'Prompt: "{issue.description}"')
+        repo.push_local_branch_to_origin(branch_id)
+        if not repo.check_pull_request_title_exists(
+            "reitzensteinm/duopoly", issue.title
+        ):
+            repo.create_pull_request(
+                repo_name="reitzensteinm/duopoly",
+                branch_id=branch_id,
+                title=issue.title,
+                body=issue.description,
+            )
 
 
-def main(retries=5) -> None:
+def main(retries=5, dry_run=False) -> None:
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
         retry_count = 0
         while retry_count < retries:
             cprint(f"Attempt {retry_count + 1}", "magenta")
             try:
-                process_issue(issue)
+                process_issue(issue, dry_run)
                 break
             except Exception as e:
                 retry_count += 1
                 cprint(str(e), "red")
                 if retry_count == retries:
                     print(f"Failed to process issue {issue.id} after {retries} retries")
-    repo.switch_and_reset_branch("main")
+
+    if not dry_run:
+        repo.switch_and_reset_branch("main")
 
 
 if __name__ == "__main__":
@@ -165,5 +174,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "-r", "--retries", type=int, default=5, help="number of retries (default is 5)"
     )
+    parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
     args = parser.parse_args()
-    main(retries=args.retries)
+    main(retries=args.retries, dry_run=args.dry_run)
