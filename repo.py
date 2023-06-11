@@ -62,3 +62,12 @@ def commit_local_modifications(commit_subject: str, commit_body: str):
     repo = Repo(os.getcwd())
     repo.git.add("--all")
     repo.index.commit(f"{commit_subject}\n\n{commit_body}")
+
+
+def get_all_checked_in_files():
+    repo = Repo(os.getcwd())
+    file_list = []
+    for obj in repo.tree().traverse():
+        if obj.type == "blob":
+            file_list.append(obj.path)
+    return file_list
