@@ -47,6 +47,8 @@ def partition_by_predicate(sequence: list, predicate: callable) -> list:
 
 def write_file(path: str, contents: str) -> None:
     """Writes the contents to a file."""
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    dirname = os.path.dirname(path)
+    if dirname:
+        os.makedirs(dirname, exist_ok=True)
     with open(path, "w", encoding="utf-8") as file:
         file.write(contents)
