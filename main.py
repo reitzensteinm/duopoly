@@ -65,7 +65,10 @@ def command_loop(prompt: str, files: dict) -> dict:
                 contents = files[c["path"]]
                 scratch += f"```python\n{contents}\n```\n"
             elif comm == "UPDATE":
-                new_files[c["path"]] = c["body"]
+                updated_content = c["body"]
+                if c["path"].endswith(".py"):
+                    updated_content = format_python_code(updated_content)
+                new_files[c["path"]] = updated_content
             elif comm == "FINISH":
                 return new_files
 
@@ -144,4 +147,3 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     main(retries=args.retries)
-    
