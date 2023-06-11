@@ -80,7 +80,7 @@ def command_loop(prompt: str, files: dict) -> dict:
             )
 
             if comm == "FILE":
-                contents = files[c["path"]]
+                contents = files.get(c["path"], "")
                 scratch += f"```python\n{contents}\n```\n"
             elif comm == "UPDATE":
                 updated_content = c["body"]
