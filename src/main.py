@@ -155,10 +155,12 @@ def merge_approved_prs() -> None:
             print(f"Merged PR: {pr_id}")
         else:
             print(f"Could not merge PR: {pr_id}")
+    repo.git_pull("reitzensteinm/duopoly", "main")
 
 
 def main(retries=3, dry_run=False) -> None:
-    merge_approved_prs()
+    if not dry_run:
+        merge_approved_prs()
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
         retry_count = 0
         while retry_count < retries:
