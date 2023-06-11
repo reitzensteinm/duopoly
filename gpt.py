@@ -70,11 +70,14 @@ from cache import memoize
 
 
 @memoize
-def gpt_query(message: str, system: str = SYSTEM_PATCH) -> str:
+def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") -> str:
+    if model not in ["gpt-4", "gpt-3.5-turbo"]:
+        raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
+
     openai.api_key = os.environ["OPENAI_API_KEY"]
 
     completion = openai.ChatCompletion.create(
-        model="gpt-4",
+        model=model,
         messages=[
             {
                 "role": "system",
