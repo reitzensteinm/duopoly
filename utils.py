@@ -1,3 +1,6 @@
+import os
+
+
 def read_file(path: str) -> str:
     """Reads and returns the content of a file."""
     with open(path, "r", encoding="utf-8") as file:
@@ -44,5 +47,6 @@ def partition_by_predicate(sequence: list, predicate: callable) -> list:
 
 def write_file(path: str, contents: str) -> None:
     """Writes the contents to a file."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as file:
         file.write(contents)
