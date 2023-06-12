@@ -155,7 +155,6 @@ def merge_approved_prs() -> None:
             print(f"Merged PR: {pr_id}")
         else:
             print(f"Could not merge PR: {pr_id}")
-    repo.git_pull("reitzensteinm/duopoly", "main")
 
 
 def main(retries=3, dry_run=False) -> None:
