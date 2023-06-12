@@ -156,30 +156,22 @@ def merge_approved_prs() -> None:
     repo.fetch_new_changes()
 
 
-def main(retries=3, dry_run=False) -> None:
+def main(dry_run=False) -> None:
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
         if not dry_run:
             merge_approved_prs()
-        retry_count = 0
-        while retry_count < retries:
-            cprint(f"Attempt {retry_count + 1}", "magenta")
-            try:
-                process_issue(issue, dry_run)
-                break
-            except Exception as e:
-                retry_count += 1
-                cprint(f"{str(e)}\n{traceback.format_exc()}", "red")
-                if retry_count == retries:
-                    print(f"Failed to process issue {issue.id} after {retries} retries")
+        try:
+            process_issue(issue, dry_run)
+        except Exception as e:
+            cprint(f"{str(e)}\n{traceback.format_exc()}", "red")
+            print(f"Failed to process issue {issue.id}")
+
         if not dry_run:
             repo.switch_and_reset_branch("main")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-r", "--retries", type=int, default=3, help="number of retries (default is 3)"
-    )
     parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
     args = parser.parse_args()
-    main(retries=args.retries, dry_run=args.dry_run)
+    main(dry_run=args.dry_run)
