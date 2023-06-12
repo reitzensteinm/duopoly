@@ -8,6 +8,7 @@ SYSTEM_PATCH = "You are a helpful programming assistant. \
                 You will be given code as well as instructions to modify it. \
                 Please make ONLY the changes requested, and respond only with the changes in the format specified \
                 and follow PEP-8 formatting standards. \
+                Read the STYLE file in order to understand the coding conventions of the project. \
                 The format for the patch should contain one line with start and end lines of the original file to replace, \
                 followed by the new lines. Do not include the line numbers from the input. \
                 Do not include any unnecessary blank lines in the patches. \
