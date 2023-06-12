@@ -125,14 +125,12 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         os.remove(f)
 
     result = subprocess.run(
-        ["pytest", "-ra", "--log-file=pytest_errors.log"],
+        ["pytest", "-rf"],
         capture_output=True,
         text=True,
     )
     if result.returncode != 0:
-        with open("pytest_errors.log", "r") as file:
-            errors = file.read()
-        raise Exception("Pytest failed\n" + errors)
+        raise Exception("Pytest failed\n" + result.stdout)
 
     if not dry_run:
         repo.commit_local_modifications(issue.title, f'Prompt: "{issue.description}"')
