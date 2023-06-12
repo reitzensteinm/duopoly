@@ -157,9 +157,9 @@ def merge_approved_prs() -> None:
 
 
 def main(retries=3, dry_run=False) -> None:
-    if not dry_run:
-        merge_approved_prs()
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
+        if not dry_run:
+            merge_approved_prs()
         retry_count = 0
         while retry_count < retries:
             cprint(f"Attempt {retry_count + 1}", "magenta")
