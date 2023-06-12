@@ -14,7 +14,7 @@ import gpt
 import repo
 from utils import read_file, write_file, partition_by_predicate, add_line_numbers
 from gpt import SYSTEM_CHECK, gpt_query
-from repo import fetch_open_issues, Issue, get_all_checked_in_files
+from repo import fetch_open_issues, Issue, get_all_checked_in_files, fetch_new_changes
 from patch import patch_files, apply_patch
 
 
@@ -155,6 +155,7 @@ def merge_approved_prs() -> None:
             print(f"Merged PR: {pr_id}")
         else:
             print(f"Could not merge PR: {pr_id}")
+    repo.fetch_new_changes()
 
 
 def main(retries=3, dry_run=False) -> None:

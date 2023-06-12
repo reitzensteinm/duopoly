@@ -100,3 +100,8 @@ def get_all_checked_in_files():
         if obj.type == "blob":
             file_list.append(obj.path)
     return file_list
+
+
+def fetch_new_changes():
+    repo = Repo(os.getcwd())
+    repo.git.fetch()
