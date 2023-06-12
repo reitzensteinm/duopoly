@@ -158,7 +158,7 @@ def merge_approved_prs() -> None:
     repo.fetch_new_changes()
 
 
-def main(retries=3, dry_run=False) -> None:
+def main(retries=1, dry_run=False) -> None:
     if not dry_run:
         merge_approved_prs()
     for issue in fetch_open_issues("reitzensteinm/duopoly"):
@@ -180,7 +180,7 @@ def main(retries=3, dry_run=False) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "-r", "--retries", type=int, default=3, help="number of retries (default is 3)"
+        "-r", "--retries", type=int, default=1, help="number of retries (default is 1)"
     )
     parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
     args = parser.parse_args()
