@@ -25,7 +25,8 @@ def create_pull_request(repo_name: str, branch_id: str, title: str, body: str):
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
-    repo.create_pull(title=title, body=body, head=branch_id, base="main")
+    pr = repo.create_pull(title=title, body=body, head=branch_id, base="main")
+    pr.create_review_request(reviewers=["reitzensteinm"])
 
 
 def find_approved_prs(repo_name: str) -> list[int]:
