@@ -1,22 +1,18 @@
 import os
-import re
-import fnmatch
 import uuid
 import subprocess
 import argparse
 import traceback
-from github import Github
 import openai
 from black import FileMode, format_str
 from termcolor import cprint
+from tools.imports import imports
 import command
 import gpt
 import repo
 from utils import read_file, write_file, partition_by_predicate, add_line_numbers
 from gpt import SYSTEM_CHECK, gpt_query
-from repo import fetch_open_issues, Issue, get_all_checked_in_files, fetch_new_changes
-from patch import patch_files, apply_patch
-from tools.imports import imports
+from repo import Issue
 
 
 def format_python_code(code: str) -> str:
