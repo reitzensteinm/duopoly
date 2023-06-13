@@ -76,6 +76,8 @@ Think out loud about what you're about to do:
 
 List imports contained in a file:
 @@IMPORTS@@ path=<file>
+
+When moving code between files, ensure to add and remove import statements as required.
 """
 
 from cache import memoize
