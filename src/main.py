@@ -44,7 +44,8 @@ def list_files(files):
 
 
 def remove_markdown_quotes(string: str) -> str:
-    lines = string.split("\n")
+    trimmed_string = string.strip()
+    lines = trimmed_string.split("\n")
     if lines[0].startswith("```") and lines[-1].startswith("```"):
         return "\n".join(lines[1:-1])
     else:
