@@ -53,9 +53,21 @@ def merge_with_rebase_if_possible(repo_name: str, pr_number: int) -> bool:
 
     if pr.mergeable and pr.rebaseable:
         pr.merge(merge_method="rebase")
+        close_issue_by_title(repo_name, pr.title)
         return True
 
     return False
+
+
+def close_issue_by_title(repo_name: str, issue_title: str) -> None:
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    issues = repo.get_issues(state="open")
+    for issue in issues:
+        if issue.title == issue_title:
+            issue.edit(state="closed")
+            break
 
 
 @dataclass
