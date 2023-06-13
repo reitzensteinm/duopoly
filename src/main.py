@@ -12,7 +12,7 @@ import gpt
 import repo
 from utils import read_file, write_file, partition_by_predicate, add_line_numbers
 from gpt import SYSTEM_CHECK, gpt_query
-from repo import Issue
+from repo import Issue, get_all_checked_in_files, fetch_open_issues
 
 
 def format_python_code(code: str) -> str:
