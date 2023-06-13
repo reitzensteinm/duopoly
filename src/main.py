@@ -12,7 +12,7 @@ import gpt
 import repo
 from utils import read_file, write_file, partition_by_predicate, add_line_numbers
 from gpt import SYSTEM_CHECK, gpt_query
-from repo import Issue, get_all_checked_in_files, fetch_open_issues
+from repo import Issue, get_all_checked_in_files, fetch_open_issues, is_issue_open
 
 
 def format_python_code(code: str) -> str:
@@ -112,6 +112,9 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
+    if not is_issue_open("reitzensteinm/duopoly", issue.id):
+        return
+
     files = {f: read_file(f) for f in get_all_checked_in_files()}
     branch_id = f"issue-{issue.id}"
 

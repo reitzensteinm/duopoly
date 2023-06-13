@@ -118,3 +118,12 @@ def get_all_checked_in_files():
 def fetch_new_changes():
     repo = Repo(os.getcwd())
     repo.git.fetch()
+
+
+def is_issue_open(repo_name: str, issue_id: int) -> bool:
+    """Checks if a given issue is still open."""
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    issue = repo.get_issue(issue_id)
+    return issue.state == "open"
