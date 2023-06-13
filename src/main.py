@@ -84,8 +84,9 @@ def command_loop(prompt: str, files: dict) -> dict:
                     del new_files[c["path"]]
             elif comm == "IMPORTS":
                 file_contents = files.get(c["path"], "")
-                imports_result = imports(file_contents)
-                scratch += f"```python\n{imports_result}\n```\n"
+                if c["path"].endswith(".py"):
+                    imports_result = imports(file_contents)
+                    scratch += f"```python\n{imports_result}\n```\n"
             elif comm == "FINISH":
                 return new_files
 
