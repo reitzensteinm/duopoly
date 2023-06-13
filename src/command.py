@@ -31,7 +31,8 @@ def parse_command_string(command_string: str) -> list[dict]:
     found_first_command = False
 
     for line in command_string.split("\n"):
-        if '"""' in line:
+        triple_quotes_count = line.count('"""')
+        if triple_quotes_count % 2 != 0:
             inside_multiline_string = not inside_multiline_string
 
         if not inside_multiline_string and line.startswith("@@"):
