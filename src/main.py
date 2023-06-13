@@ -16,6 +16,7 @@ from utils import read_file, write_file, partition_by_predicate, add_line_number
 from gpt import SYSTEM_CHECK, gpt_query
 from repo import fetch_open_issues, Issue, get_all_checked_in_files, fetch_new_changes
 from patch import patch_files, apply_patch
+from tools.imports import imports
 
 
 def format_python_code(code: str) -> str:
@@ -80,6 +81,10 @@ def command_loop(prompt: str, files: dict) -> dict:
             elif comm == "DELETE":
                 if c["path"] in new_files:
                     del new_files[c["path"]]
+            elif comm == "IMPORTS":
+                file_contents = files.get(c["path"], "")
+                imports_result = imports(file_contents)
+                scratch += f"```python\n{imports_result}\n```\n"
             elif comm == "FINISH":
                 return new_files
 

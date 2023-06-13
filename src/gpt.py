@@ -66,13 +66,16 @@ Replace THE ENTIRE FILE with the specified lines:
 Delete a file:
 @@DELETE@@ path=<path>
 
-Indicate you're finished:
+Announce you're finished:
 @@FINISH@@
 
 Think out loud about what you're about to do:
 @@THINK@@
 <thinking line 1>
 <thinking line 2>
+
+List imports contained in a file:
+@@IMPORTS@@ path=<file>
 """
 
 from cache import memoize
