@@ -75,7 +75,7 @@ Think out loud about what you're about to do:
 <thinking line 2>
 
 List imports contained in a file:
-@@IMPORTS@@ path=<file>
+@@IMPORTS@@ path=<file> (Note: This tool works only on Python files)
 """
 
 from cache import memoize
