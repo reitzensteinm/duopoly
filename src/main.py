@@ -112,7 +112,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
-    if not is_issue_open("reitzensteinm/duopoly", issue.id):
+    if not is_issue_open("reitzensteinm/duopoly", issue.number):
         return
 
     files = {f: read_file(f) for f in get_all_checked_in_files()}

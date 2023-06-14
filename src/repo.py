@@ -73,6 +73,7 @@ def close_issue_by_title(repo_name: str, issue_title: str) -> None:
 @dataclass
 class Issue:
     id: int
+    number: int
     title: str
     description: str
 
@@ -84,7 +85,7 @@ def fetch_open_issues(repo_name: str) -> list[Issue]:
     repo = g.get_repo(repo_name)
     issues = repo.get_issues(state="open")
     issue_data = [
-        Issue(id=issue.id, title=issue.title, description=issue.body)
+        Issue(id=issue.id, number=issue.number, title=issue.title, description=issue.body)
         for issue in issues
         if issue.pull_request is None
     ]
@@ -120,10 +121,10 @@ def fetch_new_changes():
     repo.git.fetch()
 
 
-def is_issue_open(repo_name: str, issue_id: int) -> bool:
+def is_issue_open(repo_name: str, issue_number: int) -> bool:
     """Checks if a given issue is still open."""
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
-    issue = repo.get_issue(issue_id)
+    issue = repo.get_issue(issue_number)
     return issue.state == "open"
