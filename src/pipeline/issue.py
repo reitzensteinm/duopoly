@@ -56,10 +56,10 @@ def command_loop(prompt: str, files: dict) -> dict:
         for c in commands:
             comm = c["command"]
             scratch += (
-                    "\n".join(
-                        [">> " + line for line in command.command_to_str(c).split("\n")]
-                    )
-                    + "\n"
+                "\n".join(
+                    [">> " + line for line in command.command_to_str(c).split("\n")]
+                )
+                + "\n"
             )
 
             if comm == "FILE":
@@ -112,10 +112,15 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         return
 
     files = {f: read_file(f) for f in repo.get_all_checked_in_files()}
+
+    target_dir = f"target/issue-{issue.number}"
+    os.makedirs(target_dir, exist_ok=True)
+    repo.clone("https://github.com/reitzensteinm/duopoly.git", target_dir)
+
     branch_id = f"issue-{issue.id}"
 
     if not dry_run:
-        repo.switch_and_reset_branch(branch_id)
+        repo.switch_and_reset_branch(branch_id, target_dir)
 
     updated_files = apply_prompt_to_files(issue.description, files)
 
@@ -135,10 +140,12 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         raise Exception("Pytest failed\n" + result.stdout)
 
     if not dry_run:
-        repo.commit_local_modifications(issue.title, f'Prompt: "{issue.description}"')
-        repo.push_local_branch_to_origin(branch_id)
+        repo.commit_local_modifications(
+            issue.title, f'Prompt: "{issue.description}"', target_dir
+        )
+        repo.push_local_branch_to_origin(branch_id, target_dir)
         if not repo.check_pull_request_title_exists(
-                "reitzensteinm/duopoly", issue.title
+            "reitzensteinm/duopoly", issue.title
         ):
             repo.create_pull_request(
                 repo_name="reitzensteinm/duopoly",
