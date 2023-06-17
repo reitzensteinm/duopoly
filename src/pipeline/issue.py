@@ -115,7 +115,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
 
     target_dir = f"target/issue-{issue.number}"
     os.makedirs(target_dir, exist_ok=True)
-    repo.clone("https://github.com/reitzensteinm/duopoly.git", target_dir)
+    repo.clone_repository("https://github.com/reitzensteinm/duopoly.git", target_dir)
 
     branch_id = f"issue-{issue.id}"
 
