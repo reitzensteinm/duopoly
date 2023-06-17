@@ -85,7 +85,9 @@ def fetch_open_issues(repo_name: str) -> list[Issue]:
     repo = g.get_repo(repo_name)
     issues = repo.get_issues(state="open")
     issue_data = [
-        Issue(id=issue.id, number=issue.number, title=issue.title, description=issue.body)
+        Issue(
+            id=issue.id, number=issue.number, title=issue.title, description=issue.body
+        )
         for issue in issues
         if issue.pull_request is None
     ]
@@ -128,3 +130,8 @@ def is_issue_open(repo_name: str, issue_number: int) -> bool:
     repo = g.get_repo(repo_name)
     issue = repo.get_issue(issue_number)
     return issue.state == "open"
+
+
+def clone_repository(repo_url: str, path: str):
+    """Clone the specified repository from GitHub to the specified path."""
+    Repo.clone_from(repo_url, path)
