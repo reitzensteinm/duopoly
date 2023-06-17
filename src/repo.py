@@ -4,8 +4,8 @@ import os
 from dataclasses import dataclass
 
 
-def switch_and_reset_branch(branch_id: str):
-    repo = Repo(os.getcwd())
+def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()):
+    repo = Repo(target_dir)
 
     if branch_id not in repo.branches:
         repo.create_head(branch_id)
@@ -15,8 +15,8 @@ def switch_and_reset_branch(branch_id: str):
     repo.git.clean("-f", "-d")
 
 
-def push_local_branch_to_origin(branch_id: str):
-    repo = Repo(os.getcwd())
+def push_local_branch_to_origin(branch_id: str, target_dir: str = os.getcwd()):
+    repo = Repo(target_dir)
     repo.git.checkout(branch_id)
     repo.git.push("origin", branch_id, force=True)
 
@@ -103,14 +103,16 @@ def check_pull_request_title_exists(repo_name: str, pr_title: str) -> bool:
     return any(pr_title == pr.title for pr in pull_requests)
 
 
-def commit_local_modifications(commit_subject: str, commit_body: str):
-    repo = Repo(os.getcwd())
+def commit_local_modifications(
+    commit_subject: str, commit_body: str, target_dir: str = os.getcwd()
+):
+    repo = Repo(target_dir)
     repo.git.add("--all")
     repo.index.commit(f"{commit_subject}\n\n{commit_body}")
 
 
-def get_all_checked_in_files():
-    repo = Repo(os.getcwd())
+def get_all_checked_in_files(target_dir: str = os.getcwd()):
+    repo = Repo(target_dir)
     file_list = []
     for obj in repo.tree().traverse():
         if obj.type == "blob":
@@ -118,8 +120,8 @@ def get_all_checked_in_files():
     return file_list
 
 
-def fetch_new_changes():
-    repo = Repo(os.getcwd())
+def fetch_new_changes(target_dir: str = os.getcwd()):
+    repo = Repo(target_dir)
     repo.git.fetch()
 
 
