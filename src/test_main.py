@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from main import apply_prompt_to_files
+from pipeline.issue import apply_prompt_to_files
 
 
 @pytest.fixture
