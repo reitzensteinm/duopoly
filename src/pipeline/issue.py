@@ -114,6 +114,8 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     files = {f: read_file(f) for f in repo.get_all_checked_in_files()}
 
     target_dir = f"target/issue-{issue.number}"
+    if os.path.exists(target_dir):
+        shutil.rmtree(target_dir)
     os.makedirs(target_dir, exist_ok=True)
     repo.clone_repository("https://github.com/reitzensteinm/duopoly.git", target_dir)
 
