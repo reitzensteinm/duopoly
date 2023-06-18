@@ -135,7 +135,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         os.remove(f)
 
     result = subprocess.run(
-        ["pytest", target_dir, "-rf"],
+        ["pytest", os.path.join(target_dir, "src"), "-rf"],
         capture_output=True,
         text=True,
     )
