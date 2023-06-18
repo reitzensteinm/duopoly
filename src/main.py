@@ -12,7 +12,7 @@ def merge_approved_prs() -> None:
     for pr_id in approved_prs:
         if repo.merge_with_rebase_if_possible("reitzensteinm/duopoly", pr_id):
             print(f"Merged PR: {pr_id}")
-            time.sleep(10)
+            time.sleep(30)
         else:
             print(f"Could not merge PR: {pr_id}")
     repo.fetch_new_changes()
