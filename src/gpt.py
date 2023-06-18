@@ -46,6 +46,7 @@ Do not add markdown quotes around code in your responses.
 Requirements:
  * When moving code between files, ensure to add and remove import statements as required.
  * When deleting files, ensure that all references to it in other files are removed. 
+ * When returning a file, indent it with tabs.
 
 Do not include anything in the response that is not a command. Respond with at least one command. The format is:
 
