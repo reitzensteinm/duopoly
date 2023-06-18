@@ -11,15 +11,16 @@ class TraceData:
 
 
 class Trace:
-    def __init__(self):
+    def __init__(self, name: str):
+        self.name = name
         self.trace_data = []
 
     def add_trace_data(self, type, trace):
         self.trace_data.append(TraceData(type, trace))
 
 
-def create_trace():
-    return Trace()
+def create_trace(name: str):
+    return Trace(name)
 
 
 def bind_trace(trace: Trace):

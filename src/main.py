@@ -6,6 +6,7 @@ from termcolor import cprint
 from pipeline.issue import process_issue
 import repo
 from evals.evals import process_evals
+from tracing.trace import create_trace, bind_trace
 
 
 def merge_approved_prs() -> None:
@@ -26,6 +27,8 @@ def main(dry_run=False) -> None:
     open_issues = repo.fetch_open_issues("reitzensteinm/duopoly")
 
     def process_open_issue(issue):
+        trace = create_trace(f"Issue {issue.id}")
+        bind_trace(trace)
         try:
             process_issue(issue, dry_run)
         except Exception as e:
