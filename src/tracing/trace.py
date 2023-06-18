@@ -10,13 +10,16 @@ class TraceData:
     trace: str
 
 
-@dataclass
 class Trace:
-    trace_data_list: list[TraceData]
+    def __init__(self):
+        self.trace_data = []
+
+    def add_trace_data(self, type, trace):
+        self.trace_data.append(TraceData(type, trace))
 
 
 def create_trace():
-    return Trace(trace_data_list=[])
+    return Trace()
 
 
 def bind_trace(trace: Trace):
