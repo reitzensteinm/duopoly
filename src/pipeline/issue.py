@@ -8,6 +8,7 @@ import gpt
 from utils import read_file, write_file, add_line_numbers
 import command
 import repo
+import shutil
 from repo import Issue
 
 
