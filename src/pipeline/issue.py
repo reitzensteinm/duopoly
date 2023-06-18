@@ -123,7 +123,10 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
 
-    files = {f: read_file(f) for f in repo.get_all_checked_in_files(target_dir)}
+    files = {
+        f: read_file(os.path.join(target_dir, f))
+        for f in repo.get_all_checked_in_files(target_dir)
+    }
 
     updated_files = apply_prompt_to_files(issue.description, files)
 
