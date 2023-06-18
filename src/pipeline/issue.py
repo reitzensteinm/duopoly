@@ -112,6 +112,12 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if not repo.is_issue_open("reitzensteinm/duopoly", issue.number):
         return
 
+    # Skip issues with an open PR with the same title
+    if repo.check_issue_has_open_pr_with_same_title(
+        "reitzensteinm/duopoly", issue.title
+    ):
+        return
+
     target_dir = f"target/issue-{issue.number}"
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir)
