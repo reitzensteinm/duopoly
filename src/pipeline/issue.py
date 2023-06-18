@@ -82,6 +82,7 @@ def command_loop(prompt: str, files: dict) -> dict:
                     scratch += f"```python\n{imports_result}\n```\n"
             elif comm == "FINISH":
                 return new_files
+    raise Exception("Command Loop Overflow")
 
 
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
