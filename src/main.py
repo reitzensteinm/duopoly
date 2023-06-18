@@ -15,10 +15,10 @@ def merge_approved_prs() -> None:
     repo.fetch_new_changes()
 
 
-def main(dry_run=False) -> None:
+def main2(dry_run=False) -> None:
     if not dry_run:
         merge_approved_prs()
-        
+
     for issue in repo.fetch_open_issues("reitzensteinm/duopoly"):
         try:
             process_issue(issue, dry_run)
@@ -34,4 +34,4 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
     args = parser.parse_args()
-    main(dry_run=args.dry_run)
+    main2(dry_run=args.dry_run)
