@@ -1,5 +1,6 @@
 import argparse
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 from termcolor import cprint
 from pipeline.issue import process_issue
 import repo
@@ -19,12 +20,17 @@ def main(dry_run=False) -> None:
     if not dry_run:
         merge_approved_prs()
 
-    for issue in repo.fetch_open_issues("reitzensteinm/duopoly"):
+    open_issues = repo.fetch_open_issues("reitzensteinm/duopoly")
+
+    def process_open_issue(issue):
         try:
             process_issue(issue, dry_run)
         except Exception as e:
             cprint(f"{str(e)}\n{traceback.format_exc()}", "red")
             print(f"Failed to process issue {issue.id}")
+
+    with ThreadPoolExecutor() as executor:
+        executor.map(process_open_issue, open_issues)
 
 
 if __name__ == "__main__":
