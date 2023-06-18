@@ -148,6 +148,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         capture_output=True,
         text=True,
     )
+    print(pylint_result.stdout)
     if pylint_result.returncode != 0:
         raise Exception("Pylint failed\n" + pylint_result.stdout)
 
