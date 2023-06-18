@@ -16,7 +16,7 @@ def merge_approved_prs() -> None:
     repo.fetch_new_changes()
 
 
-def main(dry_run=False) -> None:
+def main2(dry_run=False) -> None:
     if not dry_run:
         merge_approved_prs()
 
@@ -30,14 +30,11 @@ def main(dry_run=False) -> None:
             print(f"Failed to process issue {issue.id}")
 
     with ThreadPoolExecutor() as executor:
-        results = executor.map(process_open_issue, open_issues)
-
-    for result in results:
-        pass
+        executor.map(process_open_issue, open_issues)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
     args = parser.parse_args()
-    main(dry_run=args.dry_run)
+    main2(dry_run=args.dry_run)
