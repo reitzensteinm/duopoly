@@ -30,7 +30,10 @@ def main(dry_run=False) -> None:
             print(f"Failed to process issue {issue.id}")
 
     with ThreadPoolExecutor() as executor:
-        executor.map(process_open_issue, open_issues)
+        results = executor.map(process_open_issue, open_issues)
+
+    for result in results:
+        pass
 
 
 if __name__ == "__main__":
