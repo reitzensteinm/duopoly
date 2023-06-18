@@ -137,3 +137,12 @@ def is_issue_open(repo_name: str, issue_number: int) -> bool:
 def clone_repository(repo_url: str, path: str):
     """Clone the specified repository from GitHub to the specified path."""
     Repo.clone_from(repo_url, path)
+
+
+def check_issue_has_open_pr_with_same_title(repo_name: str, issue_title: str) -> bool:
+    """Checks if an issue has an open PR with the same title."""
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    pull_requests = repo.get_pulls(state="open")
+    return any(issue_title == pr.title for pr in pull_requests)
