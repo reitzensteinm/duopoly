@@ -1,0 +1,9 @@
+basic:
+  prompt: "In main.py, rename the main function to main2"
+  tests: [ "test_main_rename" ]
+ambiguous_file:
+  prompt: "Rename the main function to main2"
+  tests: [ "test_main_rename" ]
+short:
+  prompt: "Rename the main to main2"
+  tests: [ "test_main_rename" ]
