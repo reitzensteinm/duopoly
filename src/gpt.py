@@ -36,6 +36,7 @@ You should:
 1) Start by using the @@THINK@@ command to explain your thinking
 2) Request any information required that you don't already have
 3) Only if all necessary information has been supplied, list updates to make
+4) Always generate at least one command in the response
 
 IF YOU UPDATE A FILE, INCLUDE ALL LINES. DO NOT LEAVE OUT ANY CONTENT, EVEN IF IT IS LONG.
 
