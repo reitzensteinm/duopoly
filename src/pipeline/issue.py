@@ -1,3 +1,4 @@
+import shutil
 from tools.imports import imports
 from black import FileMode, format_str
 import os
@@ -112,15 +113,14 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         return
 
     files = {f: read_file(f) for f in repo.get_all_checked_in_files()}
-
-    target_dir = f"target/issue-{issue.number}"
-    os.makedirs(target_dir, exist_ok=True)
-    repo.clone_repository("https://github.com/reitzensteinm/duopoly.git", target_dir)
+    target_dir = f"target/issue-{issue.number}/duopoly"
+    if os.path.exists(target_dir):
+        shutil.rmtree(target_dir)
 
     branch_id = f"issue-{issue.id}"
 
     if not dry_run:
-        repo.switch_and_reset_branch(branch_id, target_dir)
+        repo.switch_and_reset_branch(branch_id)
 
     updated_files = apply_prompt_to_files(issue.description, files)
 
@@ -132,7 +132,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         os.remove(f)
 
     result = subprocess.run(
-        ["pytest", "-rf"],
+        ["pytest", "-rf", "--ignore", target_dir],
         capture_output=True,
         text=True,
     )
@@ -140,10 +140,8 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         raise Exception("Pytest failed\n" + result.stdout)
 
     if not dry_run:
-        repo.commit_local_modifications(
-            issue.title, f'Prompt: "{issue.description}"', target_dir
-        )
-        repo.push_local_branch_to_origin(branch_id, target_dir)
+        repo.commit_local_modifications(issue.title, f'Prompt: "{issue.description}"')
+        repo.push_local_branch_to_origin(branch_id)
         if not repo.check_pull_request_title_exists(
             "reitzensteinm/duopoly", issue.title
         ):
