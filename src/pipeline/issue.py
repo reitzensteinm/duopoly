@@ -111,8 +111,6 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if not repo.is_issue_open("reitzensteinm/duopoly", issue.number):
         return
 
-    files = {f: read_file(f) for f in repo.get_all_checked_in_files()}
-
     target_dir = f"target/issue-{issue.number}"
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir)
@@ -124,10 +122,12 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
 
+    files = {f: read_file(f) for f in repo.get_all_checked_in_files(target_dir)}
+
     updated_files = apply_prompt_to_files(issue.description, files)
 
     for k, v in updated_files.items():
-        write_file(k, v)
+        write_file(os.path.join(target_dir, k), v)
 
     deleted_files = [f for f in files.keys() if f not in updated_files]
     for f in deleted_files:
