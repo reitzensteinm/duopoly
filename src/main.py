@@ -36,8 +36,24 @@ def main(dry_run=False) -> None:
         pass
 
 
+def evals(directory: str) -> None:
+    # TODO: Implement the functionality for the evals function
+    pass
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
+    parser.add_argument(
+        "--evals",
+        type=str,
+        help="Specify the eval directory",
+        required=False,
+        default=None,
+    )
     args = parser.parse_args()
-    main(dry_run=args.dry_run)
+
+    if args.evals:
+        evals(args.evals)
+    else:
+        main(dry_run=args.dry_run)
