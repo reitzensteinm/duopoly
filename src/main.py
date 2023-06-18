@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from termcolor import cprint
 from pipeline.issue import process_issue
 import repo
+from src.evals.evals import process_evals
 
 
 def merge_approved_prs() -> None:
@@ -39,8 +40,7 @@ def main(dry_run=False) -> None:
 
 
 def evals(directory: str) -> None:
-    # TODO: Implement the functionality for the evals function
-    pass
+    process_evals(directory)
 
 
 if __name__ == "__main__":
