@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from termcolor import cprint
 from pipeline.issue import process_issue
 import repo
-from src.evals.evals import process_evals
+from evals.evals import process_evals
 
 
 def merge_approved_prs() -> None:
