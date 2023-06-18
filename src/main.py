@@ -18,16 +18,13 @@ def merge_approved_prs() -> None:
 def main(dry_run=False) -> None:
     if not dry_run:
         merge_approved_prs()
-        
+
     for issue in repo.fetch_open_issues("reitzensteinm/duopoly"):
         try:
             process_issue(issue, dry_run)
         except Exception as e:
             cprint(f"{str(e)}\n{traceback.format_exc()}", "red")
             print(f"Failed to process issue {issue.id}")
-
-        if not dry_run:
-            repo.switch_and_reset_branch("main")
 
 
 if __name__ == "__main__":
