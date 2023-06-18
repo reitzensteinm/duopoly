@@ -134,6 +134,14 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     for f in deleted_files:
         os.remove(f)
 
+    pylint_result = subprocess.run(
+        ["pylint", "--disable=R,C,W", os.path.join(target_dir, "src"), "--exit-zero"],
+        capture_output=True,
+        text=True,
+    )
+    if pylint_result.returncode != 0:
+        raise Exception("Pylint failed\n" + pylint_result.stdout)
+
     result = subprocess.run(
         ["pytest", os.path.join(target_dir, "src"), "-rf"],
         capture_output=True,
