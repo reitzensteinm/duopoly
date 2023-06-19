@@ -147,7 +147,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     synchronize_files(target_dir, files, updated_files)
 
     pylint_result = subprocess.run(
-        ["pylint", "--disable=R,C,W", os.path.join(target_dir, "src"), "--exit-zero"],
+        ["pylint", "--disable=R,C,W", os.path.join(target_dir, "src")],
         capture_output=True,
         text=True,
     )
