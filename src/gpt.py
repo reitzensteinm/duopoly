@@ -98,6 +98,7 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") ->
 
     for i in range(retries):
         try:
+            start_time = time.time()
             cprint(f"GPT Input: {message}", "blue")
             completion = openai.ChatCompletion.create(
                 model=model,
@@ -109,6 +110,16 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") ->
                     {"role": "user", "content": message},
                 ],
             )
+            end_time = time.time()
+            call_duration = end_time - start_time
+
+            tokens_in = completion["usage"]["prompt_tokens"]
+            tokens_out = completion["usage"]["completion_tokens"]
+            cprint(
+                f"Call took {call_duration:.1f}s, {tokens_in} tokens in, {tokens_out} tokens out",
+                "yellow",
+            )
+
             break
         except Exception as e:
             if i == retries - 1:
