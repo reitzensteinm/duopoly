@@ -45,6 +45,15 @@ def remove_markdown_quotes(string: str) -> str:
         return string
 
 
+def synchronize_files(target_dir, old_files, updated_files):
+    for k, v in updated_files.items():
+        write_file(os.path.join(target_dir, k), v)
+
+    deleted_files = [f for f in old_files.keys() if f not in updated_files]
+    for f in deleted_files:
+        os.remove(f)
+
+
 def command_loop(prompt: str, files: dict) -> dict:
     new_files = files.copy()
 
@@ -113,7 +122,6 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if not repo.is_issue_open("reitzensteinm/duopoly", issue.number):
         return
 
-    # Skip issues with an open PR with the same title
     if repo.check_issue_has_open_pr_with_same_title(
         "reitzensteinm/duopoly", issue.title
     ):
@@ -136,13 +144,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     }
 
     updated_files = apply_prompt_to_files(issue.description, files)
-
-    for k, v in updated_files.items():
-        write_file(os.path.join(target_dir, k), v)
-
-    deleted_files = [f for f in files.keys() if f not in updated_files]
-    for f in deleted_files:
-        os.remove(f)
+    synchronize_files(target_dir, files, updated_files)
 
     pylint_result = subprocess.run(
         ["pylint", "--disable=R,C,W", os.path.join(target_dir, "src"), "--exit-zero"],
