@@ -6,7 +6,7 @@ _thread_local = local()
 
 @dataclass
 class TraceData:
-    type: str
+    tag: str
     trace: str
 
 
@@ -15,8 +15,8 @@ class Trace:
         self.name = name
         self.trace_data = []
 
-    def add_trace_data(self, type, trace):
-        self.trace_data.append(TraceData(type, trace))
+    def add_trace_data(self, tag, trace):
+        self.trace_data.append(TraceData(tag, trace))
 
 
 def create_trace(name: str):
