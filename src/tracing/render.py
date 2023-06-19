@@ -1,5 +1,4 @@
 import jinja2
-from tracing.trace import Trace
 
 TAG_COLOR_MAPPING = {
     # Add tag to color mapping here
@@ -7,7 +6,7 @@ TAG_COLOR_MAPPING = {
 }
 
 
-def render_trace(trace: Trace) -> str:
+def render_trace(trace) -> str:
     template = jinja2.Template(
         """
 		<html>
