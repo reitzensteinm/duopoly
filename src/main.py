@@ -16,11 +16,20 @@ MAX_RETRIES = (
 def merge_approved_prs() -> None:
     approved_prs = repo.find_approved_prs("reitzensteinm/duopoly")
     for pr_id in approved_prs:
-        if repo.merge_with_rebase_if_possible("reitzensteinm/duopoly", pr_id):
-            print(f"Merged PR: {pr_id}")
-            time.sleep(30)
-        else:
-            print(f"Could not merge PR: {pr_id}")
+        for attempt in range(
+            5
+        ):  # Attempt to merge the pull request for a maximum of 5 times
+            if repo.merge_with_rebase_if_possible("reitzensteinm/duopoly", pr_id):
+                print(f"Merged PR: {pr_id}")
+                break  # Break out of the retry loop
+            else:
+                print(f"Attempt {attempt + 1}: Could not merge PR: {pr_id}")
+                if attempt < 4:  # If this wasn't the last attempt
+                    time.sleep(5)  # Sleep for 5 seconds
+                else:
+                    print(
+                        f"Failed to merge PR {pr_id} after 5 attempts."
+                    )  # If we've used all our retries
     repo.fetch_new_changes()
 
 
