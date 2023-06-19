@@ -8,6 +8,10 @@ import repo
 from evals.evals import process_evals
 from tracing.trace import create_trace, bind_trace
 
+MAX_RETRIES = (
+    3  # Maximum number of retries if exception is thrown in process_open_issue
+)
+
 
 def merge_approved_prs() -> None:
     approved_prs = repo.find_approved_prs("reitzensteinm/duopoly")
@@ -27,13 +31,24 @@ def main(dry_run=False) -> None:
     open_issues = repo.fetch_open_issues("reitzensteinm/duopoly")
 
     def process_open_issue(issue):
-        trace = create_trace(f"Issue {issue.id}")
-        bind_trace(trace)
-        try:
-            process_issue(issue, dry_run)
-        except Exception as e:
-            cprint(f"{str(e)}\n{traceback.format_exc()}", "red")
-            print(f"Failed to process issue {issue.id}")
+        for attempt in range(MAX_RETRIES):
+            trace = create_trace(f"Issue {issue.id}")
+            bind_trace(trace)
+            try:
+                process_issue(issue, dry_run)
+            except Exception as e:
+                cprint(
+                    f"Attempt {attempt + 1} failed for issue {issue.id} with error: {str(e)}\n{traceback.format_exc()}",
+                    "red",
+                )
+                # If we've used all our retries, then rethrow the exception
+                if attempt == MAX_RETRIES - 1:
+                    print(
+                        f"Failed to process issue {issue.id} after {MAX_RETRIES} attempts."
+                    )
+                    raise
+                else:
+                    print(f"Retrying to process issue {issue.id}...")
 
     with ThreadPoolExecutor() as executor:
         results = executor.map(process_open_issue, open_issues)
