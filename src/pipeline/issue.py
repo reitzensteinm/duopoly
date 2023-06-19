@@ -51,7 +51,7 @@ def synchronize_files(target_dir, old_files, updated_files):
 
     deleted_files = [f for f in old_files.keys() if f not in updated_files]
     for f in deleted_files:
-        os.remove(f)
+        os.remove(os.path.join(target_dir, f))
 
 
 def command_loop(prompt: str, files: dict) -> dict:
