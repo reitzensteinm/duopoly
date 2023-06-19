@@ -6,7 +6,7 @@ from termcolor import cprint
 from pipeline.issue import process_issue
 import repo
 from evals.evals import process_evals
-from tracing.trace import create_trace, bind_trace
+from tracing.trace import create_trace, bind_trace, get_trace
 
 
 def merge_approved_prs() -> None:
@@ -32,6 +32,9 @@ def main(dry_run=False) -> None:
         try:
             process_issue(issue, dry_run)
         except Exception as e:
+            trace = get_trace()
+            if trace is not None:
+                trace.add_trace_data("exception", f"{str(e)}\n{traceback.format_exc()}")
             cprint(f"{str(e)}\n{traceback.format_exc()}", "red")
             print(f"Failed to process issue {issue.id}")
 

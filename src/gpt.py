@@ -3,6 +3,7 @@ import openai
 import time
 from utils import read_file, write_file, partition_by_predicate
 from termcolor import cprint
+from tracing.trace import get_trace
 
 SYSTEM_PATCH = "You are a helpful programming assistant. \
                 You will be given code as well as instructions to modify it. \
@@ -100,6 +101,9 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") ->
         try:
             start_time = time.time()
             cprint(f"GPT Input: {message}", "blue")
+            trace = get_trace()
+            if trace is not None:
+                trace.add_trace_data("gpt_in", f"GPT Input: {message}")
             completion = openai.ChatCompletion.create(
                 model=model,
                 messages=[
@@ -131,5 +135,8 @@ def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") ->
     content = completion.choices[0].message.content
 
     cprint(f"GPT Output: {content}", "cyan")
+    trace = get_trace()
+    if trace is not None:
+        trace.add_trace_data("gpt_out", f"GPT Output: {content}")
 
     return content

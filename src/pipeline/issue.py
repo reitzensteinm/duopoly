@@ -10,6 +10,7 @@ import command
 import repo
 import shutil
 from repo import Issue
+from tracing.trace import get_trace
 
 
 def format_python_code(code: str) -> str:
@@ -123,7 +124,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir)
     os.makedirs(target_dir, exist_ok=True)
-    repo.clone_repository("https://github.com/reitzensteinm/duopoly.git", target_dir)
+    repo.clone_repository("reitzensteinm/duopoly", target_dir)
 
     branch_id = f"issue-{issue.id}"
 
@@ -149,6 +150,9 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         capture_output=True,
         text=True,
     )
+    trace = get_trace()
+    if trace is not None:
+        trace.add_trace_data("pylint", pylint_result.stdout)
     print(pylint_result.stdout)
     if pylint_result.returncode != 0:
         raise Exception("Pylint failed\n" + pylint_result.stdout)
