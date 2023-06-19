@@ -1,5 +1,5 @@
 import jinja2
-from src.tracing.trace import Trace
+from tracing.trace import Trace
 
 TAG_COLOR_MAPPING = {
     # Add tag to color mapping here
