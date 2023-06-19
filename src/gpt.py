@@ -4,6 +4,9 @@ import time
 from utils import read_file, write_file, partition_by_predicate
 from termcolor import cprint
 
+GPT_3_5 = "gpt-3.5-turbo"
+GPT_4 = "gpt-4"
+
 SYSTEM_PATCH = "You are a helpful programming assistant. \
                 You will be given code as well as instructions to modify it. \
                 Please make ONLY the changes requested, and respond only with the changes in the format specified \
@@ -87,8 +90,8 @@ from cache import memoize
 
 
 @memoize
-def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = "gpt-4") -> str:
-    if model not in ["gpt-4", "gpt-3.5-turbo"]:
+def gpt_query(message: str, system: str = SYSTEM_PATCH, model: str = GPT_4) -> str:
+    if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
 
     openai.api_key = os.environ["OPENAI_API_KEY"]
