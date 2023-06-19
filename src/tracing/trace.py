@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from threading import local
 import os
-from src.tracing.render import render_trace
+from tracing.render import render_trace
 
 _thread_local = local()
 
