@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 from threading import local
+import os
+from src.tracing.render import render_trace
 
 _thread_local = local()
 
@@ -17,6 +19,16 @@ class Trace:
 
     def add_trace_data(self, tag, trace):
         self.trace_data.append(TraceData(tag, trace))
+
+        # Save the trace to disk using the render function
+        html_trace = render_trace(self)
+
+        # Create the traces directory if it doesn't exist
+        os.makedirs("traces", exist_ok=True)
+
+        # Save the trace to an HTML file
+        with open(f"traces/{self.name}.html", "w") as f:
+            f.write(html_trace)
 
 
 def create_trace(name: str):
