@@ -129,7 +129,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     ):
         return
 
-    target_dir = f"target/issue-{issue.number}"
+    target_dir = f"target/issue-{issue.number}/duopoly"
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir)
     os.makedirs(target_dir, exist_ok=True)
