@@ -11,6 +11,8 @@ import repo
 import shutil
 from repo import Issue
 
+CHECK_OPEN_PR = False
+
 
 def format_python_code(code: str) -> str:
     formatted_code = format_str(code, mode=FileMode())
@@ -122,7 +124,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if not repo.is_issue_open("reitzensteinm/duopoly", issue.number):
         return
 
-    if repo.check_issue_has_open_pr_with_same_title(
+    if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
         "reitzensteinm/duopoly", issue.title
     ):
         return
