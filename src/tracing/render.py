@@ -1,6 +1,7 @@
 import jinja2
 
 TAG_COLOR_MAPPING = {
+    "default": {"background": "white", "border": "black", "text": "black"},
     # Add tag to color mapping here
     # Format: 'tag': {'background': 'color', 'border': 'color', 'text': 'color'}
 }
