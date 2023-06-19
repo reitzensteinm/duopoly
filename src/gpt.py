@@ -4,8 +4,8 @@ import time
 from utils import read_file, write_file, partition_by_predicate
 from termcolor import cprint
 
-GPT_3_5 = "gpt-3.5-turbo"
-GPT_4 = "gpt-4"
+GPT_3_5 = "gpt-3.5-turbo-0613"
+GPT_4 = "gpt-4-0613"
 
 SYSTEM_PATCH = "You are a helpful programming assistant. \
                 You will be given code as well as instructions to modify it. \
