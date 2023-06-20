@@ -45,6 +45,7 @@ def main(dry_run=False) -> None:
             bind_trace(trace)
             try:
                 process_issue(issue, dry_run)
+                break  # Breaking out of the loop if the process_issue is successful
             except Exception as e:
                 cprint(
                     f"Attempt {attempt + 1} failed for issue {issue.id} with error: {str(e)}\n{traceback.format_exc()}",
