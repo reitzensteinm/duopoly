@@ -25,7 +25,9 @@ def merge_approved_prs() -> None:
             else:
                 print(f"Attempt {attempt + 1}: Could not merge PR: {pr_id}")
                 if attempt < 4:  # If this wasn't the last attempt
-                    time.sleep(5)  # Sleep for 5 seconds
+                    time.sleep(
+                        5
+                    )  # Sleep for 5 seconds before trying again, if this wasn't the last attempt
                 else:
                     print(
                         f"Failed to merge PR {pr_id} after 5 attempts."
@@ -33,32 +35,32 @@ def merge_approved_prs() -> None:
     repo.fetch_new_changes()
 
 
-def main(dry_run=False) -> None:
+def main(dry_run=False, issue_name=None) -> None:
     if not dry_run:
         merge_approved_prs()
-
     open_issues = repo.fetch_open_issues("reitzensteinm/duopoly")
 
     def process_open_issue(issue):
-        for attempt in range(MAX_RETRIES):
-            trace = create_trace(f"Issue {issue.id}")
-            bind_trace(trace)
-            try:
-                process_issue(issue, dry_run)
-                break  # Breaking out of the loop if the process_issue is successful
-            except Exception as e:
-                cprint(
-                    f"Attempt {attempt + 1} failed for issue {issue.id} with error: {str(e)}\n{traceback.format_exc()}",
-                    "red",
-                )
-                # If we've used all our retries, then rethrow the exception
-                if attempt == MAX_RETRIES - 1:
-                    print(
-                        f"Failed to process issue {issue.id} after {MAX_RETRIES} attempts."
+        if issue_name is None or issue_name in issue.title:
+            for attempt in range(MAX_RETRIES):
+                trace = create_trace(f"Issue {issue.id}")
+                bind_trace(trace)
+                try:
+                    process_issue(issue, dry_run)
+                    break  # Breaking out of the loop if the process_issue is successful
+                except Exception as e:
+                    cprint(
+                        f"Attempt {attempt + 1} failed for issue {issue.id} with error: {str(e)}\n{traceback.format_exc()}",
+                        "red",
                     )
-                    raise
-                else:
-                    print(f"Retrying to process issue {issue.id}...")
+                    # If we've used all our retries, then rethrow the exception
+                    if attempt == MAX_RETRIES - 1:
+                        print(
+                            f"Failed to process issue {issue.id} after {MAX_RETRIES} attempts."
+                        )
+                        raise
+                    else:
+                        print(f"Retrying to process issue {issue.id}...")
 
     with ThreadPoolExecutor() as executor:
         results = executor.map(process_open_issue, open_issues)
@@ -75,6 +77,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
     parser.add_argument(
+        "--issue", type=str, help="Specify the issue name", required=False, default=None
+    )
+    parser.add_argument(
         "--evals",
         type=str,
         help="Specify the eval directory",
@@ -82,8 +87,7 @@ if __name__ == "__main__":
         default=None,
     )
     args = parser.parse_args()
-
     if args.evals:
         evals(args.evals)
     else:
-        main(dry_run=args.dry_run)
+        main(dry_run=args.dry_run, issue_name=args.issue)
