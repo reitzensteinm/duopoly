@@ -120,8 +120,8 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     return new_files
 
 
-def process_directory(target_dir: str, files: dict) -> None:
-    updated_files = apply_prompt_to_files("", files)
+def process_directory(prompt: str, target_dir: str, files: dict) -> None:
+    updated_files = apply_prompt_to_files(prompt, files)
     synchronize_files(target_dir, files, updated_files)
 
     pylint_result = subprocess.run(
@@ -167,7 +167,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         for f in repo.get_all_checked_in_files(target_dir)
     }
 
-    process_directory(target_dir, files)
+    process_directory(issue.description, target_dir, files)
 
     if not dry_run:
         repo.commit_local_modifications(
