@@ -1,4 +1,5 @@
 from tools.imports import imports
+from tools.search import search_tool  # Importing search_tool
 from black import FileMode, format_str
 import os
 import uuid
@@ -93,6 +94,12 @@ def command_loop(prompt: str, files: dict) -> dict:
                     scratch += f"```python\n{imports_result}\n```\n"
             elif comm == "FINISH":
                 return new_files
+            elif comm == "SEARCH":  # Add SEARCH command process
+                search_string = c.get("search_string", "")
+                search_result = search_tool(new_files, search_string)
+                scratch += (
+                    f"Search result for '{search_string}': {', '.join(search_result)}\n"
+                )
     raise Exception("Command Loop Overflow")
 
 
