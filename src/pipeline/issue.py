@@ -120,6 +120,28 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     return new_files
 
 
+def process_directory(target_dir: str, files: dict) -> None:
+    updated_files = apply_prompt_to_files("", files)
+    synchronize_files(target_dir, files, updated_files)
+
+    pylint_result = subprocess.run(
+        ["pylint", "--disable=R,C,W", os.path.join(target_dir, "src")],
+        capture_output=True,
+        text=True,
+    )
+    print(pylint_result.stdout)
+    if pylint_result.returncode != 0:
+        raise Exception("Pylint failed\n" + pylint_result.stdout)
+
+    result = subprocess.run(
+        ["pytest", os.path.join(target_dir, "src"), "-rf"],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        raise Exception("Pytest failed\n" + result.stdout)
+
+
 def process_issue(issue: Issue, dry_run: bool) -> None:
     if not repo.is_issue_open("reitzensteinm/duopoly", issue.number):
         return
@@ -145,25 +167,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         for f in repo.get_all_checked_in_files(target_dir)
     }
 
-    updated_files = apply_prompt_to_files(issue.description, files)
-    synchronize_files(target_dir, files, updated_files)
-
-    pylint_result = subprocess.run(
-        ["pylint", "--disable=R,C,W", os.path.join(target_dir, "src")],
-        capture_output=True,
-        text=True,
-    )
-    print(pylint_result.stdout)
-    if pylint_result.returncode != 0:
-        raise Exception("Pylint failed\n" + pylint_result.stdout)
-
-    result = subprocess.run(
-        ["pytest", os.path.join(target_dir, "src"), "-rf"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        raise Exception("Pytest failed\n" + result.stdout)
+    process_directory(target_dir, files)
 
     if not dry_run:
         repo.commit_local_modifications(
