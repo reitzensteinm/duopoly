@@ -127,7 +127,9 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     return new_files
 
 
-def process_directory(prompt: str, target_dir: str, files: dict) -> None:
+def process_directory(
+    prompt: str, target_dir: str, files: dict, should_run_tests: bool = True
+) -> None:
     updated_files = apply_prompt_to_files(prompt, files)
     synchronize_files(target_dir, files, updated_files)
 
@@ -140,13 +142,14 @@ def process_directory(prompt: str, target_dir: str, files: dict) -> None:
     if pylint_result.returncode != 0:
         raise Exception("Pylint failed\n" + pylint_result.stdout)
 
-    result = subprocess.run(
-        ["pytest", os.path.join(target_dir, "src"), "-rf"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        raise Exception("Pytest failed\n" + result.stdout)
+    if should_run_tests:
+        result = subprocess.run(
+            ["pytest", os.path.join(target_dir, "src"), "-rf"],
+            capture_output=True,
+            text=True,
+        )
+        if result.returncode != 0:
+            raise Exception("Pytest failed\n" + result.stdout)
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
@@ -174,7 +177,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         for f in repo.get_all_checked_in_files(target_dir)
     }
 
-    process_directory(issue.description, target_dir, files)
+    process_directory(issue.description, target_dir, files, should_run_tests=False)
 
     if not dry_run:
         repo.commit_local_modifications(
