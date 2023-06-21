@@ -62,9 +62,6 @@ Replace THE ENTIRE FILE with the specified lines:
 Delete a file:
 @@DELETE@@ path=<path>
 
-Search for a string in the files:
-@@SEARCH@@ search_string=<string>
-
 Announce you're finished:
 @@FINISH@@
 
