@@ -78,7 +78,7 @@ from cache import memoize
 
 
 @memoize
-def gpt_query(message: str, system: str, model: str = GPT_4) -> str:
+def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> str:
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
 
@@ -91,16 +91,22 @@ def gpt_query(message: str, system: str, model: str = GPT_4) -> str:
         try:
             start_time = time.time()
             cprint(f"GPT Input: {message}", "blue")
-            completion = openai.ChatCompletion.create(
-                model=model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": system,
-                    },
-                    {"role": "user", "content": message},
-                ],
-            )
+            messages = [
+                {
+                    "role": "system",
+                    "content": system,
+                },
+                {"role": "user", "content": message},
+            ]
+            if functions is not None:
+                completion = openai.ChatCompletion.create(
+                    model=model, messages=messages, functions=functions
+                )
+            else:
+                completion = openai.ChatCompletion.create(
+                    model=model, messages=messages
+                )
+
             end_time = time.time()
             call_duration = end_time - start_time
 
@@ -118,9 +124,9 @@ def gpt_query(message: str, system: str, model: str = GPT_4) -> str:
 
             time.sleep(backoff)
             backoff *= 2
-
     content = completion.choices[0].message.content
-
+    if "function_call" in completion.choices[0].message:
+        return completion.choices[0].message["function_call"]
     cprint(f"GPT Output: {content}", "cyan")
 
     return content
