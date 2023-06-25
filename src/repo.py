@@ -2,6 +2,7 @@ from git import Repo
 from github import Github
 import os
 from dataclasses import dataclass
+import time
 
 
 def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()):
@@ -50,10 +51,12 @@ def merge_with_rebase_if_possible(repo_name: str, pr_number: int) -> bool:
     g = Github(api_key)
     repo = g.get_repo(repo_name)
     pr = repo.get_pull(pr_number)
+    branch = pr.head
 
     if pr.mergeable and pr.rebaseable:
         pr.merge(merge_method="rebase")
         close_issue_by_title(repo_name, pr.title)
+        delete_branch_after_merge(g, repo_name, branch)
         return True
 
     return False
@@ -68,6 +71,17 @@ def close_issue_by_title(repo_name: str, issue_title: str) -> None:
         if issue.title == issue_title:
             issue.edit(state="closed")
             break
+
+
+def delete_branch_after_merge(g, repo_name, branch):
+    retries = 5
+    while retries > 0:
+        try:
+            g.get_repo(repo_name).get_git_ref(f"heads/{branch}").delete()
+            break
+        except Exception:
+            retries -= 1
+            time.sleep(2)  # Wait before retrying
 
 
 @dataclass
