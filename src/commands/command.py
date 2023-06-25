@@ -30,6 +30,13 @@ class Command:
     def __init__(self):
         pass
 
+    @property
+    def terminal(self):
+        """
+        Whether or not this command is a terminal command.
+        """
+        raise NotImplementedError
+
     @staticmethod
     def schema() -> dict:
         """
@@ -57,6 +64,10 @@ class Think(Command):
     """
 
     name: str = "Think"
+
+    @property
+    def terminal(self):
+        return False
 
     def __init__(self, thought: str):
         self.thought: str = thought
@@ -101,6 +112,10 @@ class Verdict(Command):
     """
 
     name: str = "Verdict"
+
+    @property
+    def terminal(self):
+        return True
 
     def __init__(self, reasoning: str, verdict: bool):
         self.reasoning: str = reasoning
