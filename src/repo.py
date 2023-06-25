@@ -79,7 +79,8 @@ def delete_branch_after_merge(g, repo_name, branch):
         try:
             g.get_repo(repo_name).get_git_ref(f"heads/{branch}").delete()
             break
-        except Exception:
+        except Exception as e:
+            print(e)
             retries -= 1
             time.sleep(2)  # Wait before retrying
 
