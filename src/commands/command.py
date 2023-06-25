@@ -1,3 +1,5 @@
+import json
+
 """
 Example Command schema:
 {
@@ -162,9 +164,8 @@ def parse_gpt_response(command_classes, gpt_response):
     #   "arguments": "{\n\"reasoning\": \"Yes, the change is correct. The result of 1+1 is indeed 2. The expression has been simplified correctly.\",\n\"verdict\": true\n}",
     #   "name": "Verdict"
     # }
-
     for command_class in command_classes:
         if command_class.name == gpt_response["name"]:
-            return command_class.load_from_json(gpt_response["arguments"])
+            return command_class.load_from_json(json.loads(gpt_response["arguments"]))
 
     raise ValueError(f"Unrecognized command name: {gpt_response['name']}")
