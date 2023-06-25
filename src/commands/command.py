@@ -65,14 +65,18 @@ class Think(Command):
         Returns the schema for the Think command.
         """
         return {
-            "type": "object",
-            "properties": {
-                "thought": {
-                    "type": "string",
-                    "description": "A description of what you plan to do in your next steps",
-                }
+            "name": "Think",
+            "description": "Write out a plan for the steps you are about to take. Please think before taking any action. Include at least a paragraph of detail",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "thought": {
+                        "type": "string",
+                        "description": "A description of what you plan to do in your next steps",
+                    }
+                },
+                "required": ["thought"],
             },
-            "required": ["thought"],
         }
 
     @staticmethod
@@ -106,18 +110,22 @@ class Verdict(Command):
         Returns the schema for the Verdict command.
         """
         return {
-            "type": "object",
-            "properties": {
-                "reasoning": {
-                    "type": "string",
-                    "description": "Text that describes the reason for the supplied verdict",
+            "name": "Verdict",
+            "description": "Make a decision on whether the proposed change is acceptable or not",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reasoning": {
+                        "type": "string",
+                        "description": "Text that describes the reason for the supplied verdict",
+                    },
+                    "verdict": {
+                        "type": "boolean",
+                        "description": "A Boolean that describes whether or not the change is judged to be successful",
+                    },
                 },
-                "verdict": {
-                    "type": "boolean",
-                    "description": "A Boolean that describes whether or not the change is judged to be successful",
-                },
+                "required": ["reasoning", "verdict"],
             },
-            "required": ["reasoning", "verdict"],
         }
 
     @staticmethod
