@@ -143,3 +143,11 @@ class Verdict(Command):
 
 
 commands: list = [Think, Verdict]
+
+
+def extract_schemas(command_classes):
+    """
+    Extracts schemas from a list of command classes.
+    """
+    schemas = [command_class.schema() for command_class in command_classes]
+    return schemas
