@@ -14,5 +14,5 @@ def command_loop(prompt: str, system: str, command_classes: list, files: dict = 
         if command.terminal:
             return command
 
-        output = command.execute()
+        output = command.execute(state)
         state.scratch += "\n" + output

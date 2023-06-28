@@ -1,4 +1,5 @@
 import json
+from commands.state import State
 
 """
 Example Command schema:
@@ -51,7 +52,7 @@ class Command:
         """
         pass
 
-    def execute(self):
+    def execute(self, state: State):
         """
         Executes the command.
         """
@@ -99,7 +100,7 @@ class Think(Command):
         """
         return Think(json_data["thought"])
 
-    def execute(self) -> str:
+    def execute(self, state: State) -> str:
         """
         Executes the Think command.
         """
@@ -152,7 +153,7 @@ class Verdict(Command):
         """
         return Verdict(json_data["reasoning"], json_data["verdict"])
 
-    def execute(self) -> tuple:
+    def execute(self, state: State) -> tuple:
         """
         Executes the Verdict command.
         """
