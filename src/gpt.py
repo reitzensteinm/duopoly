@@ -18,6 +18,15 @@ SYSTEM_CHECK = "You are a helpful programming assistant. \
                 Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
                 If files aren't supplied, you can assume that their contents are correct. You are only checking issues in what you can see."
 
+SYSTEM_CHECK_FUNC = "You are a helpful programming assistant. \
+                    You will be given original and modified versions of code. \
+                    If a file isn't present in the modified version, you can assume it was deleted. \
+                    You will also be given a description of the change that was intended. \
+                    Was the change that was made correct? \
+                    Please write a paragraph explaining your reasoning. \
+                    Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
+                    If files aren't supplied, you can assume that their contents are correct. You are only checking issues in what you can see."
+
 SYSTEM_COMMAND = """
 You are a helpful programming assistant. You will be given a list of files as well as instructions to modify them.
 Please make ONLY the changes requested, and respond only with the changes in the format specified.
