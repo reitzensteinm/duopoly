@@ -160,7 +160,60 @@ class Verdict(Command):
         return self.reasoning, self.pass_verdict
 
 
-commands: list = [Think, Verdict]
+class Files(Command):
+    """
+    Class representing a Files command.
+    """
+
+    name: str = "Files"
+
+    @property
+    def terminal(self):
+        return False
+
+    def __init__(self, files: list):
+        self.files: list = files
+
+    @staticmethod
+    def schema() -> dict:
+        """
+        Returns the schema for the Files command.
+        """
+        return {
+            "name": "Files",
+            "description": "List files and their contents from the state",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "files": {
+                        "type": "array",
+                        "description": "List of files to retrieve",
+                        "items": {"type": "string"},
+                    }
+                },
+                "required": ["files"],
+            },
+        }
+
+    @staticmethod
+    def load_from_json(json_data: dict) -> "Files":
+        """
+        Loads the Files command from the provided json_data.
+        """
+        return Files(json_data["files"])
+
+    def execute(self, state: State) -> str:
+        """
+        Executes the Files command.
+        """
+        result = ""
+        for file in self.files:
+            if file in state.files:
+                result += f"{file}: \n{state.files[file]}"
+        return result
+
+
+commands: list = [Think, Verdict, Files]
 
 
 def extract_schemas(command_classes):
