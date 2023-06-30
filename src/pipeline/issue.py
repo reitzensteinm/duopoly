@@ -4,10 +4,12 @@ from black import FileMode, format_str
 import os
 import uuid
 import subprocess
-from gpt import SYSTEM_CHECK, gpt_query
+from gpt import SYSTEM_CHECK, SYSTEM_CHECK_FUNC, gpt_query
 import gpt
 from utils import read_file, write_file, add_line_numbers
 import command
+from commands.command import Think, Verdict  # Importing Think and Verdict
+from commands.loop import command_loop_new  # Importing command_loop_new
 import repo
 import shutil
 from repo import Issue
@@ -30,6 +32,19 @@ def check_result(old, new, prompt) -> bool:
         raise Exception(result)
 
     return True
+
+
+def check_result_func(old, new, prompt) -> bool:
+    state = command_loop_new(
+        f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}",
+        SYSTEM_CHECK_FUNC,
+        [Think, Verdict],
+    )
+
+    if not state.verdict:
+        raise Exception("NEGATIVE VERDICT: " + state.reasoning)
+
+    return state.verdict
 
 
 def list_files(files):
