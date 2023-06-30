@@ -42,7 +42,6 @@ def find_approved_prs(repo_name: str) -> list[int]:
 
         if any(review.state == "APPROVED" for review in reviews):
             approved_prs_ids.append(pr.number)
-
     return approved_prs_ids
 
 
@@ -58,7 +57,6 @@ def merge_with_rebase_if_possible(repo_name: str, pr_number: int) -> bool:
         close_issue_by_title(repo_name, pr.title)
         delete_branch_after_merge(g, repo_name, branch)
         return True
-
     return False
 
 
@@ -77,7 +75,7 @@ def delete_branch_after_merge(g, repo_name, branch):
     retries = 5
     while retries > 0:
         try:
-            g.get_repo(repo_name).get_git_ref(f"heads/{branch}").delete()
+            g.get_repo(repo_name).get_git_ref(f"heads/{branch.ref}").delete()
             break
         except Exception as e:
             print(e)
