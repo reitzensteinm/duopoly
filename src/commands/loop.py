@@ -4,7 +4,7 @@ from gpt import gpt_query
 from commands.state import State
 
 
-def command_loop(prompt: str, system: str, command_classes: list, files: dict = {}):
+def command_loop_new(prompt: str, system: str, command_classes: list, files: dict = {}):
     state = State(files)
     command_classes = extract_schemas(command_classes)
     while True:
