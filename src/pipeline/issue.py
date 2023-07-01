@@ -23,18 +23,6 @@ def format_python_code(code: str) -> str:
 
 
 def check_result(old, new, prompt) -> bool:
-    result = gpt_query(
-        f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}", SYSTEM_CHECK
-    )
-
-    if not "VERDICT: OK" in result:
-        print(new)
-        raise Exception(result)
-
-    return True
-
-
-def check_result_func(old, new, prompt) -> bool:
     state = command_loop_new(
         f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}",
         SYSTEM_CHECK_FUNC,
