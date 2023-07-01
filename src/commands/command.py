@@ -127,7 +127,7 @@ class Verdict(Command):
 
     def __init__(self, reasoning: str, verdict: bool):
         self.reasoning: str = reasoning
-        self.pass_verdict: bool = verdict
+        self.verdict: bool = verdict
 
     @staticmethod
     def schema() -> dict:
@@ -164,7 +164,7 @@ class Verdict(Command):
         """
         Executes the Verdict command.
         """
-        return self.reasoning, self.pass_verdict
+        return self.reasoning, self.verdict
 
 
 class Files(Command):
