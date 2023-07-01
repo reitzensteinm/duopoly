@@ -6,10 +6,10 @@ from commands.state import State
 
 def command_loop_new(prompt: str, system: str, command_classes: list, files: dict = {}):
     state = State(files)
-    command_classes = extract_schemas(command_classes)
+
     while True:
-        result = gpt_query(prompt + "\n" + state.scratch, system, command_classes)
-        command = parse_gpt_response(command_classes, json.loads(result))
+        result = gpt_query(prompt + "\n" + state.scratch, system, extract_schemas(command_classes))
+        command = parse_gpt_response(command_classes, result)
 
         if command.terminal:
             return command
