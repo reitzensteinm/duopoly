@@ -26,8 +26,8 @@ class Command:
     Class representing a command.
     """
 
-    @property
-    def name(self) -> str:
+    @classmethod
+    def name(cls) -> str:
         """
         Returns the name of the command.
         This should be overridden by subclasses if needed.
@@ -67,8 +67,8 @@ class Think(Command):
     Class representing a Think command.
     """
 
-    @property
-    def name(self) -> str:
+    @classmethod
+    def name(cls) -> str:
         return "Think"
 
     @property
@@ -117,8 +117,8 @@ class Verdict(Command):
     Class representing a Verdict command.
     """
 
-    @property
-    def name(self) -> str:
+    @classmethod
+    def name(cls) -> str:
         return "Verdict"
 
     @property
@@ -172,8 +172,8 @@ class Files(Command):
     Class representing a Files command.
     """
 
-    @property
-    def name(self) -> str:
+    @classmethod
+    def name(cls) -> str:
         return "Files"
 
     @property
@@ -243,7 +243,7 @@ def parse_gpt_response(command_classes, gpt_response):
     #   "name": "Verdict"
     # }
     for command_class in command_classes:
-        if command_class.name == gpt_response["name"]:
+        if command_class.name() == gpt_response["name"]:
             return command_class.load_from_json(json.loads(gpt_response["arguments"]))
 
     raise ValueError(f"Unrecognized command name: {gpt_response['name']}")
