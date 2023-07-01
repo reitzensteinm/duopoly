@@ -26,10 +26,13 @@ class Command:
     Class representing a command.
     """
 
-    name: str = ""
-
-    def __init__(self):
-        pass
+    @property
+    def name(self) -> str:
+        """
+        Returns the name of the command.
+        This should be overridden by subclasses if needed.
+        """
+        return ""
 
     @property
     def terminal(self):
@@ -64,7 +67,9 @@ class Think(Command):
     Class representing a Think command.
     """
 
-    name: str = "Think"
+    @property
+    def name(self) -> str:
+        return "Think"
 
     @property
     def terminal(self):
@@ -112,7 +117,9 @@ class Verdict(Command):
     Class representing a Verdict command.
     """
 
-    name: str = "Verdict"
+    @property
+    def name(self) -> str:
+        return "Verdict"
 
     @property
     def terminal(self):
@@ -165,7 +172,9 @@ class Files(Command):
     Class representing a Files command.
     """
 
-    name: str = "Files"
+    @property
+    def name(self) -> str:
+        return "Files"
 
     @property
     def terminal(self):
