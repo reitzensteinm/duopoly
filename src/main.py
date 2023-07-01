@@ -35,7 +35,7 @@ def merge_approved_prs() -> None:
     repo.fetch_new_changes()
 
 
-def main(dry_run=False, issue_name=None) -> None:
+def main2(dry_run=False, issue_name=None) -> None:
     if not dry_run:
         merge_approved_prs()
     open_issues = repo.fetch_open_issues("reitzensteinm/duopoly")
@@ -90,4 +90,4 @@ if __name__ == "__main__":
     if args.evals:
         evals(args.evals)
     else:
-        main(dry_run=args.dry_run, issue_name=args.issue)
+        main2(dry_run=args.dry_run, issue_name=args.issue)
