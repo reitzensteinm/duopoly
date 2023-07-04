@@ -116,7 +116,10 @@ def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> 
                     model=model, messages=messages
                 )
 
-            if functions is not None and "function_call" not in completion.choices[0].message:
+            if (
+                functions is not None
+                and "function_call" not in completion.choices[0].message
+            ):
                 cprint("No functions returned", "red")
                 raise Exception("No functions returned")
 
@@ -139,7 +142,9 @@ def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> 
             backoff *= 2
     content = completion.choices[0].message.content
     if "function_call" in completion.choices[0].message:
-        return completion.choices[0].message["function_call"]
+        function_result = completion.choices[0].message["function_call"]
+        print(f"Function call result: {function_result}")  # print function call result
+        return function_result
     cprint(f"GPT Output: {content}", "cyan")
 
     return content
