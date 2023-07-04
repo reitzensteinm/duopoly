@@ -222,7 +222,63 @@ class Files(Command):
         return result
 
 
-commands: list = [Think, Verdict, Files]
+class ReplaceFile(Command):
+    """
+    Class representing ReplaceFile command.
+    """
+
+    @classmethod
+    def name(cls) -> str:
+        return "ReplaceFile"
+
+    @property
+    def terminal(self):
+        return False
+
+    def __init__(self, filename: str, content: str):
+        self.filename: str = filename
+        self.content: str = content
+
+    @staticmethod
+    def schema() -> dict:
+        """
+        Returns the schema for the ReplaceFile command.
+        """
+        return {
+            "name": "ReplaceFile",
+            "description": "Replace the content of a file in the state",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "filename": {
+                        "type": "string",
+                        "description": "Name of the file to be replaced",
+                    },
+                    "content": {
+                        "type": "string",
+                        "description": "The new content of the file",
+                    },
+                },
+                "required": ["filename", "content"],
+            },
+        }
+
+    @staticmethod
+    def load_from_json(json_data: dict) -> "ReplaceFile":
+        """
+        Loads the ReplaceFile command from the provided json_data.
+        """
+        return ReplaceFile(json_data["filename"], json_data["content"])
+
+    def execute(self, state: State):
+        """
+        Executes the ReplaceFile command.
+        """
+        state.files[self.filename] = self.content
+        return f"File {self.filename} has been replaced."
+
+
+commands: list = [Think, Verdict, Files, ReplaceFile]
 
 
 def extract_schemas(command_classes):
