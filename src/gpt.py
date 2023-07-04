@@ -23,7 +23,7 @@ SYSTEM_CHECK_FUNC = "You are a helpful programming assistant. \
                     If a file isn't present in the modified version, you can assume it was deleted. \
                     You will also be given a description of the change that was intended. \
                     Was the change that was made correct? \
-                    Please write a paragraph explaining your reasoning. \
+                    Only respond by calling a function. \
                     Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
                     If files aren't supplied, you can assume that their contents are correct. You are only checking issues in what you can see."
 
@@ -115,6 +115,10 @@ def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> 
                 completion = openai.ChatCompletion.create(
                     model=model, messages=messages
                 )
+
+            if functions is not None and "function_call" not in completion.choices[0].message:
+                cprint("No functions returned", "red")
+                raise Exception("No functions returned")
 
             end_time = time.time()
             call_duration = end_time - start_time
