@@ -22,7 +22,13 @@ Example Command schema:
 
 
 def annotate_with_line_numbers(content: str) -> str:
-    """Annotates a file content with line numbers."""
+    """
+    Annotate a file content with line numbers.
+    Now handles empty content, and returns '1: <blank line>'.
+    """
+    if not content:
+        return "1: <blank line>"
+
     annotated_lines = [f"{i+1}: {line}" for i, line in enumerate(content.splitlines())]
     return "\n".join(annotated_lines)
 
