@@ -21,6 +21,12 @@ Example Command schema:
 """
 
 
+def annotate_with_line_numbers(content: str) -> str:
+    """Annotates a file content with line numbers."""
+    annotated_lines = [f"{i+1}: {line}" for i, line in enumerate(content.splitlines())]
+    return "\n".join(annotated_lines)
+
+
 class Command:
     """
     Class representing a command.
@@ -218,7 +224,8 @@ class Files(Command):
         result = ""
         for file in self.files:
             if file in state.files:
-                result += f"{file}: \n{state.files[file]}"
+                annotated_content = annotate_with_line_numbers(state.files[file])
+                result += f"{file}: \n{annotated_content}"
         return result
 
 
