@@ -4,15 +4,41 @@ from gpt import gpt_query
 from commands.state import State
 
 
+def stringify_command(command: Command) -> str:
+    """Converts the command into a string representation."""
+    parameters_string = ""
+
+    # Handling specific command types
+    if type(command).__name__ == "Think":
+        parameters_string = f"thought={command.thought}"
+    elif type(command).__name__ == "Files":
+        parameters_string = f"files={command.files}"
+    elif type(command).__name__ == "ReplaceFile":
+        parameters_string = f"filename={command.filename}, content=<content>"
+    elif type(command).__name__ == "Search":
+        parameters_string = f"search_string={command.search_string}"
+    elif type(command).__name__ == "DeleteFile":
+        parameters_string = f"filename={command.filename}"
+    elif type(command).__name__ == "Verdict":
+        parameters_string = f"reasoning={command.reasoning}, verdict={command.verdict}"
+
+    return f"Function Called: {command.name()} {parameters_string}"
+
+
 def command_loop_new(prompt: str, system: str, command_classes: list, files: dict = {}):
     state = State(files)
 
     while True:
-        result = gpt_query(prompt + "\n" + state.scratch, system, extract_schemas(command_classes))
+        result = gpt_query(
+            prompt + "\n" + state.scratch, system, extract_schemas(command_classes)
+        )
         command = parse_gpt_response(command_classes, result)
 
         if command.terminal:
             return command
+
+        # Adding stringified command to scratch
+        state.scratch += "\n" + stringify_command(command)
 
         output = command.execute(state)
         state.scratch += "\n" + output
