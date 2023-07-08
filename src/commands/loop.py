@@ -14,7 +14,8 @@ def stringify_command(command: Command) -> str:
     elif type(command).__name__ == "Files":
         parameters_string = f"files={command.files}"
     elif type(command).__name__ == "ReplaceFile":
-        parameters_string = f"filename={command.filename}, content=<content>"
+        # Include actual 'filename' and 'content' from the 'ReplaceFile' command
+        parameters_string = f"filename={command.filename}, content={command.content}"
     elif type(command).__name__ == "Search":
         parameters_string = f"search_string={command.search_string}"
     elif type(command).__name__ == "DeleteFile":
