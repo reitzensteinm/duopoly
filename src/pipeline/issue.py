@@ -30,7 +30,7 @@ def format_python_code(code: str) -> str:
 
 
 def check_result(old, new, prompt) -> bool:
-    command = command_loop_new(
+    command, state = command_loop_new(
         f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}",
         SYSTEM_CHECK_FUNC,
         [Think, Verdict],
@@ -141,7 +141,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
 def apply_prompt_to_files_new(prompt: str, files: dict) -> dict:
     old_files = files
     scratch = "Available files: " + ", ".join(files.keys()) + "\n"
-    new_files = command_loop_new(
+    command, state = command_loop_new(
         scratch + f"{str(uuid.uuid4())}\n{prompt}",
         gpt.SYSTEM_COMMAND_FUNC,
         [Think, Verdict, Files, ReplaceFile, Search, DeleteFile],
@@ -151,11 +151,11 @@ def apply_prompt_to_files_new(prompt: str, files: dict) -> dict:
     old_files_filtered = {
         k: v
         for k, v in old_files.items()
-        if k in new_files and v != new_files[k] or k not in new_files
+        if k in state.files and v != state.files[k] or k not in state.files
     }
     new_files_filtered = {
         k: v
-        for k, v in new_files.items()
+        for k, v in state.files.items()
         if k in old_files and v != old_files[k] or k not in old_files
     }
 
@@ -165,7 +165,7 @@ def apply_prompt_to_files_new(prompt: str, files: dict) -> dict:
         prompt,
     )
 
-    return new_files
+    return state.files
 
 
 def process_directory(prompt: str, target_dir: str, files: dict) -> None:
