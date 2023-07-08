@@ -30,16 +30,16 @@ def format_python_code(code: str) -> str:
 
 
 def check_result(old, new, prompt) -> bool:
-    state = command_loop_new(
+    command = command_loop_new(
         f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}",
         SYSTEM_CHECK_FUNC,
         [Think, Verdict],
     )
 
-    if not state.verdict:
-        raise Exception("NEGATIVE VERDICT: " + state.reasoning)
+    if not command.verdict:
+        raise Exception("NEGATIVE VERDICT: " + command.reasoning)
 
-    return state.verdict
+    return command.verdict
 
 
 def list_files(files):
