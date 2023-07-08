@@ -36,7 +36,7 @@ def command_loop_new(prompt: str, system: str, command_classes: list, files: dic
         command = parse_gpt_response(command_classes, result)
 
         if command.terminal:
-            return command
+            return (command, state)
 
         # Adding stringified command to scratch
         state.scratch += "\n" + stringify_command(command)
