@@ -106,7 +106,7 @@ Requirements:
  * When returning a file, indent it with tabs.
  * Ignore python files not under src
 
-Do not include anything in the response that is not a command. Respond with at least one command.
+When finished, call the Verdict function and return to me the results.
 """
 
 from cache import memoize
@@ -146,7 +146,10 @@ def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> 
                 functions is not None
                 and "function_call" not in completion.choices[0].message
             ):
-                cprint("No functions returned", "red")
+                cprint(
+                    f"No functions returned. Message received: {completion.choices[0].message.content}",
+                    "red",
+                )
                 raise Exception("No functions returned")
 
             end_time = time.time()
