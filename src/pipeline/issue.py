@@ -113,7 +113,7 @@ def command_loop(prompt: str, files: dict) -> dict:
     raise Exception("Command Loop Overflow")
 
 
-def apply_prompt_to_files(prompt: str, files: dict) -> dict:
+def apply_prompt_to_files_old(prompt: str, files: dict) -> dict:
     old_files = files
 
     new_files = command_loop(f"{str(uuid.uuid4())}\n{prompt}", files)
@@ -138,7 +138,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     return new_files
 
 
-def apply_prompt_to_files_new(prompt: str, files: dict) -> dict:
+def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     old_files = files
     scratch = "Available files: " + ", ".join(files.keys()) + "\n"
     command, state = command_loop_new(
