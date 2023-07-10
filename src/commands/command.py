@@ -1,5 +1,9 @@
 import json
 from commands.state import State
+from black import (
+    FileMode,
+    format_str,
+)  # Added import for Black's format_str and FileMode
 
 """
 Example Command schema:
@@ -31,6 +35,11 @@ def annotate_with_line_numbers(content: str) -> str:
 
     annotated_lines = [f"{i+1}: {line}" for i, line in enumerate(content.splitlines())]
     return "\n".join(annotated_lines)
+
+
+def format_python_code(code: str) -> str:  # Added the format_python_code function
+    formatted_code = format_str(code, mode=FileMode())
+    return formatted_code
 
 
 class Command:
@@ -287,7 +296,12 @@ class ReplaceFile(Command):
         """
         Executes the ReplaceFile command.
         """
-        state.files[self.filename] = self.content
+        new_content = self.content
+        if self.filename.endswith(".py"):  # Check if it's a Python file
+            new_content = format_python_code(
+                self.content
+            )  # Format the content if it's a Python file
+        state.files[self.filename] = new_content
         return f"File {self.filename} has been replaced."
 
 
