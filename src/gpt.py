@@ -104,7 +104,6 @@ Requirements:
  * When moving code between files, ensure to add and remove import statements as required.
  * When deleting files, ensure that all references to it in other files are removed. 
  * Ignore python files not under src
- * When writing source code, escape any tabs as \\t and any newlines as \\n 
  
 When finished, call the Verdict function and return to me the results.
 """
