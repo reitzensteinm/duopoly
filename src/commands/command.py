@@ -348,14 +348,14 @@ class Search(Command):
         """
         return Search(json_data["search_string"])
 
-    def execute(self, state: State) -> list:
+    def execute(self, state: State) -> str:
         """
         Executes the Search command.
         """
         from tools.search import search_tool
 
         results = search_tool(state.files, self.search_string)
-        return results
+        return str(results)
 
 
 class DeleteFile(Command):
