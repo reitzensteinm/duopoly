@@ -7,6 +7,8 @@ from pipeline.issue import process_issue
 import repo
 from evals.evals import process_evals
 from tracing.trace import create_trace, bind_trace
+import ast
+import astor
 
 MAX_RETRIES = (
     3  # Maximum number of retries if exception is thrown in process_open_issue
@@ -33,6 +35,23 @@ def merge_approved_prs() -> None:
                         f"Failed to merge PR {pr_id} after 5 attempts."
                     )  # If we've used all our retries
     repo.fetch_new_changes()
+
+
+# Add function here
+
+
+def replace_function_in_code(source_code, function_name, new_function_code):
+    # Parsing the source code
+    tree = ast.parse(source_code)
+
+    # Locating the old function and replacing it with the new function
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef) and node.name == function_name:
+            new_function_node = ast.parse(new_function_code)
+            node.body = new_function_node.body
+    updated_code = astor.to_source(tree)
+
+    return updated_code
 
 
 def main(dry_run=False, issue_name=None) -> None:
