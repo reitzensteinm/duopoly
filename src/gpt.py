@@ -110,8 +110,9 @@ When finished, call the Verdict function and return to me the results.
 
 from cache import memoize
 
+disable_cache = True
 
-@memoize
+
 def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> str:
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
@@ -176,3 +177,7 @@ def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> 
     cprint(f"GPT Output: {content}", "cyan")
 
     return content
+
+
+if not disable_cache:
+    gpt_query = memoize(gpt_query)
