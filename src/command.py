@@ -57,3 +57,29 @@ def parse_command_string(command_string: str) -> list[dict]:
             command["body"] = "\n".join(command["body"])
 
     return command_list
+
+
+# Add function here
+
+
+def ReplaceFunction(filename: str, function_name: str, new_function_code: str):
+    """This command replaces a function in a given file using astor. It's a cheaper operation compared to ReplaceFile"""
+    # import required libraries
+    import ast
+    import astor
+
+    # READ the file
+    with open(filename, "r") as file:
+        source_code = file.read()
+    # Parsing the source code
+    tree = ast.parse(source_code)
+    # Locating the old function and replacing it with the new function
+    for node in ast.walk(tree):
+        if isinstance(node, ast.FunctionDef) and node.name == function_name:
+            new_function_node = ast.parse(new_function_code)
+            node.body = new_function_node.body
+    updated_code = astor.to_source(tree)
+    # WRITE the updated code back to file
+    with open(filename, "w") as file:
+        file.write(updated_code)
+    return "Operation completed successfully"
