@@ -104,7 +104,8 @@ Requirements:
  * When moving code between files, ensure to add and remove import statements as required.
  * When deleting files, ensure that all references to it in other files are removed. 
  * Ignore python files not under src
- 
+ * When returning a file, indent it with tabs.
+
 When finished, call the Verdict function and return to me the results.
 """
 
