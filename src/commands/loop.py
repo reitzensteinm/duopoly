@@ -2,6 +2,7 @@ import json
 from commands.command import Command, parse_gpt_response, extract_schemas
 from gpt import gpt_query
 from commands.state import State
+from termcolor import cprint
 
 
 def stringify_command(command: Command) -> str:
@@ -48,7 +49,12 @@ def command_loop_new(prompt: str, system: str, command_classes: list, files: dic
 
             # If command execute successfully, reset the exception counter
             exception_count = 0
-        except Exception:
+        except Exception as e:
             exception_count += 1
+            cprint(f"Exception occurred: {str(e)}", "red")
             if exception_count >= 5:
                 break
+            else:
+                print(
+                    f"Retrying command execution, attempt number {exception_count+1}..."
+                )
