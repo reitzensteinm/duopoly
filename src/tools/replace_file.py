@@ -20,7 +20,8 @@ Requirements:
 2) Reply only with the updated file. Do not include any commentary. 
 3) Do not add markdown quotes around code in your responses. 
 4) Use tabs for indentation.
-5) Do not add any tests unless specifically requested. 
+5) Do not add any tests unless specifically requested.
+6) Return the entire file without skipping anything or stopping before the end, no matter how long it is. 
 """
 
 
