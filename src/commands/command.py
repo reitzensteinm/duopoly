@@ -297,7 +297,9 @@ class ReplaceFile(Command):
         """
         Executes the ReplaceFile command.
         """
-        new_content = modify_file(state.files[self.filename], self.instructions)
+        new_content = modify_file(
+            state.files[self.filename], self.instructions, state.scratch
+        )
         if self.filename.endswith(".py"):  # Check if it's a Python file
             new_content = format_python_code(
                 new_content
