@@ -16,7 +16,9 @@ def stringify_command(command: Command) -> str:
         parameters_string = f"files={command.files}"
     elif type(command).__name__ == "ReplaceFile":
         # Include actual 'filename' and 'content' from the 'ReplaceFile' command
-        parameters_string = f"filename={command.filename}, instructions={command.instructions}"
+        parameters_string = (
+            f"filename={command.filename}, instructions={command.instructions}"
+        )
     elif type(command).__name__ == "Search":
         parameters_string = f"search_string={command.search_string}"
     elif type(command).__name__ == "DeleteFile":
@@ -54,7 +56,7 @@ def command_loop_new(prompt: str, system: str, command_classes: list, files: dic
             exception_count += 1
             cprint(f"Exception occurred: {str(e)}", "red")
             if exception_count >= 5:
-                break
+                raise e
             else:
                 print(
                     f"Retrying command execution, attempt number {exception_count+1}..."
