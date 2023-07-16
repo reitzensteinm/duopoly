@@ -1,4 +1,5 @@
 import json
+from tools.replace_file import modify_file
 from commands.state import State
 from black import (
     FileMode,
@@ -257,9 +258,9 @@ class ReplaceFile(Command):
     def terminal(self):
         return False
 
-    def __init__(self, filename: str, content: str):
+    def __init__(self, filename: str, instructions: str):
         self.filename: str = filename
-        self.content: str = content
+        self.instructions: str = instructions
 
     @staticmethod
     def schema() -> dict:
@@ -268,7 +269,7 @@ class ReplaceFile(Command):
         """
         return {
             "name": "ReplaceFile",
-            "description": "Replace the content of a file in the state",
+            "description": "Modify a file with the given instructions",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -276,12 +277,12 @@ class ReplaceFile(Command):
                         "type": "string",
                         "description": "Name of the file to be replaced",
                     },
-                    "content": {
+                    "instructions": {
                         "type": "string",
-                        "description": "The new content of the file",
+                        "description": "Human readable description for how the file should be modified, without code",
                     },
                 },
-                "required": ["filename", "content"],
+                "required": ["filename", "instructions"],
             },
         }
 
@@ -290,16 +291,16 @@ class ReplaceFile(Command):
         """
         Loads the ReplaceFile command from the provided json_data.
         """
-        return ReplaceFile(json_data["filename"], json_data["content"])
+        return ReplaceFile(json_data["filename"], json_data["instructions"])
 
     def execute(self, state: State):
         """
         Executes the ReplaceFile command.
         """
-        new_content = self.content
+        new_content = modify_file(state.files[self.filename], self.instructions)
         if self.filename.endswith(".py"):  # Check if it's a Python file
             new_content = format_python_code(
-                self.content
+                new_content
             )  # Format the content if it's a Python file
         state.files[self.filename] = new_content
         return f"File {self.filename} has been replaced."
