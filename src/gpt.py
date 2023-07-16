@@ -36,7 +36,6 @@ You should:
 1) Start by using the @@THINK@@ command to explain your thinking
 2) Request any information required that you don't already have
 3) Only if all necessary information has been supplied, list updates to make
-4) Always generate at least one command in the response
 
 IF YOU UPDATE A FILE, INCLUDE ALL LINES. DO NOT LEAVE OUT ANY CONTENT, EVEN IF IT IS LONG.
 
@@ -89,14 +88,9 @@ Please make ONLY the changes requested, and respond only with the changes in the
 
 You should:
 
-1) Start by using the @@THINK@@ command to explain your thinking
+1) Start by calling the think function with a step by step description of the changes you're about to make
 2) Request any information required that you don't already have
 3) Only if all necessary information has been supplied, list updates to make
-4) Always generate at least one command in the response
-
-IF YOU UPDATE A FILE, INCLUDE ALL LINES. DO NOT LEAVE OUT ANY CONTENT, EVEN IF IT IS LONG.
-
-Once you have made all modifications, always add a FINISH command at the end.
 
 Do not add markdown quotes around code in your responses.
 
