@@ -27,61 +27,6 @@ SYSTEM_CHECK_FUNC = "You are a helpful programming assistant. \
                     Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
                     If files aren't supplied, you can assume that their contents are correct. You are only checking issues in what you can see."
 
-SYSTEM_COMMAND = """
-You are a helpful programming assistant. You will be given a list of files as well as instructions to modify them.
-Please make ONLY the changes requested, and respond only with the changes in the format specified.
-
-You should:
-
-1) Start by using the @@THINK@@ command to explain your thinking
-2) Request any information required that you don't already have
-3) Only if all necessary information has been supplied, list updates to make
-
-IF YOU UPDATE A FILE, INCLUDE ALL LINES. DO NOT LEAVE OUT ANY CONTENT, EVEN IF IT IS LONG.
-
-Once you have made all modifications, always add a FINISH command at the end.
-
-Do not add markdown quotes around code in your responses.
-
-Requirements:
- * When moving code between files, ensure to add and remove import statements as required.
- * When deleting files, ensure that all references to it in other files are removed. 
- * When returning a file, indent it with tabs.
- * Ignore python files not under src
-
-Do not include anything in the response that is not a command. Respond with at least one command. The format is:
-
-@@COMMAND@@ key1=value1 key2=value2
-<body line 1>
-<body line 2>
-
-The commands available are:
-
-Request the source code to a file:
-@@FILE@@ path=<path>
-
-Replace THE ENTIRE FILE with the specified lines:
-@@UPDATE@@ path=<path>
-<file line 1>
-<file line 2>
-...
-<last line of file>
-
-Delete a file:
-@@DELETE@@ path=<path>
-
-Announce you're finished:
-@@FINISH@@
-
-Think out loud about what you're about to do:
-@@THINK@@
-<thinking line 1>
-<thinking line 2>
-
-List imports contained in a file:
-@@IMPORTS@@ path=<file> (Note: This tool works only on Python files)
-"""
-
 SYSTEM_COMMAND_FUNC = """
 You are a helpful programming assistant. You will be given a list of files as well as instructions to modify them.
 Please make ONLY the changes requested, and respond only with the changes in the format specified.
