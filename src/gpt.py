@@ -29,6 +29,7 @@ SYSTEM_CHECK_FUNC = "You are a helpful programming assistant. \
 
 SYSTEM_COMMAND_FUNC = """
 You are a helpful programming assistant. You will be given a list of files as well as instructions to modify them.
+
 Please make ONLY the changes requested, and respond only with the changes in the format specified.
 
 You should:
@@ -53,7 +54,13 @@ from cache import memoize
 disable_cache = True
 
 
-def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> str:
+def gpt_query(
+    message: str,
+    system: str,
+    functions=None,
+    model: str = GPT_4,
+    require_function: bool = True,
+) -> str:
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
 
@@ -85,6 +92,7 @@ def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> 
             if (
                 functions is not None
                 and "function_call" not in completion.choices[0].message
+                and require_function
             ):
                 cprint(
                     f"No functions returned. Message received: {completion.choices[0].message.content}",
@@ -109,13 +117,14 @@ def gpt_query(message: str, system: str, functions=None, model: str = GPT_4) -> 
 
             time.sleep(backoff)
             backoff *= 2
+
     content = completion.choices[0].message.content
     if "function_call" in completion.choices[0].message:
         function_result = completion.choices[0].message["function_call"]
         print(f"Function call result: {function_result}")  # print function call result
         return function_result
-    cprint(f"GPT Output: {content}", "cyan")
 
+    cprint(f"GPT Output: {content}", "cyan")
     return content
 
 
