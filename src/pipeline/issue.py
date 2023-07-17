@@ -1,6 +1,7 @@
 from tools.imports import imports
 from tools.search import search_tool  # Importing search_tool
 from tools.pylint import run_pylint  # Importing run_pylint
+from tools.pytest import run_pytest  # Importing run_pytest
 from black import FileMode, format_str
 import os
 import uuid
@@ -106,13 +107,9 @@ def process_directory(prompt: str, target_dir: str, files: dict) -> None:
     if pylint_result is not None:
         raise Exception("Pylint failed\n" + pylint_result)
 
-    result = subprocess.run(
-        ["pytest", os.path.join(target_dir, "src"), "-rf"],
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        raise Exception("Pytest failed\n" + result.stdout)
+    pytest_result = run_pytest(os.path.join(target_dir, "src"))
+    if pytest_result is not None:
+        raise Exception("Pytest failed\n" + pytest_result)
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
