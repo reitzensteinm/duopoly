@@ -67,8 +67,4 @@ class ReplaceFile(Command):
         return f"File {self.filename} has been replaced."
 
     def __str__(self):
-        """
-        Returns the string representation of the ReplaceFile command
-        following the pattern of the stringify_command function.
-        """
-        return f"Function Called: ReplaceFile filename={self.filename}, instructions={self.instructions}"
+        return f"Function Called: {self.name()} filename={self.filename}, instructions={self.instructions}"
