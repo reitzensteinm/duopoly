@@ -6,7 +6,7 @@ import shutil
 def run_pytest(target_dir):
     try:
         result = subprocess.run(
-            ["pytest", os.path.join(target_dir, "src"), "-rf"],
+            ["pytest", target_dir, "-rf"],
             capture_output=True,
             text=True,
         )
