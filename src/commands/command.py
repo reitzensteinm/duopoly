@@ -9,19 +9,19 @@ from black import (
 """
 Example Command schema:
 {
-    "name": "get_current_weather",
-    "description": "Get the current weather in a given location",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "location": {
-                "type": "string",
-                "description": "The city and state, e.g. San Francisco, CA",
-            },
-            "unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
-        },
-        "required": ["location"],
-    }
+	"name": "get_current_weather",
+	"description": "Get the current weather in a given location",
+	"parameters": {
+		"type": "object",
+		"properties": {
+			"location": {
+				"type": "string",
+				"description": "The city and state, e.g. San Francisco, CA",
+			},
+			"unit": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+		},
+		"required": ["location"],
+	}
 }
 """
 
@@ -298,7 +298,7 @@ class ReplaceFile(Command):
         Executes the ReplaceFile command.
         """
         new_content = modify_file(
-            state.files[self.filename], self.instructions, state.scratch
+            state.files.get(self.filename, ""), self.instructions, state.scratch
         )
         if self.filename.endswith(".py"):  # Check if it's a Python file
             new_content = format_python_code(
