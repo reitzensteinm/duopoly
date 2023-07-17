@@ -26,7 +26,7 @@ Requirements:
 
 
 def modify_file(original_file, instructions, context=""):
-    instructions = f"### CONTEXT ###\n{context}\n### INSTRUCTIONS ###\n{instructions}\n### ORIGINAL FILE ###\n{original_file}\n### THINKING ###"
+    instructions = f"### CONTEXT ###\n{context}\n### INSTRUCTIONS ###\n{instructions}\n### ORIGINAL FILE ###\n(see context)\n### THINKING ###"
     thinking = gpt_query(instructions, SYSTEM_REPLACE_THINK)
     instructions = f"{instructions}\n{thinking}\n### NEW FILE ###"
     new_file = gpt_query(instructions, SYSTEM_REPLACE)
