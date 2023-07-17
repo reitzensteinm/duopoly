@@ -1,5 +1,6 @@
 from tools.imports import imports
 from tools.search import search_tool  # Importing search_tool
+from tools.pylint import run_pylint  # Importing run_pylint
 from black import FileMode, format_str
 import os
 import uuid
@@ -101,14 +102,9 @@ def process_directory(prompt: str, target_dir: str, files: dict) -> None:
     updated_files = apply_prompt_to_files(prompt, files)
     synchronize_files(target_dir, files, updated_files)
 
-    pylint_result = subprocess.run(
-        ["pylint", "--disable=R,C,W", os.path.join(target_dir, "src")],
-        capture_output=True,
-        text=True,
-    )
-    print(pylint_result.stdout)
-    if pylint_result.returncode != 0:
-        raise Exception("Pylint failed\n" + pylint_result.stdout)
+    pylint_result = run_pylint(os.path.join(target_dir, "src"))
+    if pylint_result is not None:
+        raise Exception("Pylint failed\n" + pylint_result)
 
     result = subprocess.run(
         ["pytest", os.path.join(target_dir, "src"), "-rf"],
