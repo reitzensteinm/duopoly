@@ -103,6 +103,7 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
     files = {
         f: read_file(os.path.join(target_dir, f))
         for f in repo.get_all_checked_in_files(target_dir)
+        if os.path.isfile(os.path.join(target_dir, f))
     }
     updated_files = apply_prompt_to_files(prompt, files)
     synchronize_files(target_dir, files, updated_files)
