@@ -111,9 +111,19 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
 def process_directory(prompt: str, target_dir: str) -> None:
     apply_prompt_to_directory(prompt, target_dir)
 
-    pylint_result = run_pylint(os.path.join(target_dir, "src"))
-    if pylint_result is not None:
-        raise Exception("Pylint failed\n" + pylint_result)
+    for iteration in range(3):
+        pylint_result = run_pylint(os.path.join(target_dir, "src"))
+        if pylint_result is not None and iteration < 2:
+            # ask to fix pylint errors if we are in first or second iteration
+            apply_prompt_to_directory(
+                f"Fix these errors identified by PyLint:\n{pylint_result}", target_dir
+            )
+        elif pylint_result is not None and iteration == 2:
+            # if errors are still present on the third iteration, raise an exception
+            raise Exception("Pylint failed\n" + pylint_result)
+        elif pylint_result is None:
+            # if no pylint errors, break the loop
+            break
 
     pytest_result = run_pytest(os.path.join(target_dir, "src"))
     if pytest_result is not None:
