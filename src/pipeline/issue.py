@@ -99,9 +99,17 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     return state.files
 
 
-def process_directory(prompt: str, target_dir: str, files: dict) -> None:
+def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
+    files = {
+        f: read_file(os.path.join(target_dir, f))
+        for f in repo.get_all_checked_in_files(target_dir)
+    }
     updated_files = apply_prompt_to_files(prompt, files)
     synchronize_files(target_dir, files, updated_files)
+
+
+def process_directory(prompt: str, target_dir: str) -> None:
+    apply_prompt_to_directory(prompt, target_dir)
 
     pylint_result = run_pylint(os.path.join(target_dir, "src"))
     if pylint_result is not None:
@@ -132,12 +140,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
 
-    files = {
-        f: read_file(os.path.join(target_dir, f))
-        for f in repo.get_all_checked_in_files(target_dir)
-    }
-
-    process_directory(issue.description, target_dir, files)
+    process_directory(issue.description, target_dir)
 
     if not dry_run:
         repo.commit_local_modifications(
