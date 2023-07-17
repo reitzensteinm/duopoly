@@ -1,3 +1,4 @@
+# command_files.py
 from commands.command import Command
 from commands.state import State
 from utils import annotate_with_line_numbers
@@ -46,6 +47,12 @@ class Files(Command):
         Loads the Files command from the provided json_data.
         """
         return Files(json_data["files"])
+
+    def __str__(self):
+        """
+        Returns a string representation of the Files command.
+        """
+        return f"Function Called: Files files={self.files}"
 
     def execute(self, state: State) -> str:
         """

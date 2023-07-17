@@ -1,3 +1,4 @@
+# command_verdict.py
 from commands.command import Command
 from commands.state import State
 
@@ -18,6 +19,9 @@ class Verdict(Command):
     def __init__(self, reasoning: str, verdict: bool):
         self.reasoning: str = reasoning
         self.verdict: bool = verdict
+
+    def __str__(self):
+        return f"Function Called: {self.name()} reasoning={self.reasoning}, verdict={self.verdict}"
 
     @staticmethod
     def schema() -> dict:
