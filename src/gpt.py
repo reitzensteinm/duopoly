@@ -25,7 +25,7 @@ SYSTEM_CHECK_FUNC = "You are a helpful programming assistant. \
                     Was the change that was made correct? \
                     Only respond by calling a function. \
                     Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
-                    If files aren't supplied, you can assume that their contents are correct. You are only checking issues in what you can see."
+                    If a file isn't supplied, always assume its content is completely correct."
 
 SYSTEM_COMMAND_FUNC = """
 You are a helpful programming assistant. You will be given a list of files as well as instructions to modify them.
