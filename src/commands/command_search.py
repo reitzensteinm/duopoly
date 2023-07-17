@@ -54,3 +54,6 @@ class Search(Command):
 
         results = search_tool(state.files, self.search_string)
         return str(results)
+
+    def __str__(self):
+        return f"Function Called: Search search_string={self.search_string}"
