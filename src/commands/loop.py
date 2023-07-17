@@ -24,28 +24,6 @@ def parse_gpt_response(command_classes, gpt_response):
     raise ValueError(f"Unrecognized command name: {gpt_response['name']}")
 
 
-def stringify_command(command: Command) -> str:
-    """Converts the command into a string representation."""
-    parameters_string = ""
-
-    if type(command).__name__ == "Think":
-        parameters_string = f"thought={command.thought}"
-    elif type(command).__name__ == "Files":
-        parameters_string = f"files={command.files}"
-    elif type(command).__name__ == "ReplaceFile":
-        parameters_string = (
-            f"filename={command.filename}, instructions={command.instructions}"
-        )
-    elif type(command).__name__ == "Search":
-        parameters_string = f"search_string={command.search_string}"
-    elif type(command).__name__ == "DeleteFile":
-        parameters_string = f"filename={command.filename}"
-    elif type(command).__name__ == "Verdict":
-        parameters_string = f"reasoning={command.reasoning}, verdict={command.verdict}"
-
-    return f"Function Called: {command.name()} {parameters_string}"
-
-
 def command_loop_new(prompt: str, system: str, command_classes: list, files: dict = {}):
     state = State(files)
     exception_count = 0
@@ -62,7 +40,7 @@ def command_loop_new(prompt: str, system: str, command_classes: list, files: dic
 
             output = command.execute(state)
 
-            state.scratch += "\n" + stringify_command(command)
+            state.scratch += "\n" + str(command)
 
             state.scratch += "\n" + output
 
