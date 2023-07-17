@@ -64,7 +64,3 @@ class Files(Command):
                 annotated_content = annotate_with_line_numbers(state.files[file])
                 result += f"{file}: \n{annotated_content}"
         return result
-
-    def __str__(self) -> str:
-        """Returns a string representation of the Files command."""
-        return f"Function Called: Files files={self.files}"
