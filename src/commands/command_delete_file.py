@@ -56,3 +56,6 @@ class DeleteFile(Command):
             raise FileNotFoundError(
                 f"Cannot delete file {self.filename} as it does not exist."
             )
+
+    def __str__(self):
+        return f"Function Called: DeleteFile filename={self.filename}"
