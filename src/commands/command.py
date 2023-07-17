@@ -1,6 +1,7 @@
 import json
 from tools.replace_file import modify_file
 from commands.state import State
+from utils import annotate_with_line_numbers, format_python_code
 from black import (
     FileMode,
     format_str,
@@ -25,23 +26,6 @@ Example Command schema:
 	}
 }
 """
-
-
-def annotate_with_line_numbers(content: str) -> str:
-    """
-    Annotate a file content with line numbers.
-    Now handles empty content, and returns '1: <blank line>'.
-    """
-    if not content:
-        return "1: <blank line>"
-
-    annotated_lines = [f"{i+1}: {line}" for i, line in enumerate(content.splitlines())]
-    return "\n".join(annotated_lines)
-
-
-def format_python_code(code: str) -> str:  # Added the format_python_code function
-    formatted_code = format_str(code, mode=FileMode())
-    return formatted_code
 
 
 class Command:
