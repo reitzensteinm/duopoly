@@ -9,7 +9,7 @@ import subprocess
 from gpt import SYSTEM_CHECK, SYSTEM_CHECK_FUNC, gpt_query
 import gpt
 from utils import read_file, write_file, add_line_numbers
-import command
+from commands import command
 from commands.commands import (
     Think,
     Verdict,
