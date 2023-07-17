@@ -4,7 +4,7 @@ import os
 
 def run_pylint(directory: str) -> str:
     proc = subprocess.run(
-        ["pylint", "--disable=R,C,W", os.path.join(directory, "src")],
+        ["pylint", "--disable=R,C,W", directory],
         capture_output=True,
         text=True,
     )
