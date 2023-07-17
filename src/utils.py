@@ -1,4 +1,5 @@
 import os
+from black import FileMode, format_str
 
 
 def read_file(path: str) -> str:
@@ -52,3 +53,20 @@ def write_file(path: str, contents: str) -> None:
         os.makedirs(dirname, exist_ok=True)
     with open(path, "w", encoding="utf-8") as file:
         file.write(contents)
+
+
+def annotate_with_line_numbers(content: str) -> str:
+    """
+    Annotate a file content with line numbers.
+    Now handles empty content, and returns '1: <blank line>'.
+    """
+    if not content:
+        return "1: <blank line>"
+
+    annotated_lines = [f"{i+1}: {line}" for i, line in enumerate(content.splitlines())]
+    return "\n".join(annotated_lines)
+
+
+def format_python_code(code: str) -> str:
+    formatted_code = format_str(code, mode=FileMode())
+    return formatted_code
