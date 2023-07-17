@@ -6,6 +6,7 @@ from black import (
     format_str,
 )  # Added import for Black's format_str and FileMode
 
+
 """
 Example Command schema:
 {
@@ -415,30 +416,3 @@ class DeleteFile(Command):
             raise FileNotFoundError(
                 f"Cannot delete file {self.filename} as it does not exist."
             )
-
-
-commands: list = [Think, Verdict, Files, ReplaceFile, Search, DeleteFile]
-
-
-def extract_schemas(command_classes):
-    """
-    Extracts schemas from a list of command classes.
-    """
-    schemas = [command_class.schema() for command_class in command_classes]
-    return schemas
-
-
-def parse_gpt_response(command_classes, gpt_response):
-    """
-    Parses the response from GPT and returns a Command instance for that response.
-    """
-    # i.e. GPT response looks like:
-    # {
-    #   "arguments": "{\n\"reasoning\": \"Yes, the change is correct. The result of 1+1 is indeed 2. The expression has been simplified correctly.\",\n\"verdict\": true\n}",
-    #   "name": "Verdict"
-    # }
-    for command_class in command_classes:
-        if command_class.name() == gpt_response["name"]:
-            return command_class.load_from_json(json.loads(gpt_response["arguments"]))
-
-    raise ValueError(f"Unrecognized command name: {gpt_response['name']}")
