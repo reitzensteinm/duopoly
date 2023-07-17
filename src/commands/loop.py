@@ -43,10 +43,11 @@ def command_loop_new(prompt: str, system: str, command_classes: list, files: dic
             if command.terminal:
                 return (command, state)
 
+            output = command.execute(state)
+
             # Adding stringified command to scratch
             state.scratch += "\n" + stringify_command(command)
 
-            output = command.execute(state)
             state.scratch += "\n" + output
 
             # If command execute successfully, reset the exception counter
