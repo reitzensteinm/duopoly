@@ -7,25 +7,14 @@ from termcolor import cprint
 GPT_3_5 = "gpt-3.5-turbo-0613"
 GPT_4 = "gpt-4-0613"
 
-SYSTEM_CHECK = "You are a helpful programming assistant. \
-                You will be given original and modified versions of code. \
-                If a file isn't present in the modified version, you can assume it was deleted. \
-                You will also be given a description of the change that was intended. \
-                Was the change that was made correct? \
-                Please write a paragraph explaining your reasoning using this format: 'REASONING: <reasoning>'. \
-                Afterwards, give a verdict, either by saying 'VERDICT: OK' or 'VERDICT: ERROR'. \
-                This should be the last line of your response. \
-                Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
-                If files aren't supplied, you can assume that their contents are correct. You are only checking issues in what you can see."
-
 SYSTEM_CHECK_FUNC = "You are a helpful programming assistant. \
-                    You will be given original and modified versions of code. \
-                    If a file isn't present in the modified version, you can assume it was deleted. \
-                    You will also be given a description of the change that was intended. \
-                    Was the change that was made correct? \
-                    Only respond by calling a function. \
-                    Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
-                    If a file isn't supplied, always assume its content is completely correct."
+					You will be given original and modified versions of code. \
+					If a file isn't present in the modified version, you can assume it was deleted. \
+					You will also be given a description of the change that was intended. \
+					Was the change that was made correct? \
+					Only respond by calling a function. \
+					Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
+					If a file isn't supplied, always assume its content is completely correct."
 
 SYSTEM_COMMAND_FUNC = """
 You are a helpful programming assistant. You will be given a list of files as well as instructions to modify them.

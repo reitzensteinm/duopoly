@@ -6,7 +6,6 @@ from black import FileMode, format_str
 import os
 import uuid
 import subprocess
-from gpt import SYSTEM_CHECK, SYSTEM_CHECK_FUNC, gpt_query
 import gpt
 from utils import read_file, write_file, add_line_numbers
 from commands import command
@@ -34,7 +33,7 @@ def format_python_code(code: str) -> str:
 def check_result(old, new, prompt) -> bool:
     command, state = command_loop_new(
         f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}",
-        SYSTEM_CHECK_FUNC,
+        gpt.SYSTEM_CHECK_FUNC,
         [Think, Verdict],
     )
 
