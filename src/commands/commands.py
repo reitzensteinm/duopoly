@@ -7,3 +7,6 @@ from .command_files import Files
 from .command_replace_file import ReplaceFile
 from .command_search import Search
 from .command_delete_file import DeleteFile
+
+COMMANDS_CHECK = [Think, Verdict]
+COMMANDS_GENERATE = [Think, Verdict, Files, ReplaceFile, Search, DeleteFile]
