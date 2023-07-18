@@ -20,6 +20,12 @@ class Think(Command):
     def __init__(self, thought: str):
         self.thought: str = thought
 
+    def __str__(self):
+        """
+        Returns a string representation of the Think command.
+        """
+        return f"Function Called: Think thought={self.thought}"
+
     @staticmethod
     def schema() -> dict:
         """
