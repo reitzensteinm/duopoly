@@ -121,7 +121,9 @@ def gpt_query(
     content = completion.choices[0].message.content
     if "function_call" in completion.choices[0].message:
         function_result = completion.choices[0].message["function_call"]
-        print(f"Function call result: {function_result}")  # print function call result
+        cprint(
+            f"Function call result: {function_result}", "cyan"
+        )  # print function call result in cyan
         return function_result
 
     cprint(f"GPT Output: {content}", "cyan")
