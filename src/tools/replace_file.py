@@ -6,6 +6,9 @@ You are a helpful programming assistant. You will be given a file as well as ins
 Plan out step by step how you'd like to make the change, but don't start writing code yet. 
 You will be asked to write code in the next step.
 
+Requirements:
+"Do not include instructions to modify anything but the target file"
+
 An example plan might be:
 
 1) Modify function count_functions to also count classes
