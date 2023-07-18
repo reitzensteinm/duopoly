@@ -11,7 +11,7 @@ import ast
 import astor
 
 MAX_RETRIES = (
-    3  # Maximum number of retries if exception is thrown in process_open_issue
+    1  # Maximum number of retries if exception is thrown in process_open_issue
 )
 
 
