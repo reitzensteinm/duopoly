@@ -1,3 +1,7 @@
+# commands/commands.py
+
+# pipeline/issue.py
+
 from tools.imports import imports
 from tools.search import search_tool  # Importing search_tool
 from tools.pylint import run_pylint  # Importing run_pylint
@@ -17,6 +21,7 @@ from commands.commands import (
     ReplaceFile,
     Search,
     DeleteFile,
+    ReplaceNode,
 )  # Importing all commands
 from commands.loop import command_loop_new  # Importing command_loop_new
 import repo
@@ -35,7 +40,7 @@ def check_result(old, new, prompt) -> bool:
     command, state = command_loop_new(
         f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}",
         SYSTEM_CHECK_FUNC,
-        [Think, Verdict],
+        [Think, Verdict, Files, ReplaceFile, Search, DeleteFile, ReplaceNode],
     )
 
     if not command.verdict:
@@ -75,7 +80,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     command, state = command_loop_new(
         scratch + f"{str(uuid.uuid4())}\n{prompt}",
         gpt.SYSTEM_COMMAND_FUNC,
-        [Think, Verdict, Files, ReplaceFile, Search, DeleteFile],
+        [Think, Verdict, Files, ReplaceFile, Search, DeleteFile, ReplaceNode],
         files,
     )
 
