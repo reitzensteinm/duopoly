@@ -81,4 +81,6 @@ class Files(Command):
                 content_with_tabs = replace_spaces_with_tabs(state.files[file])
                 annotated_content = annotate_with_line_numbers(content_with_tabs)
                 result += f"{file}: \n{annotated_content}"
+            else:
+                result += f"File {file} does not exist.\n"
         return result
