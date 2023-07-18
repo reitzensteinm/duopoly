@@ -4,6 +4,23 @@ from commands.state import State
 from utils import annotate_with_line_numbers
 
 
+def replace_spaces_with_tabs(content: str) -> str:
+    """
+    Replaces 4 spaces at the beginning of each line with tabs.
+    """
+    lines = content.split("\n")
+    modified_lines = []
+    for line in lines:
+        leading_spaces = len(line) - len(line.lstrip(" "))
+        if leading_spaces % 4 == 0:
+            tabs = leading_spaces // 4
+            modified_line = "\t" * tabs + line.lstrip(" ")
+            modified_lines.append(modified_line)
+        else:
+            modified_lines.append(line)
+    return "\n".join(modified_lines)
+
+
 class Files(Command):
     """
     Class representing a Files command.
@@ -61,6 +78,7 @@ class Files(Command):
         result = ""
         for file in self.files:
             if file in state.files:
-                annotated_content = annotate_with_line_numbers(state.files[file])
+                content_with_tabs = replace_spaces_with_tabs(state.files[file])
+                annotated_content = annotate_with_line_numbers(content_with_tabs)
                 result += f"{file}: \n{annotated_content}"
         return result
