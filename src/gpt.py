@@ -3,18 +3,20 @@ import openai
 import time
 from utils import read_file, write_file, partition_by_predicate
 from termcolor import cprint
+from tracing.trace import get_trace
+from cache import memoize
 
 GPT_3_5 = "gpt-3.5-turbo-0613"
 GPT_4 = "gpt-4-0613"
 
 SYSTEM_CHECK_FUNC = "You are a helpful programming assistant. \
-					You will be given original and modified versions of code. \
-					If a file isn't present in the modified version, you can assume it was deleted. \
-					You will also be given a description of the change that was intended. \
-					Was the change that was made correct? \
-					Only respond by calling a function. \
-					Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
-					If a file isn't supplied, always assume its content is completely correct."
+	You will be given original and modified versions of code. \
+	If a file isn't present in the modified version, you can assume it was deleted. \
+	You will also be given a description of the change that was intended. \
+	Was the change that was made correct? \
+	Only respond by calling a function. \
+	Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
+	If a file isn't supplied, always assume its content is completely correct."
 
 SYSTEM_COMMAND_FUNC = """
 You are a helpful programming assistant. You will be given a list of files as well as instructions to modify them.
@@ -38,8 +40,6 @@ Requirements:
 When finished, call the Verdict function and return to me the results.
 """
 
-from cache import memoize
-
 disable_cache = True
 
 
@@ -61,6 +61,9 @@ def gpt_query(
     for i in range(retries):
         try:
             start_time = time.time()
+            trace = get_trace()
+            if trace is not None:
+                trace.add_trace_data("GPT Input", message)
             cprint(f"GPT Input: {message}", "blue")
             messages = [
                 {
@@ -108,6 +111,9 @@ def gpt_query(
             backoff *= 2
 
     content = completion.choices[0].message.content
+    trace = get_trace()
+    if trace is not None:
+        trace.add_trace_data("GPT Output", content)
     if "function_call" in completion.choices[0].message:
         function_result = completion.choices[0].message["function_call"]
         cprint(
