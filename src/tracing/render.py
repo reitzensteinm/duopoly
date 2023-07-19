@@ -35,4 +35,6 @@ def render_trace(trace) -> str:
 		</html>
 	"""
     )
-    return template.render(trace_items=trace.items, tag_color_mapping=TAG_COLOR_MAPPING)
+    return template.render(
+        trace_items=trace.trace_data, tag_color_mapping=TAG_COLOR_MAPPING
+    )
