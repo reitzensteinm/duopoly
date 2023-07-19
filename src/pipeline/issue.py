@@ -141,7 +141,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
 
     target_dir = f"target/issue-{issue.number}/duopoly"
     if os.path.exists(target_dir):
-        shutil.rmtree(target_dir)
+        shutil.rmtree(target_dir, ignore_errors=True)
     os.makedirs(target_dir, exist_ok=True)
     repo.clone_repository("https://github.com/reitzensteinm/duopoly.git", target_dir)
 
