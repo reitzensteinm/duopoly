@@ -48,6 +48,7 @@ def check_result(old_files, new_files, prompt) -> bool:
         f"ORIGINAL:\n{list_files(old_files_filtered)}\nMODIFIED:\n{list_files(new_files_filtered)}\nOBJECTIVE:\n{prompt}",
         gpt.SYSTEM_CHECK_FUNC,
         COMMANDS_CHECK,
+        new_files,
     )
 
     if not command.verdict:
