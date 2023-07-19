@@ -32,9 +32,20 @@ def format_python_code(code: str) -> str:
     return formatted_code
 
 
-def check_result(old, new, prompt) -> bool:
+def check_result(old_files, new_files, prompt) -> bool:
+    old_files_filtered = {
+        k: v
+        for k, v in old_files.items()
+        if k in new_files and v != new_files[k] or k not in new_files
+    }
+    new_files_filtered = {
+        k: v
+        for k, v in new_files.items()
+        if k in old_files and v != old_files[k] or k not in old_files
+    }
+
     command, state = command_loop_new(
-        f"ORIGINAL:\n{old}\nMODIFIED:\n{new}\nOBJECTIVE:\n{prompt}",
+        f"ORIGINAL:\n{list_files(old_files_filtered)}\nMODIFIED:\n{list_files(new_files_filtered)}\nOBJECTIVE:\n{prompt}",
         gpt.SYSTEM_CHECK_FUNC,
         COMMANDS_CHECK,
     )
@@ -73,6 +84,7 @@ def synchronize_files(target_dir, old_files, updated_files):
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     old_files = files
     scratch = "Available files: " + ", ".join(files.keys()) + "\n"
+
     command, state = command_loop_new(
         scratch + f"{str(uuid.uuid4())}\n{prompt}",
         gpt.SYSTEM_COMMAND_FUNC,
@@ -80,22 +92,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
         files,
     )
 
-    old_files_filtered = {
-        k: v
-        for k, v in old_files.items()
-        if k in state.files and v != state.files[k] or k not in state.files
-    }
-    new_files_filtered = {
-        k: v
-        for k, v in state.files.items()
-        if k in old_files and v != old_files[k] or k not in old_files
-    }
-
-    check_result(
-        list_files(old_files_filtered),
-        list_files(new_files_filtered),
-        prompt,
-    )
+    check_result(old_files, state.files, prompt)
 
     return state.files
 
