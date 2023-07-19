@@ -37,9 +37,6 @@ def merge_approved_prs() -> None:
     repo.fetch_new_changes()
 
 
-# Add function here
-
-
 def replace_function_in_code(source_code, function_name, new_function_code):
     # Parsing the source code
     tree = ast.parse(source_code)
@@ -50,7 +47,6 @@ def replace_function_in_code(source_code, function_name, new_function_code):
             new_function_node = ast.parse(new_function_code)
             node.body = new_function_node.body
     updated_code = astor.to_source(tree)
-
     return updated_code
 
 
@@ -82,6 +78,10 @@ def main(dry_run=False, issue_name=None) -> None:
                         raise
                     else:
                         print(f"Retrying to process issue {issue.id}...")
+
+    if dry_run:
+        process_open_issue(open_issues[0])
+        return
 
     with ThreadPoolExecutor() as executor:
         results = executor.map(process_open_issue, open_issues)
