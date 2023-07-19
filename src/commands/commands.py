@@ -9,7 +9,7 @@ from .command_search import Search
 from .command_delete_file import DeleteFile
 from .command_install_package import InstallPackage
 
-COMMANDS_CHECK = [Think, Verdict]
+COMMANDS_CHECK = [Think, Verdict, Files]
 COMMANDS_GENERATE = [
     Think,
     Verdict,
