@@ -3,7 +3,7 @@ import openai
 import time
 from utils import read_file, write_file, partition_by_predicate
 from termcolor import cprint
-from tracing.trace import get_trace
+from tracing.trace import trace
 from cache import memoize
 
 GPT_3_5 = "gpt-3.5-turbo-0613"
@@ -61,9 +61,7 @@ def gpt_query(
     for i in range(retries):
         try:
             start_time = time.time()
-            trace = get_trace()
-            if trace is not None:
-                trace.add_trace_data("GPT Input", message)
+            trace("GPT Input", message)
             cprint(f"GPT Input: {message}", "blue")
             messages = [
                 {
@@ -111,9 +109,7 @@ def gpt_query(
             backoff *= 2
 
     content = completion.choices[0].message.content
-    trace = get_trace()
-    if trace is not None:
-        trace.add_trace_data("GPT Output", content)
+    trace("GPT Output", content)
     if "function_call" in completion.choices[0].message:
         function_result = completion.choices[0].message["function_call"]
         cprint(
