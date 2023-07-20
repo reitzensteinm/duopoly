@@ -28,7 +28,7 @@ class ReplaceFile(Command):
         """
         return {
             "name": "ReplaceFile",
-            "description": "Modify a file with the given instructions",
+            "description": "Modify a file with the given instructions. This command returns a special token for the new file.",
             "parameters": {
                 "type": "object",
                 "properties": {
