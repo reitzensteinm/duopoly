@@ -30,7 +30,7 @@ class ReplaceNode(Command):
         """
         return {
             "name": "ReplaceNode",
-            "description": "Replace a specific node in a Python file",
+            "description": "Replace a specific node in a Python file. This command returns a special token for the new node.",
             "parameters": {
                 "type": "object",
                 "properties": {
