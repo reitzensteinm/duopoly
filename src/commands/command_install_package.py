@@ -50,7 +50,10 @@ class InstallPackage(Command):
         """
         Executes the InstallPackage command.
         """
-        install_package(self.tool)
+        requirements_contents = install_package(self.tool)
+
+        state.new_files["requirements.txt"] = requirements_contents
+
         return f"Tool {self.tool} has been installed."
 
     def __str__(self):

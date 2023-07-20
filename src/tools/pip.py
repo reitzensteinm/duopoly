@@ -21,4 +21,8 @@ def install_package(package_name):
         except Exception as err:
             print("Failed to freeze requirements using pip.")
             return False
-    return True
+
+    with open("requirements.txt", "r") as file:
+        contents = file.read()
+
+    return contents
