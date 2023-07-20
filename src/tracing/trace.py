@@ -40,7 +40,7 @@ def bind_trace(trace: Trace):
 
 
 def get_trace() -> Trace:
-    return getattr(_thread_local, "trace", None)
+    return getattr(_thread_local, "trace", Trace("New Trace"))
 
 
 class TraceNotFound(Exception):
