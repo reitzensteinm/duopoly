@@ -28,7 +28,7 @@ def render_trace(trace) -> str:
 		<body>
 			{% for trace_item in trace_items %}
 				<div class="panel bg-{{ trace_item.tag }}">
-					{{ trace_item.text }}
+					{{ trace_item.trace }}
 				</div>
 			{% endfor %}
 		</body>
