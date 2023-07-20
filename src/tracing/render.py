@@ -28,12 +28,12 @@ def render_trace(trace) -> str:
 		<body>
 			{% for trace_item in trace_items %}
 				<div class="panel bg-{{ trace_item.tag }}">
-					{{ trace_item.trace }}
+					<pre>{{ trace_item.trace }}</pre>
 				</div>
 			{% endfor %}
 		</body>
 		</html>
-	"""
+		"""
     )
     return template.render(
         trace_items=trace.trace_data, tag_color_mapping=TAG_COLOR_MAPPING
