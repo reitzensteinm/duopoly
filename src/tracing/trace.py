@@ -41,3 +41,14 @@ def bind_trace(trace: Trace):
 
 def get_trace() -> Trace:
     return getattr(_thread_local, "trace", None)
+
+
+class TraceNotFound(Exception):
+    pass
+
+
+def trace(tag, trace_string):
+    current_trace = get_trace()
+    if current_trace is None:
+        raise TraceNotFound("No active trace found")
+    current_trace.add_trace_data(tag, trace_string)
