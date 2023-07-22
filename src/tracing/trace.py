@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from threading import local
 import os
+from typing import Optional, Tuple
 from tracing.render import render_trace
 
 _thread_local = local()
@@ -10,6 +11,7 @@ _thread_local = local()
 class TraceData:
     tag: str
     trace: str
+    tokens: Optional[Tuple[int, int]] = None
 
 
 class Trace:
@@ -17,8 +19,8 @@ class Trace:
         self.name = name
         self.trace_data = []
 
-    def add_trace_data(self, tag, trace):
-        self.trace_data.append(TraceData(tag, trace))
+    def add_trace_data(self, tag, trace, tokens: Optional[Tuple[int, int]] = None):
+        self.trace_data.append(TraceData(tag, trace, tokens))
 
         # Save the trace to disk using the render function
         html_trace = render_trace(self)
@@ -47,8 +49,8 @@ class TraceNotFound(Exception):
     pass
 
 
-def trace(tag, trace_string):
+def trace(tag, trace_string, tokens: Optional[Tuple[int, int]] = None):
     current_trace = get_trace()
     if current_trace is None:
         raise TraceNotFound("No active trace found")
-    current_trace.add_trace_data(tag, trace_string)
+    current_trace.add_trace_data(tag, trace_string, tokens)
