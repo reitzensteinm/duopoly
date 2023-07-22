@@ -8,6 +8,7 @@ from .command_replace_file import ReplaceFile
 from .command_search import Search
 from .command_delete_file import DeleteFile
 from .command_install_package import InstallPackage
+from .command_move_file import MoveFile
 
 COMMANDS_CHECK = [Think, Verdict, Files]
 COMMANDS_GENERATE = [
@@ -17,5 +18,6 @@ COMMANDS_GENERATE = [
     ReplaceFile,
     Search,
     DeleteFile,
+    MoveFile,
     InstallPackage,
 ]
