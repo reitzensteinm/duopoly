@@ -18,6 +18,8 @@ def render_trace(trace) -> str:
 			<style>
 				.panel {
 					padding: 10px;
+					border: 8px solid black;
+					margin: 16px;
 				}
 				{% for tag, colors in tag_color_mapping.items() %}
 				.bg-{{ tag }} {
