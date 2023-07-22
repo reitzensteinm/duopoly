@@ -2,9 +2,14 @@ import subprocess
 import os
 
 
-def run_pylint(directory: str) -> str:
+def run_pylint(directory: str, warnings: bool = False) -> str:
+    if warnings:
+        command = ["pylint", "--disable=R,C", directory]
+    else:
+        command = ["pylint", "--disable=R,C,W", directory]
+
     proc = subprocess.run(
-        ["pylint", "--disable=R,C,W", directory],
+        command,
         capture_output=True,
         text=True,
     )
