@@ -44,6 +44,7 @@ def gpt_query(
                 },
                 {"role": "user", "content": message},
             ]
+
             if functions is not None:
                 completion = openai.ChatCompletion.create(
                     model=model, messages=messages, functions=functions
@@ -82,16 +83,16 @@ def gpt_query(
             time.sleep(backoff)
             backoff *= 2
 
-    content = completion.choices[0].message.content
     if "function_call" in completion.choices[0].message:
         function_result = completion.choices[0].message["function_call"]
-        trace(GPT_OUTPUT, content)
+        trace(GPT_OUTPUT, function_result)
         cprint(f"Function call result: {function_result}", "cyan")
         return function_result
-
-    trace(GPT_OUTPUT, content)
-    cprint(f"GPT Output: {content}", "cyan")
-    return content
+    else:
+        content = completion.choices[0].message.content
+        trace(GPT_OUTPUT, content)
+        cprint(f"GPT Output: {content}", "cyan")
+        return content
 
 
 if not disable_cache:
