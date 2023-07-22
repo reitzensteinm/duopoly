@@ -52,7 +52,7 @@ class InstallPackage(Command):
         """
         requirements_contents = install_package(self.tool)
 
-        state.new_files["requirements.txt"] = requirements_contents
+        state.files["requirements.txt"] = requirements_contents
 
         return f"Tool {self.tool} has been installed."
 
