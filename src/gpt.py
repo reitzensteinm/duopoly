@@ -4,19 +4,20 @@ import time
 from utils import read_file, write_file, partition_by_predicate
 from termcolor import cprint
 from tracing.trace import trace
+from tracing.tags import GPT_INPUT, GPT_OUTPUT
 from cache import memoize
 
 GPT_3_5 = "gpt-3.5-turbo-0613"
 GPT_4 = "gpt-4-0613"
 
-SYSTEM_CHECK_FUNC = "You are a helpful programming assistant. \
+SYSTEM_CHECK_FUNC = """You are a helpful programming assistant. \
 	You will be given original and modified versions of code. \
 	If a file isn't present in the modified version, you can assume it was deleted. \
 	You will also be given a description of the change that was intended. \
 	Was the change that was made correct? \
 	Only respond by calling a function. \
 	Are you absolutely sure? If you have any doubt at all, tell me there is an error. \
-	If a file isn't supplied, always assume its content is completely correct."
+	If a file isn't supplied, always assume its content is completely correct."""
 
 SYSTEM_COMMAND_FUNC = """
 You are a helpful programming assistant. You will be given a list of files as well as instructions to modify them.
@@ -32,10 +33,10 @@ You should:
 Do not add markdown quotes around code in your responses.
 
 Requirements:
- * When moving code between files, ensure to add and remove import statements as required.
- * When deleting files, ensure that all references to it in other files are removed. 
- * Ignore python files not under src
- * When returning a file, indent it with tabs.
+  * When moving code between files, ensure to add and remove import statements as required.
+  * When deleting files, ensure that all references to it in other files are removed. 
+  * Ignore python files not under src
+  * When returning a file, indent it with tabs.
 
 When finished, call the Verdict function and return to me the results.
 """
@@ -61,7 +62,7 @@ def gpt_query(
     for i in range(retries):
         try:
             start_time = time.time()
-            trace("GPT Input", message)
+            trace(GPT_INPUT, message)
             cprint(f"GPT Input: {message}", "blue")
             messages = [
                 {
@@ -109,7 +110,7 @@ def gpt_query(
             backoff *= 2
 
     content = completion.choices[0].message.content
-    trace("GPT Output", content)
+    trace(GPT_OUTPUT, content)
     if "function_call" in completion.choices[0].message:
         function_result = completion.choices[0].message["function_call"]
         cprint(

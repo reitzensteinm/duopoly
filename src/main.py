@@ -6,7 +6,8 @@ from termcolor import cprint
 from pipeline.issue import process_issue
 import repo
 from evals.evals import process_evals
-from tracing.trace import create_trace, bind_trace, get_trace
+from tracing.trace import create_trace, bind_trace, trace
+from tracing.tags import EXCEPTION
 import ast
 import astor
 
@@ -68,9 +69,7 @@ def main(dry_run=False, issue_name=None) -> None:
                         f"Attempt {attempt + 1} failed for issue {issue.id} with error: {str(e)}\n{traceback.format_exc()}",
                         "red",
                     )
-                    trace = get_trace()
-                    if trace is not None:
-                        trace.add_trace_data("Exception", str(e))
+                    trace.add_trace_data(EXCEPTION, str(e))
                     if attempt == MAX_RETRIES - 1:
                         print(
                             f"Failed to process issue {issue.id} after {MAX_RETRIES} attempts."
