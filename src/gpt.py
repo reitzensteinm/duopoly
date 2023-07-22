@@ -33,10 +33,10 @@ You should:
 Do not add markdown quotes around code in your responses.
 
 Requirements:
-  * When moving code between files, ensure to add and remove import statements as required.
-  * When deleting files, ensure that all references to it in other files are removed. 
-  * Ignore python files not under src
-  * When returning a file, indent it with tabs.
+   * When moving code between files, ensure to add and remove import statements as required.
+   * When deleting files, ensure that all references to it in other files are removed. 
+   * Ignore python files not under src
+   * When returning a file, indent it with tabs.
 
 When finished, call the Verdict function and return to me the results.
 """
@@ -110,14 +110,15 @@ def gpt_query(
             backoff *= 2
 
     content = completion.choices[0].message.content
-    trace(GPT_OUTPUT, content)
     if "function_call" in completion.choices[0].message:
         function_result = completion.choices[0].message["function_call"]
+        trace(GPT_OUTPUT, content)
         cprint(
             f"Function call result: {function_result}", "cyan"
         )  # print function call result in cyan
         return function_result
 
+    trace(GPT_OUTPUT, content)
     cprint(f"GPT Output: {content}", "cyan")
     return content
 
