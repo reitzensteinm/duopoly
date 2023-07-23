@@ -7,6 +7,7 @@ from tracing.trace import trace
 from tracing.tags import GPT_INPUT, GPT_OUTPUT
 from cache import memoize
 from utilities.prompts import load_prompt
+import numpy as np
 
 GPT_3_5 = "gpt-3.5-turbo-0613"
 GPT_4 = "gpt-4-0613"
@@ -82,3 +83,12 @@ def gpt_query(
 
 if not disable_cache:
     gpt_query = memoize(gpt_query)
+
+
+def calculate_text_embedding(text: str) -> np.ndarray:
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    embedding_result = openai.Embedding.create(
+        model="text-embedding-ada-002", input=text
+    )
+
+    return np.array(embedding_result["data"][0]["embedding"])
