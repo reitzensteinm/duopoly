@@ -1,8 +1,3 @@
-from tools.imports import imports
-from tools.search import search_tool  # Importing search_tool
-from tools.pylint import run_pylint  # Importing run_pylint
-from tools.pytest import run_pytest  # Importing run_pytest
-from black import FileMode, format_str
 import os
 import uuid
 import subprocess
@@ -23,6 +18,11 @@ from commands.loop import command_loop_new  # Importing command_loop_new
 import repo
 import shutil
 from repo import Issue
+from tools.imports import imports
+from tools.search import search_tool  # Importing search_tool
+from tools.pylint import run_pylint  # Importing run_pylint
+from tools.pytest import run_pytest  # Importing run_pytest
+from black import FileMode, format_str
 
 CHECK_OPEN_PR = False
 
@@ -87,7 +87,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     scratch = "Available files: " + ", ".join(files.keys()) + "\n"
 
     command, state = command_loop_new(
-        scratch + f"{str(uuid.uuid4())}\n{prompt}",
+        scratch + f"{prompt}",
         gpt.SYSTEM_COMMAND_FUNC,
         COMMANDS_GENERATE,
         files,

@@ -13,7 +13,6 @@ GPT_3_5 = "gpt-3.5-turbo-0613"
 GPT_4 = "gpt-4-0613"
 SYSTEM_CHECK_FUNC = load_prompt("check")
 SYSTEM_COMMAND_FUNC = load_prompt("command")
-disable_cache = True
 
 
 def gpt_query(
@@ -79,10 +78,6 @@ def gpt_query(
         trace(GPT_OUTPUT, content, (tokens_in, tokens_out))
         cprint(f"GPT Output: {content}", "cyan")
         return content
-
-
-if not disable_cache:
-    gpt_query = memoize(gpt_query)
 
 
 def calculate_text_embedding(text: str) -> np.ndarray:
