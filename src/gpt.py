@@ -10,10 +10,8 @@ from utilities.prompts import load_prompt
 
 GPT_3_5 = "gpt-3.5-turbo-0613"
 GPT_4 = "gpt-4-0613"
-
 SYSTEM_CHECK_FUNC = load_prompt("check")
 SYSTEM_COMMAND_FUNC = load_prompt("command")
-
 disable_cache = True
 
 
@@ -26,24 +24,17 @@ def gpt_query(
 ) -> str:
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
-
     openai.api_key = os.environ["OPENAI_API_KEY"]
-
     retries = 5
     backoff = 1
-
     for i in range(retries):
         try:
             start_time = time.time()
             cprint(f"GPT Input: {message}", "blue")
             messages = [
-                {
-                    "role": "system",
-                    "content": system,
-                },
+                {"role": "system", "content": system},
                 {"role": "user", "content": message},
             ]
-
             if functions is not None:
                 completion = openai.ChatCompletion.create(
                     model=model, messages=messages, functions=functions
@@ -52,7 +43,6 @@ def gpt_query(
                 completion = openai.ChatCompletion.create(
                     model=model, messages=messages
                 )
-
             if (
                 functions is not None
                 and "function_call" not in completion.choices[0].message
@@ -63,35 +53,29 @@ def gpt_query(
                     "red",
                 )
                 raise Exception("No functions returned")
-
             end_time = time.time()
             call_duration = end_time - start_time
-
             tokens_in = completion["usage"]["prompt_tokens"]
             tokens_out = completion["usage"]["completion_tokens"]
             cprint(
                 f"Call took {call_duration:.1f}s, {tokens_in} tokens in, {tokens_out} tokens out",
                 "yellow",
             )
-
             break
         except Exception as e:
             if i == retries - 1:
                 raise e
-
             time.sleep(backoff)
             backoff *= 2
-
-    trace(GPT_INPUT, message)
-
+    trace(GPT_INPUT, message, (tokens_in, tokens_out))
     if "function_call" in completion.choices[0].message:
         function_result = completion.choices[0].message["function_call"]
-        trace(GPT_OUTPUT, function_result)
+        trace(GPT_OUTPUT, function_result, (tokens_in, tokens_out))
         cprint(f"Function call result: {function_result}", "cyan")
         return function_result
     else:
         content = completion.choices[0].message.content
-        trace(GPT_OUTPUT, content)
+        trace(GPT_OUTPUT, content, (tokens_in, tokens_out))
         cprint(f"GPT Output: {content}", "cyan")
         return content
 
