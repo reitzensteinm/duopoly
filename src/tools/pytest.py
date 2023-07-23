@@ -3,10 +3,14 @@ import subprocess
 import shutil
 
 
-def run_pytest(target_dir):
+def run_pytest(target_dir, test_name=None):
     try:
+        command_list = ["pytest", target_dir, "-rf"]
+        if test_name is not None:
+            command_list = ["pytest", target_dir, "-k", test_name, "-rf"]
+
         result = subprocess.run(
-            ["pytest", target_dir, "-rf"],
+            command_list,
             capture_output=True,
             text=True,
         )
