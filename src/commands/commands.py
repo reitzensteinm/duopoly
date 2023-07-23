@@ -9,8 +9,10 @@ from .command_search import Search
 from .command_delete_file import DeleteFile
 from .command_install_package import InstallPackage
 from .command_move_file import MoveFile
+from .command_replace_node import ReplaceNode
 
 COMMANDS_CHECK = [Think, Verdict, Files]
+
 COMMANDS_GENERATE = [
     Think,
     Verdict,
@@ -20,4 +22,5 @@ COMMANDS_GENERATE = [
     DeleteFile,
     MoveFile,
     InstallPackage,
+    ReplaceNode,
 ]
