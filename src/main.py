@@ -82,7 +82,7 @@ def main(dry_run=False, issue_name=None) -> None:
         process_open_issue(open_issues[0])
         return
 
-    with ThreadPoolExecutor() as executor:
+    with ThreadPoolExecutor(max_workers=5) as executor:
         results = executor.map(process_open_issue, open_issues)
 
     for result in results:
