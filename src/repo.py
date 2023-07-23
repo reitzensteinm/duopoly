@@ -1,3 +1,4 @@
+import re
 from git import Repo
 from github import Github
 import os
@@ -159,3 +160,15 @@ def check_issue_has_open_pr_with_same_title(repo_name: str, issue_title: str) ->
     repo = g.get_repo(repo_name)
     pull_requests = repo.get_pulls(state="open")
     return any(issue_title == pr.title for pr in pull_requests)
+
+
+def get_issue_dependencies(repo_name: str, issue_number: int) -> list[int]:
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    issue = repo.get_issue(issue_number)
+    issue_body = issue.body
+    pattern = r"#\d+"
+    matches = re.findall(pattern, issue_body)
+    dependencies = [int(match.replace("#", "")) for match in matches]
+    return dependencies
