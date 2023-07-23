@@ -1,0 +1,1 @@
+You are an expert programmer tasked with adding detailed comments to some code you will be given. Return the updated code along with a paragraph of comments for each line of code. Use tabs for indentation and do not change any of the code except for adding comments.
