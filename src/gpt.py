@@ -35,7 +35,6 @@ def gpt_query(
     for i in range(retries):
         try:
             start_time = time.time()
-            trace(GPT_INPUT, message)
             cprint(f"GPT Input: {message}", "blue")
             messages = [
                 {
@@ -82,6 +81,8 @@ def gpt_query(
 
             time.sleep(backoff)
             backoff *= 2
+
+    trace(GPT_INPUT, message)
 
     if "function_call" in completion.choices[0].message:
         function_result = completion.choices[0].message["function_call"]
