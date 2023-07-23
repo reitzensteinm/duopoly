@@ -11,35 +11,9 @@ TAG_COLOR_MAPPING = {
 
 
 def render_trace(trace) -> str:
-    template = jinja2.Template(
-        """
-		<html>
-		<head>
-			<style>
-				.panel {
-					padding: 10px;
-					border: 8px solid black;
-					margin: 16px;
-				}
-				{% for tag, colors in tag_color_mapping.items() %}
-				.bg-{{ tag }} {
-					background-color: {{ colors['background'] }};
-					border-color: {{ colors['border'] }};
-					color: {{ colors['text'] }};
-				}
-				{% endfor %}
-			</style>
-		</head>
-		<body>
-			{% for trace_item in trace_items %}
-				<div class="panel bg-{{ trace_item.tag }}">
-					<pre>{{ trace_item.trace }}</pre>
-				</div>
-			{% endfor %}
-		</body>
-		</html>
-		"""
-    )
+    template = jinja2.Environment(
+        loader=jinja2.FileSystemLoader("./templates/tracing/")
+    ).get_template("trace.html")
     return template.render(
         trace_items=trace.trace_data, tag_color_mapping=TAG_COLOR_MAPPING
     )
