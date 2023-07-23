@@ -80,6 +80,7 @@ def gpt_query(
         return content
 
 
+@memoize
 def calculate_text_embedding(text: str) -> np.ndarray:
     openai.api_key = os.getenv("OPENAI_API_KEY")
     embedding_result = openai.Embedding.create(
@@ -87,3 +88,14 @@ def calculate_text_embedding(text: str) -> np.ndarray:
     )
 
     return np.array(embedding_result["data"][0]["embedding"])
+
+
+@memoize
+def cached_gpt_query(
+    message: str,
+    system: str,
+    functions=None,
+    model: str = GPT_4,
+    require_function: bool = True,
+) -> str:
+    return gpt_query(message, system, functions, model, require_function)
