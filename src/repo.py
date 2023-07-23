@@ -172,3 +172,12 @@ def get_issue_dependencies(repo_name: str, issue_number: int) -> list[int]:
     matches = re.findall(pattern, issue_body)
     dependencies = [int(match.replace("#", "")) for match in matches]
     return dependencies
+
+
+def check_dependency_issues(repo_name: str, issue_number: int) -> bool:
+    """Check if an issue has any open dependencies."""
+    dependencies = get_issue_dependencies(repo_name, issue_number)
+    for dep in dependencies:
+        if is_issue_open(repo_name, dep):
+            return True
+    return False
