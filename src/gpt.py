@@ -25,7 +25,7 @@ def gpt_query(
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
     openai.api_key = os.environ["OPENAI_API_KEY"]
-    retries = 5
+    retries = 2
     backoff = 1
     for i in range(retries):
         try:
