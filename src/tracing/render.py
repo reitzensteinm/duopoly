@@ -2,9 +2,9 @@ import jinja2
 
 TAG_COLOR_MAPPING = {
     "default": {"background": "white", "border": "black", "text": "black"},
-    "gpt-input": {"background": "#000000", "border": "#808080", "text": "#FFFFFF"},
-    "gpt-output": {"background": "#000000", "border": "#808080", "text": "#FFFFFF"},
-    "exception": {"background": "#000000", "border": "#FF0000", "text": "#FFFF00"},
+    "gpt-input": {"background": "#000000", "border": "#808080", "text": "#2DE864"},
+    "gpt-output": {"background": "#000000", "border": "#808080", "text": "#A3E8FA"},
+    "exception": {"background": "#000000", "border": "#FF0000", "text": "#FF9698"},
     # Add tag to color mapping here
     # Format: 'tag': {'background': 'color', 'border': 'color', 'text': 'color'}
 }
