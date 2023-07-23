@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 import yaml
-import subprocess
+from tools.pytest import run_pytest
 
 
 @dataclass
@@ -17,11 +17,7 @@ def process_evals(directory: str):
 
     for eval in evals:
         test_names = " ".join(eval.tests)
-        result = subprocess.run(
-            ["pytest", f"{directory}/src", "-k", test_names],
-            capture_output=True,
-            text=True,
-        )
+        result = run_pytest(f"{directory}/src", test_names)
 
-        if result.returncode != 0:
-            raise Exception(f"Pytest failed for tests: {test_names}\n{result.stderr}")
+        if result is not None:
+            raise Exception(f"Pytest failed for tests: {test_names}\n{result}")
