@@ -46,6 +46,9 @@ def main(dry_run=False, issue_name=None) -> None:
     open_issues = repo.fetch_open_issues("reitzensteinm/duopoly")
 
     def process_open_issue(issue):
+        if repo.check_dependency_issues("reitzensteinm/duopoly", issue.number):
+            cprint(f"Not processing issue {issue.number}: blocked", "yellow")
+            return
         if issue_name is None or issue_name in issue.title:
             for attempt in range(MAX_RETRIES):
                 trace_instance = create_trace(f"{issue.title}")
