@@ -16,6 +16,7 @@ from commands.commands import (
 )  # Importing all commands
 from commands.loop import command_loop_new  # Importing command_loop_new
 import repo
+import settings
 import shutil
 from repo import Issue
 from tools.imports import imports
@@ -131,19 +132,21 @@ def process_directory(prompt: str, target_dir: str) -> None:
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
-    if not repo.is_issue_open("reitzensteinm/duopoly", issue.number):
+    if not repo.is_issue_open(settings.REPOSITORY_PATH, issue.number):
         return
 
     if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
-        "reitzensteinm/duopoly", issue.title
+        settings.REPOSITORY_PATH, issue.title
     ):
         return
 
-    target_dir = f"target/issue-{issue.number}/duopoly"
+    target_dir = f"target/issue-{issue.number}/{settings.REPOSITORY_PATH}"
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir, ignore_errors=True)
     os.makedirs(target_dir, exist_ok=True)
-    repo.clone_repository("https://github.com/reitzensteinm/duopoly.git", target_dir)
+    repo.clone_repository(
+        f"https://github.com/{settings.REPOSITORY_PATH}.git", target_dir
+    )
 
     branch_id = f"issue-{issue.id}"
 
@@ -158,10 +161,10 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         )
         repo.push_local_branch_to_origin(branch_id, target_dir)
         if not repo.check_pull_request_title_exists(
-            "reitzensteinm/duopoly", issue.title
+            settings.REPOSITORY_PATH, issue.title
         ):
             repo.create_pull_request(
-                repo_name="reitzensteinm/duopoly",
+                repo_name=settings.REPOSITORY_PATH,
                 branch_id=branch_id,
                 title=issue.title,
                 body=issue.description,
