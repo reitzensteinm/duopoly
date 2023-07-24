@@ -4,6 +4,7 @@ from github import Github
 import os
 from dataclasses import dataclass
 import time
+import subprocess
 
 
 def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()):
@@ -181,3 +182,10 @@ def check_dependency_issues(repo_name: str, issue_number: int) -> bool:
         if is_issue_open(repo_name, dep):
             return True
     return False
+
+
+def git_reset(directory: str):
+    try:
+        subprocess.check_call(["git", "reset", "--hard"], cwd=directory)
+    except subprocess.CalledProcessError as e:
+        raise Exception("git reset failed") from e
