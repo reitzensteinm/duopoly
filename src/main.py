@@ -10,15 +10,16 @@ from tracing.trace import create_trace, bind_trace, trace
 from tracing.tags import EXCEPTION
 import ast
 import astor
+import settings
 
 MAX_RETRIES = 1
 
 
 def merge_approved_prs() -> None:
-    approved_prs = repo.find_approved_prs("reitzensteinm/duopoly")
+    approved_prs = repo.find_approved_prs(settings.REPOSITORY_PATH)
     for pr_id in approved_prs:
         for attempt in range(5):
-            if repo.merge_with_rebase_if_possible("reitzensteinm/duopoly", pr_id):
+            if repo.merge_with_rebase_if_possible(settings.REPOSITORY_PATH, pr_id):
                 print(f"Merged PR: {pr_id}")
                 break
             else:
@@ -43,10 +44,10 @@ def replace_function_in_code(source_code, function_name, new_function_code):
 def main(dry_run=False, issue_name=None) -> None:
     if not dry_run:
         merge_approved_prs()
-    open_issues = repo.fetch_open_issues("reitzensteinm/duopoly")
+    open_issues = repo.fetch_open_issues(settings.REPOSITORY_PATH)
 
     def process_open_issue(issue):
-        if repo.check_dependency_issues("reitzensteinm/duopoly", issue.number):
+        if repo.check_dependency_issues(settings.REPOSITORY_PATH, issue.number):
             cprint(f"Not processing issue {issue.number}: blocked", "yellow")
             return
         if issue_name is None or issue_name in issue.title:
@@ -101,4 +102,6 @@ if __name__ == "__main__":
     if args.evals:
         evals(args.evals)
     else:
-        main(dry_run=args.dry_run, issue_name=args.issue)
+        main(
+            dry_run=args.dry_run, issue_name=args.issue
+        )  ### NEW FILE src/pipeline/issue.py ###
