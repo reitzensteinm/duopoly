@@ -23,6 +23,7 @@ from tools.imports import imports
 from tools.search import search_tool  # Importing search_tool
 from tools.pylint import run_pylint  # Importing run_pylint
 from tools.pytest import run_pytest  # Importing run_pytest
+from tools.advice import generate_advice  # Importing generate_advice
 
 CHECK_OPEN_PR = False
 
@@ -71,6 +72,8 @@ def synchronize_files(target_dir, old_files, updated_files):
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     old_files = files
     scratch = "Available files: " + ", ".join(files.keys()) + "\n"
+    advice = generate_advice(prompt)
+    scratch += "\n" + advice
 
     command, state = command_loop_new(
         scratch + f"{prompt}",
