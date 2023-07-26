@@ -31,16 +31,6 @@ def merge_approved_prs() -> None:
     repo.fetch_new_changes()
 
 
-def replace_function_in_code(source_code, function_name, new_function_code):
-    tree = ast.parse(source_code)
-    for node in ast.walk(tree):
-        if isinstance(node, ast.FunctionDef) and node.name == function_name:
-            new_function_node = ast.parse(new_function_code)
-            node.body = new_function_node.body
-    updated_code = astor.to_source(tree)
-    return updated_code
-
-
 def main(dry_run=False, issue_name=None) -> None:
     if not dry_run:
         merge_approved_prs()
@@ -102,6 +92,4 @@ if __name__ == "__main__":
     if args.evals:
         evals(args.evals)
     else:
-        main(
-            dry_run=args.dry_run, issue_name=args.issue
-        )  ### NEW FILE src/pipeline/issue.py ###
+        main(dry_run=args.dry_run, issue_name=args.issue)
