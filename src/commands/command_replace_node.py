@@ -3,6 +3,7 @@ import astor
 from commands.command import Command
 from commands.state import State
 from utils import format_python_code
+from tools.ast import replace_node
 
 
 class ReplaceNode(Command):
@@ -64,28 +65,10 @@ class ReplaceNode(Command):
         """
         Executes the ReplaceNode command.
         """
-        with open(self.filename, "r") as file:
-            source_code = file.read()
+        source_code = state.files[self.filename]
 
-        # Parse the source code into an AST
-        tree = ast.parse(source_code)
-
-        # Traverse the tree and find the node
-        for node in ast.walk(tree):
-            if (
-                isinstance(node, ast.ClassDef) or isinstance(node, ast.FunctionDef)
-            ) and node.name == self.node_name:
-                # Parse new source code into an AST
-                new_node = ast.parse(self.new_source_code).body[0]
-
-                # Replace the node
-                tree.body[tree.body.index(node)] = new_node
-
-                # Break the loop after replacing the node, assuming there's no duplicate node
-                break
-
-        # Write the modified tree back to the source code
-        modified_code = astor.to_source(tree)
+        # Update the source code using the replace_node tool
+        modified_code = replace_node(source_code, self.node_name, self.new_source_code)
 
         # Format the modified code
         formatted_code = format_python_code(modified_code)
