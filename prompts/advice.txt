@@ -1,1 +1,2 @@
-When moving files, do not worry about fixing up imports. This will happen in the next stage, after pylint has been run.
+The goal of the prompt is {{goal}}
+1) When moving files, do not worry about fixing up imports. This will happen in the next stage, after pylint has been run.
