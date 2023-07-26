@@ -14,6 +14,6 @@ def run_pylint(directory: str, warnings: bool = False) -> str:
         text=True,
     )
     if proc.returncode != 0:
-        return proc.stdout
+        return proc.stdout.replace(directory, "")
     else:
         return None
