@@ -33,6 +33,10 @@ def command_loop_new(prompt: str, system: str, command_classes: list, files: dic
             result = gpt_query(
                 prompt + "\n" + state.scratch, system, extract_schemas(command_classes)
             )
+
+            if isinstance(result, str):
+                return (result, state)
+
             command = parse_gpt_response(command_classes, result)
 
             if command.terminal:
