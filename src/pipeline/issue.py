@@ -23,14 +23,8 @@ from tools.imports import imports
 from tools.search import search_tool  # Importing search_tool
 from tools.pylint import run_pylint  # Importing run_pylint
 from tools.pytest import run_pytest  # Importing run_pytest
-from black import FileMode, format_str
 
 CHECK_OPEN_PR = False
-
-
-def format_python_code(code: str) -> str:
-    formatted_code = format_str(code, mode=FileMode())
-    return formatted_code
 
 
 def check_result(old_files, new_files, prompt) -> bool:
@@ -63,15 +57,6 @@ def list_files(files):
     for k, v in files.items():
         file_info += f"{k}:\n{add_line_numbers(v)}\n"
     return file_info
-
-
-def remove_markdown_quotes(string: str) -> str:
-    trimmed_string = string.strip()
-    lines = trimmed_string.split("\n")
-    if lines[0].startswith("```") and lines[-1].startswith("```"):
-        return "\n".join(lines[1:-1])
-    else:
-        return string
 
 
 def synchronize_files(target_dir, old_files, updated_files):
