@@ -189,3 +189,14 @@ def git_reset(directory: str):
         subprocess.check_call(["git", "reset", "--hard"], cwd=directory)
     except subprocess.CalledProcessError as e:
         raise Exception("git reset failed") from e
+
+
+def find_git_repo(directory: str) -> str:
+    while directory != os.path.dirname(directory):  # While the directory has a parent
+        try:
+            Repo(directory)  # Try to create a Repo object
+            return directory  # If successful, return the directory
+        except Exception:
+            pass
+        directory = os.path.dirname(directory)  # Go up one directory level
+    return None
