@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from typing import List
 import yaml
 from tools.pytest import run_pytest
-from repo import git_reset
 from pipeline.issue import apply_prompt_to_directory
 
 
@@ -13,7 +12,6 @@ class Eval:
 
 
 def run_eval(eval: Eval, directory: str):
-    git_reset(directory)
     apply_prompt_to_directory(eval.prompt, directory)
     test_names = " ".join(eval.tests)
     result = run_pytest(f"{directory}/src", test_names)
