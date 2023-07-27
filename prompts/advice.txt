@@ -1,2 +1,3 @@
-The goal of the prompt is {{goal}}
-1) When moving files, do not worry about fixing up imports. This will happen in the next stage, after pylint has been run.
+The goal of the prompt is: {{goal}}
+
+1) When moving files, search for the name of the file being moved, and fix up any imports that are now broken.
