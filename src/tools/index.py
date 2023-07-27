@@ -1,4 +1,4 @@
-from src.utilities.minicos import VectorStore
+from utilities.minicos import VectorStore
 
 
 class VectorIndex:
