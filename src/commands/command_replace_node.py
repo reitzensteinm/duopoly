@@ -3,7 +3,7 @@ import astor
 from commands.command import Command
 from commands.state import State
 from utils import format_python_code
-from tools.ast import replace_node
+from tools.code import replace_node
 
 
 class ReplaceNode(Command):
