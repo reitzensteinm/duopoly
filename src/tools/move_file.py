@@ -19,3 +19,11 @@ def path_to_namespace(file_path):
     if file_path.startswith("src/") and file_path.endswith(".py"):
         file_path = file_path[4:-3]
     return file_path.replace("/", ".")
+
+
+def fix_imports(file_string, old_namespace, new_namespace):
+    lines = file_string.split("\n")
+    for i, line in enumerate(lines):
+        if "import" in line:
+            lines[i] = line.replace(old_namespace, new_namespace)
+    return "\n".join(lines)
