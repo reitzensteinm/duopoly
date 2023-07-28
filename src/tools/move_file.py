@@ -13,3 +13,9 @@ def move_file(file_mapping, old_path, new_path):
         raise Exception(f"No such file: '{old_path}'")
 
     return file_mapping_copy
+
+
+def path_to_namespace(file_path):
+    if file_path.startswith("src/") and file_path.endswith(".py"):
+        file_path = file_path[4:-3]
+    return file_path.replace("/", ".")
