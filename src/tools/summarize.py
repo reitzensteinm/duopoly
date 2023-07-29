@@ -1,4 +1,5 @@
-from gpt import cached_gpt_query, GPT_4
+from gpt import cached_gpt_query
+from gpt import GPT_4
 
 SYSTEM_SUMMARIZE = """
 Summarize the following source code, extracting classes, functions and constants by extracting the definitions into the following format:
