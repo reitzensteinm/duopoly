@@ -1,4 +1,5 @@
 import copy
+import settings
 
 
 def move_file(file_mapping, old_path, new_path):
@@ -25,8 +26,8 @@ def move_file(file_mapping, old_path, new_path):
 
 
 def path_to_namespace(file_path):
-    if file_path.startswith("src/") and file_path.endswith(".py"):
-        file_path = file_path[4:-3]
+    if file_path.startswith(settings.CODE_PATH + "/") and file_path.endswith(".py"):
+        file_path = file_path[len(settings.CODE_PATH) + 1 : -3]
     return file_path.replace("/", ".")
 
 
