@@ -1,4 +1,6 @@
 from utilities.minicos import VectorStore
+from gpt import calculate_text_embedding
+import numpy as np
 
 
 class VectorIndex:
@@ -6,4 +8,6 @@ class VectorIndex:
         self.store = VectorStore()
 
     def ingest(self, source_code):
-        pass
+        embedding = calculate_text_embedding(source_code)
+        embedding = np.array(embedding)
+        self.store.add_entry(embedding, source_code)
