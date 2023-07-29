@@ -2,7 +2,7 @@ import os
 import uuid
 import subprocess
 import gpt
-from utils import read_file, write_file, add_line_numbers
+from utils import read_file, write_file, add_line_numbers, list_files, synchronize_files
 from commands import command
 from commands.commands import (
     Think,
@@ -51,22 +51,6 @@ def check_result(old_files, new_files, prompt) -> bool:
         raise Exception("NEGATIVE VERDICT: " + command.reasoning)
 
     return command.verdict
-
-
-def list_files(files):
-    file_info = ""
-    for k, v in files.items():
-        file_info += f"{k}:\n{add_line_numbers(v)}\n"
-    return file_info
-
-
-def synchronize_files(target_dir, old_files, updated_files):
-    for k, v in updated_files.items():
-        write_file(os.path.join(target_dir, k), v)
-
-    deleted_files = [f for f in old_files.keys() if f not in updated_files]
-    for f in deleted_files:
-        os.remove(os.path.join(target_dir, f))
 
 
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
