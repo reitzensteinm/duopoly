@@ -1,6 +1,6 @@
 import pytest
 from datetime import datetime
-from cache import memoize
+from utilities.cache import memoize
 
 
 def test_memoize_side_effects():

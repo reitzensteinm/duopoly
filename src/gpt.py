@@ -5,7 +5,7 @@ from utils import read_file, write_file, partition_by_predicate
 from termcolor import cprint
 from tracing.trace import trace
 from tracing.tags import GPT_INPUT, GPT_OUTPUT
-from cache import memoize
+from utilities.cache import memoize
 from utilities.prompts import load_prompt
 
 GPT_3_5 = "gpt-3.5-turbo-0613"
