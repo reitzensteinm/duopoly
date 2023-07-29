@@ -72,9 +72,10 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
 
 
 def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
+    git_parent_dir = os.path.dirname(target_dir)
     files = {
         f: read_file(os.path.join(target_dir, f))
-        for f in repo.get_all_checked_in_files(target_dir)
+        for f in repo.get_all_checked_in_files(git_parent_dir)
         if os.path.isfile(os.path.join(target_dir, f))
     }
     updated_files = apply_prompt_to_files(prompt, files)

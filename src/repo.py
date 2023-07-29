@@ -127,12 +127,26 @@ def commit_local_modifications(
 
 
 def get_all_checked_in_files(target_dir: str = os.getcwd()):
-    repo = Repo(target_dir)
+    # find the git parent directory
+    parent_dir = find_git_repo(target_dir)
+
+    # make repo object of the parent directory
+    repo = Repo(parent_dir)
+
+    # list of all files in the parent directory
     file_list = []
     for obj in repo.tree().traverse():
         if obj.type == "blob":
             file_list.append(obj.path)
-    return file_list
+
+    # filter file list to only include files in the target directory
+    target_files = []
+    target_path = os.path.relpath(target_dir, parent_dir)
+    for file in file_list:
+        if file.startswith(target_path):
+            target_files.append(file)
+
+    return target_files
 
 
 def fetch_new_changes(target_dir: str = os.getcwd()):
