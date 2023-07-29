@@ -70,3 +70,19 @@ def annotate_with_line_numbers(content: str) -> str:
 def format_python_code(code: str) -> str:
     formatted_code = format_str(code, mode=FileMode())
     return formatted_code
+
+
+def list_files(files):
+    file_info = ""
+    for k, v in files.items():
+        file_info += f"{k}:\n{add_line_numbers(v)}\n"
+    return file_info
+
+
+def synchronize_files(target_dir, old_files, updated_files):
+    for k, v in updated_files.items():
+        write_file(os.path.join(target_dir, k), v)
+
+    deleted_files = [f for f in old_files.keys() if f not in updated_files]
+    for f in deleted_files:
+        os.remove(os.path.join(target_dir, f))
