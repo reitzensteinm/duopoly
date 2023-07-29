@@ -73,7 +73,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     old_files = files
     scratch = "Available files: " + ", ".join(files.keys()) + "\n"
     advice = generate_advice(prompt)
-    scratch += "\n" + advice
+    scratch += "\n" + advice + "\n\n"
 
     command, state = command_loop_new(
         scratch + f"{prompt}",
