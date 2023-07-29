@@ -58,6 +58,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     scratch = "Available files: " + ", ".join(files.keys()) + "\n"
     advice = generate_advice(prompt)
     scratch += "\n" + advice + "\n\n"
+    scratch += "Imports should be relative to " + settings.CODE_PATH + "\n"
 
     command, state = command_loop_new(
         scratch + f"{prompt}",
