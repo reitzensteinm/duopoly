@@ -26,12 +26,13 @@ def parse_gpt_response(command_classes, gpt_response):
 
 def command_loop_new(prompt: str, system: str, command_classes: list, files: dict = {}):
     state = State(files)
+    state.scratch = prompt
     exception_count = 0
 
     while True:
         try:
             result = gpt_query(
-                prompt + "\n" + state.scratch, system, extract_schemas(command_classes)
+                state.scratch + "\n", system, extract_schemas(command_classes)
             )
 
             if isinstance(result, str):
