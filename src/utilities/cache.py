@@ -46,3 +46,13 @@ def memoize(func):
             return result
 
     return memoized_func
+
+
+def read(key):
+    store = KeyValueStore()
+    return store.read(key)
+
+
+def write(key, value):
+    store = KeyValueStore()
+    store.write(key, value)
