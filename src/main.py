@@ -1,6 +1,7 @@
 import argparse
 import traceback
 import time
+import sys
 from concurrent.futures import ThreadPoolExecutor
 from termcolor import cprint
 from pipeline.issue import process_issue
@@ -16,11 +17,13 @@ MAX_RETRIES = 1
 
 
 def merge_approved_prs() -> None:
+    is_merged = False
     approved_prs = repo.find_approved_prs(settings.REPOSITORY_PATH)
     for pr_id in approved_prs:
         for attempt in range(5):
             if repo.merge_with_rebase_if_possible(settings.REPOSITORY_PATH, pr_id):
                 print(f"Merged PR: {pr_id}")
+                is_merged = True
                 break
             else:
                 print(f"Attempt {attempt + 1}: Could not merge PR: {pr_id}")
@@ -28,6 +31,10 @@ def merge_approved_prs() -> None:
                     time.sleep(5)
                 else:
                     print(f"Failed to merge PR {pr_id} after 5 attempts.")
+
+    if is_merged:
+        sys.exit(0)
+
     repo.fetch_new_changes()
 
 
