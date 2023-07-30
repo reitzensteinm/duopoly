@@ -62,7 +62,11 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
         "files": ", ".join(files.keys()),
         "advice": advice,
         "goal": prompt,
-        "details": "Imports should be relative to " + settings.CODE_PATH,
+        "details": "Imports should be relative to "
+        + settings.CODE_PATH
+        + ", so "
+        + settings.CODE_PATH
+        + "/cat/dog.py should be imported as 'cat.dog'",
     }
     prompt = load_prompt("issue", context)
 
