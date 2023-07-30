@@ -45,8 +45,6 @@ def command_loop_new(prompt: str, system: str, command_classes: list, files: dic
 
             output = command.execute(state)
 
-            state.scratch += "\n" + str(command)
-
             state.scratch += "\n" + output
 
             exception_count = 0
