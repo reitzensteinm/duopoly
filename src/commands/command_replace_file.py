@@ -67,7 +67,7 @@ class ReplaceFile(Command):
                 new_content
             )  # Format the content if it's a Python file
         state.files[self.filename] = new_content
-        return f"File {self.filename} has been replaced."
+        return f"File {self.filename} has been replaced with instructions instructions={self.instructions}."
 
     def __str__(self):
         return f"Function Called: {self.name()} filename={self.filename}, instructions={self.instructions}"
