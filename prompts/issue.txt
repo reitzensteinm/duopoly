@@ -6,3 +6,6 @@
 
 ### GOAL ###
 {{goal}}
+
+### DETAILS ###
+{{details}}
