@@ -24,6 +24,7 @@ from tools.search import search_tool  # Importing search_tool
 from tools.pylint import run_pylint  # Importing run_pylint
 from tools.pytest import run_pytest  # Importing run_pytest
 from tools.advice import generate_advice  # Importing generate_advice
+from utilities.prompts import load_prompt
 
 CHECK_OPEN_PR = False
 
@@ -55,13 +56,18 @@ def check_result(old_files, new_files, prompt) -> bool:
 
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     old_files = files
-    scratch = "Available files: " + ", ".join(files.keys()) + "\n"
     advice = generate_advice(prompt)
-    scratch += "\n" + advice + "\n\n"
-    scratch += "Imports should be relative to " + settings.CODE_PATH + "\n"
+
+    context = {
+        "files": ", ".join(files.keys()),
+        "advice": advice,
+        "goal": prompt,
+        "details": "Imports should be relative to " + settings.CODE_PATH,
+    }
+    prompt = load_prompt("issue", context)
 
     command, state = command_loop_new(
-        scratch + f"{prompt}",
+        prompt,
         gpt.SYSTEM_COMMAND_FUNC,
         COMMANDS_GENERATE,
         files,
