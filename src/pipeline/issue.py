@@ -14,7 +14,7 @@ from commands.commands import (
     COMMANDS_CHECK,
     COMMANDS_GENERATE,
 )  # Importing all commands
-from commands.loop import command_loop_new  # Importing command_loop_new
+from commands.loop import command_loop  # Importing command_loop
 import repo
 import settings
 import shutil
@@ -41,7 +41,7 @@ def check_result(old_files, new_files, prompt) -> bool:
         if k in old_files and v != old_files[k] or k not in old_files
     }
 
-    command, state = command_loop_new(
+    command, state = command_loop(
         f"ORIGINAL:\n{list_files(old_files_filtered)}\nMODIFIED:\n{list_files(new_files_filtered)}\nOBJECTIVE:\n{prompt}",
         gpt.SYSTEM_CHECK_FUNC,
         COMMANDS_CHECK,
@@ -70,7 +70,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     }
     prompt = load_prompt("issue", context)
 
-    command, state = command_loop_new(
+    command, state = command_loop(
         prompt,
         gpt.SYSTEM_COMMAND_FUNC,
         COMMANDS_GENERATE,
