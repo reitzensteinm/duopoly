@@ -2,6 +2,7 @@ import re
 from git import Repo
 from github import Github
 import os
+import pathspec
 from dataclasses import dataclass
 import time
 import subprocess
@@ -200,3 +201,16 @@ def find_git_repo(directory: str) -> str:
             pass
         directory = os.path.dirname(directory)  # Go up one directory level
     return None
+
+
+def list_files(target_directory, gitignore_path):
+    """Lists all the files in a directory that aren't excluded by a gitignore file."""
+    with open(gitignore_path, "r") as f:
+        lines = f.readlines()
+    spec = pathspec.PathSpec.from_lines("gitwildmatch", lines)
+    matches = []
+    for root, dirs, files in os.walk(target_directory):
+        for fname in files:
+            if not spec.match_file(os.path.join(root, fname)):
+                matches.append(os.path.join(root, fname))
+    return matches
