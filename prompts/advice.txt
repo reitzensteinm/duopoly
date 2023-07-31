@@ -1,6 +1,6 @@
 ### GOAL ###
 
-{goal}
+{{ goal }}
 
 ### ADVICE ###
 
