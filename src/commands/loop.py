@@ -24,6 +24,27 @@ def parse_gpt_response(command_classes, gpt_response):
     raise ValueError(f"Unrecognized command name: {gpt_response['name']}")
 
 
+def command_loop_iterate(state, system, command_classes):
+    result = gpt_query(state.scratch + "\n", system, extract_schemas(command_classes))
+
+    if isinstance(result, str):
+        return (result, state)
+
+    command = parse_gpt_response(command_classes, result)
+
+    if command.terminal:
+        return (command, state)
+
+    output = command.execute(state)
+
+    state.scratch += "\n" + str(command)
+
+    state.scratch += "\n" + output
+
+    exception_count = 0
+    return (None, state)
+
+
 def command_loop_new(prompt: str, system: str, command_classes: list, files: dict = {}):
     state = State(files)
     state.scratch = prompt
@@ -31,25 +52,9 @@ def command_loop_new(prompt: str, system: str, command_classes: list, files: dic
 
     while True:
         try:
-            result = gpt_query(
-                state.scratch + "\n", system, extract_schemas(command_classes)
-            )
-
-            if isinstance(result, str):
+            (result, state) = command_loop_iterate(state, system, command_classes)
+            if result is not None:
                 return (result, state)
-
-            command = parse_gpt_response(command_classes, result)
-
-            if command.terminal:
-                return (command, state)
-
-            output = command.execute(state)
-
-            state.scratch += "\n" + str(command)
-
-            state.scratch += "\n" + output
-
-            exception_count = 0
         except Exception as e:
             exception_count += 1
             cprint(f"Exception occurred: {str(e)}", "red")
