@@ -24,7 +24,7 @@ class Think(Command):
         """
         Returns a string representation of the Think command.
         """
-        return f"Function Called: Think thought={self.thought}"
+        return "Function Called: Think"
 
     @staticmethod
     def schema() -> dict:
