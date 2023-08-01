@@ -10,3 +10,4 @@ Requirements:
 7) Do not include line numbers in your output.
 8) Include content from only the file specified.
 9) Do not include the file name or any other content that should not be included in the file itself.
+10) Do not include the contents of any other file.
