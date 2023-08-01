@@ -22,4 +22,5 @@ COMMANDS_GENERATE = [
     DeleteFile,
     MoveFile,
     InstallPackage,
+    ReplaceNode,
 ]
