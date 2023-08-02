@@ -79,7 +79,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
 
 def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
     files = {
-        f: read_file(os.path.join(target_dir, f))
+        f.replace(target_dir + "/", ""): read_file(os.path.join(target_dir, f))
         for f in repo.list_files(target_dir, settings.GITIGNORE_PATH)
         if os.path.isfile(os.path.join(target_dir, f))
     }

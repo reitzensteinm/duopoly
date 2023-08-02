@@ -11,7 +11,7 @@ def read_file(path: str) -> str:
 def add_line_numbers(file_contents: str) -> str:
     """Returns the file contents with line numbers added."""
     lines = file_contents.split("\n")
-    numbered_lines = [f"{idx+1}: {line}" for idx, line in enumerate(lines)]
+    numbered_lines = [f"{idx + 1}: {line}" for idx, line in enumerate(lines)]
     return "\n".join(numbered_lines)
 
 
@@ -30,7 +30,6 @@ def partition_by_predicate(sequence: list, predicate: callable) -> list:
     """
     result = []
     current_group = []
-
     for item in sequence:
         if predicate(item):
             if current_group:
@@ -39,10 +38,8 @@ def partition_by_predicate(sequence: list, predicate: callable) -> list:
             current_group.append(item)
         else:
             current_group.append(item)
-
     if current_group:
         result.append(current_group)
-
     return result
 
 
@@ -62,8 +59,9 @@ def annotate_with_line_numbers(content: str) -> str:
     """
     if not content:
         return "1: <blank line>"
-
-    annotated_lines = [f"{i+1}: {line}" for i, line in enumerate(content.splitlines())]
+    annotated_lines = [
+        f"{i + 1}: {line}" for i, line in enumerate(content.splitlines())
+    ]
     return "\n".join(annotated_lines)
 
 
@@ -80,9 +78,8 @@ def list_files(files):
 
 
 def synchronize_files(target_dir, old_files, updated_files):
-    for k, v in updated_files.items():
-        write_file(os.path.join(target_dir, k), v)
-
+    for filename, content in updated_files.items():
+        write_file(os.path.join(target_dir, filename[len("src/") :]), content)
     deleted_files = [f for f in old_files.keys() if f not in updated_files]
     for f in deleted_files:
-        os.remove(os.path.join(target_dir, f))
+        os.remove(os.path.join(target_dir, f[len("src/") :]))
