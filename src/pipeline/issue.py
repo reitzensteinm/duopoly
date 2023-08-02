@@ -13,17 +13,17 @@ from commands.commands import (
     DeleteFile,
     COMMANDS_CHECK,
     COMMANDS_GENERATE,
-)  # Importing all commands
-from commands.loop import command_loop  # Importing command_loop
+)
+from commands.loop import command_loop
 import repo
 import settings
 import shutil
 from repo import Issue
 from tools.imports import imports
-from tools.search import search_tool  # Importing search_tool
-from tools.pylint import run_pylint  # Importing run_pylint
-from tools.pytest import run_pytest  # Importing run_pytest
-from tools.advice import generate_advice  # Importing generate_advice
+from tools.search import search_tool
+from tools.pylint import run_pylint
+from tools.pytest import run_pytest
+from tools.advice import generate_advice
 from utilities.prompts import load_prompt
 
 CHECK_OPEN_PR = False
@@ -40,24 +40,25 @@ def check_result(old_files, new_files, prompt) -> bool:
         for k, v in new_files.items()
         if k in old_files and v != old_files[k] or k not in old_files
     }
-
     command, state = command_loop(
-        f"ORIGINAL:\n{list_files(old_files_filtered)}\nMODIFIED:\n{list_files(new_files_filtered)}\nOBJECTIVE:\n{prompt}",
+        f"""ORIGINAL:
+{list_files(old_files_filtered)}
+MODIFIED:
+{list_files(new_files_filtered)}
+OBJECTIVE:
+{prompt}""",
         gpt.SYSTEM_CHECK_FUNC,
         COMMANDS_CHECK,
         new_files,
     )
-
     if not command.verdict:
         raise Exception("NEGATIVE VERDICT: " + command.reasoning)
-
     return command.verdict
 
 
 def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     old_files = files
     advice = generate_advice(prompt)
-
     context = {
         "files": ", ".join(files.keys()),
         "advice": advice,
@@ -69,23 +70,17 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
         + "/cat/dog.py should be imported as 'cat.dog'",
     }
     prompt = load_prompt("issue", context)
-
     command, state = command_loop(
-        prompt,
-        gpt.SYSTEM_COMMAND_FUNC,
-        COMMANDS_GENERATE,
-        files,
+        prompt, gpt.SYSTEM_COMMAND_FUNC, COMMANDS_GENERATE, files
     )
-
     check_result(old_files, state.files, prompt)
-
     return state.files
 
 
 def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
     files = {
         f: read_file(os.path.join(target_dir, f))
-        for f in repo.get_all_checked_in_files(target_dir)
+        for f in repo.list_files(target_dir, settings.GITIGNORE_PATH)
         if os.path.isfile(os.path.join(target_dir, f))
     }
     updated_files = apply_prompt_to_files(prompt, files)
@@ -94,21 +89,16 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
 
 def process_directory(prompt: str, target_dir: str) -> None:
     apply_prompt_to_directory(prompt, target_dir)
-
     for iteration in range(3):
         pylint_result = run_pylint(os.path.join(target_dir, "src"))
         if pylint_result is not None and iteration < 2:
-            # ask to fix pylint errors if we are in first or second iteration
             apply_prompt_to_directory(
                 f"Fix these errors identified by PyLint:\n{pylint_result}", target_dir
             )
         elif pylint_result is not None and iteration == 2:
-            # if errors are still present on the third iteration, raise an exception
             raise Exception("Pylint failed\n" + pylint_result)
         elif pylint_result is None:
-            # if no pylint errors, break the loop
             break
-
     pytest_result = run_pytest(os.path.join(target_dir, "src"))
     if pytest_result is not None:
         raise Exception("Pytest failed\n" + pytest_result)
@@ -117,12 +107,10 @@ def process_directory(prompt: str, target_dir: str) -> None:
 def process_issue(issue: Issue, dry_run: bool) -> None:
     if not repo.is_issue_open(settings.REPOSITORY_PATH, issue.number):
         return
-
     if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
         settings.REPOSITORY_PATH, issue.title
     ):
         return
-
     target_dir = f"target/issue-{issue.number}/{settings.REPOSITORY_PATH}"
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir, ignore_errors=True)
@@ -130,14 +118,10 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     repo.clone_repository(
         f"https://github.com/{settings.REPOSITORY_PATH}.git", target_dir
     )
-
     branch_id = f"issue-{issue.id}"
-
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
-
     process_directory(issue.description, target_dir)
-
     if not dry_run:
         repo.commit_local_modifications(
             issue.title, f'Prompt: "{issue.description}"', target_dir
