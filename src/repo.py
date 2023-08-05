@@ -6,6 +6,7 @@ import pathspec
 from dataclasses import dataclass
 import time
 import subprocess
+from pathlib import Path
 
 
 def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()):
@@ -211,6 +212,8 @@ def list_files(target_directory, gitignore_path):
     matches = []
     for root, dirs, files in os.walk(target_directory):
         for fname in files:
-            if not spec.match_file(os.path.join(root, fname)):
-                matches.append(os.path.join(root, fname))
+            full_path = os.path.join(root, fname)
+            if not spec.match_file(full_path):
+                relative_path = os.path.relpath(full_path, start=target_directory)
+                matches.append(relative_path)
     return matches
