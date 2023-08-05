@@ -22,7 +22,9 @@ def run_eval(eval: Eval, directory: str):
 def process_evals(directory: str):
     with open(f"{directory}/prompts.yaml", "r") as file:
         data = yaml.safe_load(file)
-        evals = [Eval(prompt=key, tests=value["tests"]) for key, value in data.items()]
-
+        evals = [
+            Eval(prompt=value["prompt"], tests=value["tests"])
+            for key, value in data.items()
+        ]
     for eval in evals:
         run_eval(eval, directory)
