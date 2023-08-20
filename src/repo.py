@@ -208,6 +208,7 @@ def list_files(target_directory, gitignore_path):
     """Lists all the files in a directory that aren't excluded by a gitignore file."""
     with open(gitignore_path, "r") as f:
         lines = f.readlines()
+    lines.append(".git")
     spec = pathspec.PathSpec.from_lines("gitwildmatch", lines)
     matches = []
     for root, dirs, files in os.walk(target_directory):
