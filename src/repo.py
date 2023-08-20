@@ -213,7 +213,7 @@ def list_files(target_directory, gitignore_path):
     for root, dirs, files in os.walk(target_directory):
         for fname in files:
             full_path = os.path.join(root, fname)
-            if not spec.match_file(full_path):
-                relative_path = os.path.relpath(full_path, start=target_directory)
+            relative_path = os.path.relpath(full_path, start=target_directory)
+            if not spec.match_file(relative_path):
                 matches.append(relative_path)
     return matches
