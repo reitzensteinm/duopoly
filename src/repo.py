@@ -93,6 +93,7 @@ class Issue:
     number: int
     title: str
     description: str
+    repository: str
 
 
 def fetch_open_issues(repo_name: str) -> list[Issue]:
@@ -103,7 +104,11 @@ def fetch_open_issues(repo_name: str) -> list[Issue]:
     issues = repo.get_issues(state="open")
     issue_data = [
         Issue(
-            id=issue.id, number=issue.number, title=issue.title, description=issue.body
+            id=issue.id,
+            number=issue.number,
+            title=issue.title,
+            description=issue.body,
+            repository=repo_name,
         )
         for issue in issues
         if issue.pull_request is None
