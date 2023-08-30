@@ -11,10 +11,8 @@ from pathlib import Path
 
 def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()):
     repo = Repo(target_dir)
-
     if branch_id not in repo.branches:
         repo.create_head(branch_id)
-
     repo.git.checkout(branch_id)
     repo.git.reset("--hard", "origin/main")
     repo.git.clean("-f", "-d")
@@ -40,10 +38,8 @@ def find_approved_prs(repo_name: str) -> list[int]:
     repo = g.get_repo(repo_name)
     open_pulls = repo.get_pulls(state="open")
     approved_prs_ids = []
-
     for pr in open_pulls:
         reviews = pr.get_reviews()
-
         if any(review.state == "APPROVED" for review in reviews):
             approved_prs_ids.append(pr.number)
     return approved_prs_ids
@@ -55,7 +51,6 @@ def merge_with_rebase_if_possible(repo_name: str, pr_number: int) -> bool:
     repo = g.get_repo(repo_name)
     pr = repo.get_pull(pr_number)
     branch = pr.head
-
     if pr.mergeable and pr.rebaseable:
         pr.merge(merge_method="rebase")
         close_issue_by_title(repo_name, pr.title)
@@ -84,7 +79,7 @@ def delete_branch_after_merge(g, repo_name, branch):
         except Exception as e:
             print(e)
             retries -= 1
-            time.sleep(2)  # Wait before retrying
+            time.sleep(2)
 
 
 @dataclass
@@ -176,17 +171,17 @@ def get_issue_dependencies(repo_name: str, issue_number: int) -> list[int]:
     repo = g.get_repo(repo_name)
     issue = repo.get_issue(issue_number)
     issue_body = issue.body
-    pattern = r"#\d+"
+    pattern = "#\\d+"
     matches = re.findall(pattern, issue_body)
     dependencies = [int(match.replace("#", "")) for match in matches]
     return dependencies
 
 
-def check_dependency_issues(repo_name: str, issue_number: int) -> bool:
+def check_dependency_issues(issue: Issue) -> bool:
     """Check if an issue has any open dependencies."""
-    dependencies = get_issue_dependencies(repo_name, issue_number)
+    dependencies = get_issue_dependencies(issue.repository, issue.number)
     for dep in dependencies:
-        if is_issue_open(repo_name, dep):
+        if is_issue_open(issue.repository, dep):
             return True
     return False
 
@@ -199,13 +194,13 @@ def git_reset(directory: str):
 
 
 def find_git_repo(directory: str) -> str:
-    while directory != os.path.dirname(directory):  # While the directory has a parent
+    while directory != os.path.dirname(directory):
         try:
-            Repo(directory)  # Try to create a Repo object
-            return directory  # If successful, return the directory
+            Repo(directory)
+            return directory
         except Exception:
             pass
-        directory = os.path.dirname(directory)  # Go up one directory level
+        directory = os.path.dirname(directory)
     return None
 
 
