@@ -52,7 +52,7 @@ def main(dry_run=False, issue_name=None) -> None:
                 trace_instance = create_trace(f"{issue.title}")
                 bind_trace(trace_instance)
                 try:
-                    process_issue(issue, dry_run)
+                    process_issue(issue, dry_run, settings.REPOSITORY_PATH)
                     break
                 except Exception as e:
                     cprint(

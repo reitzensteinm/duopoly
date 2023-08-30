@@ -104,20 +104,18 @@ def process_directory(prompt: str, target_dir: str) -> None:
         raise Exception("Pytest failed\n" + pytest_result)
 
 
-def process_issue(issue: Issue, dry_run: bool) -> None:
-    if not repo.is_issue_open(settings.REPOSITORY_PATH, issue.number):
+def process_issue(issue: Issue, dry_run: bool, repository_path: str) -> None:
+    if not repo.is_issue_open(repository_path, issue.number):
         return
     if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
-        settings.REPOSITORY_PATH, issue.title
+        repository_path, issue.title
     ):
         return
-    target_dir = f"target/issue-{issue.number}/{settings.REPOSITORY_PATH}"
+    target_dir = f"target/issue-{issue.number}/{repository_path}"
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir, ignore_errors=True)
     os.makedirs(target_dir, exist_ok=True)
-    repo.clone_repository(
-        f"https://github.com/{settings.REPOSITORY_PATH}.git", target_dir
-    )
+    repo.clone_repository(f"https://github.com/{repository_path}.git", target_dir)
     branch_id = f"issue-{issue.id}"
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
@@ -127,11 +125,9 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
             issue.title, f'Prompt: "{issue.description}"', target_dir
         )
         repo.push_local_branch_to_origin(branch_id, target_dir)
-        if not repo.check_pull_request_title_exists(
-            settings.REPOSITORY_PATH, issue.title
-        ):
+        if not repo.check_pull_request_title_exists(repository_path, issue.title):
             repo.create_pull_request(
-                repo_name=settings.REPOSITORY_PATH,
+                repo_name=repository_path,
                 branch_id=branch_id,
                 title=issue.title,
                 body=issue.description,
