@@ -31,10 +31,8 @@ def merge_approved_prs() -> None:
                     time.sleep(5)
                 else:
                     print(f"Failed to merge PR {pr_id} after 5 attempts.")
-
     if is_merged:
         sys.exit(0)
-
     repo.fetch_new_changes()
 
 
@@ -44,7 +42,7 @@ def main(dry_run=False, issue_name=None) -> None:
     open_issues = repo.fetch_open_issues(settings.REPOSITORY_PATH)
 
     def process_open_issue(issue):
-        if repo.check_dependency_issues(settings.REPOSITORY_PATH, issue.number):
+        if repo.check_dependency_issues(issue):
             cprint(f"Not processing issue {issue.number}: blocked", "yellow")
             return
         if issue_name is None or issue_name in issue.title:
