@@ -97,8 +97,9 @@ if __name__ == "__main__":
     if args.evals:
         evals(args.evals)
     else:
-        process_repository(
-            dry_run=args.dry_run,
-            issue_name=args.issue,
-            repository=settings.REPOSITORY_PATH,
-        )
+        for repository in settings.REPOSITORY_PATH:
+            process_repository(
+                dry_run=args.dry_run,
+                issue_name=args.issue,
+                repository=repository,
+            )
