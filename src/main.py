@@ -16,12 +16,12 @@ import settings
 MAX_RETRIES = 1
 
 
-def merge_approved_prs() -> None:
+def merge_approved_prs(repository) -> None:
     is_merged = False
-    approved_prs = repo.find_approved_prs(settings.REPOSITORY_PATH)
+    approved_prs = repo.find_approved_prs(repository)
     for pr_id in approved_prs:
         for attempt in range(5):
-            if repo.merge_with_rebase_if_possible(settings.REPOSITORY_PATH, pr_id):
+            if repo.merge_with_rebase_if_possible(repository, pr_id):
                 print(f"Merged PR: {pr_id}")
                 is_merged = True
                 break
@@ -36,10 +36,10 @@ def merge_approved_prs() -> None:
     repo.fetch_new_changes()
 
 
-def main(dry_run=False, issue_name=None) -> None:
+def main(dry_run=False, issue_name=None, repository=settings.REPOSITORY_PATH) -> None:
     if not dry_run:
-        merge_approved_prs()
-    open_issues = repo.fetch_open_issues(settings.REPOSITORY_PATH)
+        merge_approved_prs(repository)
+    open_issues = repo.fetch_open_issues(repository)
 
     def process_open_issue(issue):
         if repo.check_dependency_issues(issue):
