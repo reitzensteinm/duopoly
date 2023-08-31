@@ -36,7 +36,7 @@ def merge_approved_prs(repository) -> None:
     repo.fetch_new_changes()
 
 
-def main(dry_run=False, issue_name=None, repository=settings.REPOSITORY_PATH) -> None:
+def process_repository(dry_run=False, issue_name=None, repository="") -> None:
     if not dry_run:
         merge_approved_prs(repository)
     open_issues = repo.fetch_open_issues(repository)
@@ -97,4 +97,8 @@ if __name__ == "__main__":
     if args.evals:
         evals(args.evals)
     else:
-        main(dry_run=args.dry_run, issue_name=args.issue)
+        process_repository(
+            dry_run=args.dry_run,
+            issue_name=args.issue,
+            repository=settings.REPOSITORY_PATH,
+        )
