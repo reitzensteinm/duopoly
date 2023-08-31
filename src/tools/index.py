@@ -11,3 +11,9 @@ class VectorIndex:
         embedding = calculate_text_embedding(source_code)
         embedding = np.array(embedding)
         self.store.add_entry(embedding, source_code)
+
+    def retrieve(self, search_text, num_items):
+        embedding = calculate_text_embedding(search_text)
+        embedding = np.array(embedding)
+        entries = self.store.search(embedding, num_items)
+        return entries
