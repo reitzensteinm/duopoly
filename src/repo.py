@@ -218,3 +218,17 @@ def list_files(target_directory, gitignore_path):
             if not spec.match_file(relative_path):
                 matches.append(relative_path)
     return matches
+
+
+def repository_exists(repo_name: str) -> bool:
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    try:
+        repo = g.get_repo(repo_name)
+        return True
+    except Exception as e:
+        print(f'Error: The repository "{repo_name}" does not exist.')
+        return False
+
+
+### NEW FILE src/pipeline/issue.py ###
