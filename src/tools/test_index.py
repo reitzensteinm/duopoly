@@ -53,3 +53,12 @@ print(c)               # Prints "[[ 7.  7.] [ 7.  7.]]"
 d = np.eye(2)         # Create a 2x2 identity matrix
 print(d)              # Prints "[[ 1.  0.] [ 0.  1.]]"
 """
+
+
+def test_VectorIndex_ingest():
+    vector_index_instance = index.VectorIndex()
+    vector_index_instance.ingest(django_query)
+    vector_index_instance.ingest(quicksort_code)
+    vector_index_instance.ingest(numpy_code1)
+    vector_index_instance.ingest(numpy_code2)
+    assert hasattr(vector_index_instance, "store")
