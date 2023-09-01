@@ -61,4 +61,11 @@ def test_VectorIndex_ingest():
     vector_index_instance.ingest(quicksort_code)
     vector_index_instance.ingest(numpy_code1)
     vector_index_instance.ingest(numpy_code2)
-    assert hasattr(vector_index_instance, "store")
+
+
+def test_VectorIndex_retrieve():
+    vector_index_instance = index.VectorIndex()
+    vector_index_instance.ingest(numpy_code1)
+    vector_index_instance.ingest(numpy_code2)
+    results = vector_index_instance.retrieve(numpy_code1 + numpy_code2, 2)
+    assert set(results) == {numpy_code1, numpy_code2}
