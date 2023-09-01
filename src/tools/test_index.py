@@ -54,6 +54,15 @@ d = np.eye(2)         # Create a 2x2 identity matrix
 print(d)              # Prints "[[ 1.  0.] [ 0.  1.]]"
 """
 
+numpy_code3 = """
+# New Numpy code
+import numpy as np
+
+# Create a 3x3 array with values ranging from 0 to 8
+a = np.arange(9).reshape(3,3)
+print(a)
+"""
+
 
 def test_VectorIndex_ingest():
     vector_index_instance = index.VectorIndex()
@@ -61,11 +70,13 @@ def test_VectorIndex_ingest():
     vector_index_instance.ingest(quicksort_code)
     vector_index_instance.ingest(numpy_code1)
     vector_index_instance.ingest(numpy_code2)
+    vector_index_instance.ingest(numpy_code3)
 
 
 def test_VectorIndex_retrieve():
     vector_index_instance = index.VectorIndex()
     vector_index_instance.ingest(numpy_code1)
     vector_index_instance.ingest(numpy_code2)
-    results = vector_index_instance.retrieve(numpy_code1 + numpy_code2, 2)
-    assert set(results) == {numpy_code1, numpy_code2}
+    vector_index_instance.ingest(numpy_code3)
+    results = vector_index_instance.retrieve(numpy_code3, 3)
+    assert set(results) == {numpy_code1, numpy_code2, numpy_code3}
