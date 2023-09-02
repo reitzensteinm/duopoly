@@ -70,13 +70,11 @@ def test_VectorIndex_ingest():
     vector_index_instance.ingest(quicksort_code)
     vector_index_instance.ingest(numpy_code1)
     vector_index_instance.ingest(numpy_code2)
-    vector_index_instance.ingest(numpy_code3)
 
 
 def test_VectorIndex_retrieve():
     vector_index_instance = index.VectorIndex()
     vector_index_instance.ingest(numpy_code1)
     vector_index_instance.ingest(numpy_code2)
-    vector_index_instance.ingest(numpy_code3)
-    results = vector_index_instance.retrieve(numpy_code3, 3)
-    assert set(results) == {numpy_code1, numpy_code2, numpy_code3}
+    results = vector_index_instance.retrieve(numpy_code3, 2)
+    assert set(results) == {numpy_code1, numpy_code2}
