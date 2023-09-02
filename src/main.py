@@ -37,6 +37,9 @@ def merge_approved_prs(repository) -> None:
 
 
 def process_repository(dry_run=False, issue_name=None, repository="") -> None:
+    if not repo.repository_exists(repository):
+        print(f'Warning: The repository "{repository}" does not exist.')
+        return
     if not dry_run:
         merge_approved_prs(repository)
     open_issues = repo.fetch_open_issues(repository)
@@ -55,7 +58,7 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
                 except Exception as e:
                     cprint(
                         f"""Attempt {attempt + 1} failed for issue {issue.title} with error: {str(e)}
-{traceback.format_exc()}""",
+							{traceback.format_exc()}""",
                         "red",
                     )
                     trace(EXCEPTION, str(e))
@@ -99,9 +102,7 @@ def main():
     else:
         for repository in settings.REPOSITORY_PATH:
             process_repository(
-                dry_run=args.dry_run,
-                issue_name=args.issue,
-                repository=repository,
+                dry_run=args.dry_run, issue_name=args.issue, repository=repository
             )
 
 
