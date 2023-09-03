@@ -227,8 +227,4 @@ def repository_exists(repo_name: str) -> bool:
         repo = g.get_repo(repo_name)
         return True
     except Exception as e:
-        print(f'Error: The repository "{repo_name}" does not exist.')
         return False
-
-
-### NEW FILE src/pipeline/issue.py ###
