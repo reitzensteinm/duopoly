@@ -105,6 +105,8 @@ def process_directory(prompt: str, target_dir: str) -> None:
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
+    from pipeline.issue_state import IssueState
+
     if not repo.is_issue_open(issue.repository, issue.number):
         return
     if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
@@ -112,6 +114,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     ):
         return
     target_dir = f"target/issue-{issue.number}/{issue.repository}"
+    issue_state = IssueState.retrieve_by_id(issue.id)
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir, ignore_errors=True)
     os.makedirs(target_dir, exist_ok=True)
