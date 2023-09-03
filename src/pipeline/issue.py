@@ -111,9 +111,6 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         issue.repository, issue.title
     ):
         return
-    if not repo.repository_exists(issue.repository):
-        print(f"Error: The repository {issue.repository} does not exist.")
-        return
     target_dir = f"target/issue-{issue.number}/{issue.repository}"
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir, ignore_errors=True)
