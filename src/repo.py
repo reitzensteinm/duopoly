@@ -7,6 +7,23 @@ from dataclasses import dataclass
 import time
 import subprocess
 from pathlib import Path
+from typing import List
+
+
+@dataclass
+class IssueComment:
+    username: str
+    content: str
+
+
+@dataclass
+class Issue:
+    id: int
+    number: int
+    title: str
+    description: str
+    repository: str
+    comments: List[IssueComment]
 
 
 def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()):
@@ -82,15 +99,6 @@ def delete_branch_after_merge(g, repo_name, branch):
             time.sleep(2)
 
 
-@dataclass
-class Issue:
-    id: int
-    number: int
-    title: str
-    description: str
-    repository: str
-
-
 def fetch_open_issues(repo_name: str) -> list[Issue]:
     """Fetches open issues from a given repository."""
     api_key = os.environ["GITHUB_API_KEY"]
@@ -104,6 +112,10 @@ def fetch_open_issues(repo_name: str) -> list[Issue]:
             title=issue.title,
             description=issue.body,
             repository=repo_name,
+            comments=[
+                IssueComment(username=comment.user.login, content=comment.body)
+                for comment in issue.get_comments()
+            ],
         )
         for issue in issues
         if issue.pull_request is None
