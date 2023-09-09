@@ -8,7 +8,10 @@ class IssueState:
     @staticmethod
     def retrieve_by_id(id):
         try:
-            return read(f"issue-{id}.json")
+            issue_dict = read(f"issue-{id}.json")
+            new_issue = IssueState(id)
+            new_issue.__dict__.update(issue_dict)
+            return new_issue
         except FileNotFoundError:
             new_issue = IssueState(id)
             write(f"issue-{id}.json", new_issue)
