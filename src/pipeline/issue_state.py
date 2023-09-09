@@ -16,3 +16,9 @@ class IssueState:
 
     def store(self):
         write(f"issue-{self.id}.json", self)
+
+    def __dict__(self):
+        return self.__dict__.copy()
+
+    def __str__(self):
+        return str(self.__dict__)
