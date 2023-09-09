@@ -11,3 +11,4 @@ Requirements:
 8) Include content from only the file specified.
 9) Do not include the file name or any other content that should not be included in the file itself.
 10) Do not include the contents of any other file.
+11) Use project relative imports. e.g. to import 'src/a/b.py', write 'import a.b'.
