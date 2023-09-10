@@ -104,6 +104,14 @@ def process_directory(prompt: str, target_dir: str) -> None:
         raise Exception("Pytest failed\n" + pytest_result)
 
 
+def get_target_dir(issue):
+    return f"target/issue-{issue.number}/{issue.repository}"
+
+
+def get_branch_id(issue):
+    return f"issue-{issue.id}"
+
+
 def process_issue(issue: Issue, dry_run: bool) -> None:
     if not repo.is_issue_open(issue.repository, issue.number):
         return
@@ -111,12 +119,12 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         issue.repository, issue.title
     ):
         return
-    target_dir = f"target/issue-{issue.number}/{issue.repository}"
+    target_dir = get_target_dir(issue)
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir, ignore_errors=True)
     os.makedirs(target_dir, exist_ok=True)
     repo.clone_repository(f"https://github.com/{issue.repository}.git", target_dir)
-    branch_id = f"issue-{issue.id}"
+    branch_id = get_branch_id(issue)
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
     process_directory(issue.description, target_dir)
