@@ -1,6 +1,6 @@
 import os
 import hashlib
-import json
+import pickle
 
 
 class KeyValueStore:
@@ -15,22 +15,22 @@ class KeyValueStore:
         if not os.path.exists(file_path):
             raise FileNotFoundError(f"Key not found: {key}")
 
-        with open(file_path, "r") as file:
-            value = json.load(file)
+        with open(file_path, "rb") as file:
+            value = pickle.load(file)
         return value
 
     def write(self, key, value):
         key_hash = self._hash_key(key)
         file_path = self.cache_dir + key_hash
 
-        with open(file_path, "w") as file:
-            json.dump(value, file)
+        with open(file_path, "wb") as file:
+            pickle.dump(value, file)
 
     def _hash_key(self, key):
         md5_hash = hashlib.md5()
         md5_hash.update(key.encode("utf-8"))
         hashed_key = md5_hash.hexdigest()
-        return hashed_key
+        return "p_" + hashed_key
 
 
 def memoize(func):
