@@ -25,6 +25,7 @@ from tools.pylint import run_pylint
 from tools.pytest import run_pytest
 from tools.advice import generate_advice
 from utilities.prompts import load_prompt
+from pipeline.issue_state import IssueState
 
 CHECK_OPEN_PR = False
 
@@ -113,8 +114,6 @@ def get_branch_id(issue):
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
-    from pipeline.issue_state import IssueState
-
     if not repo.is_issue_open(issue.repository, issue.number):
         return
     if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
