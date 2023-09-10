@@ -20,15 +20,11 @@ class Trace:
         self.trace_data = []
 
     def add_trace_data(self, tag, trace, tokens: Optional[Tuple[int, int]] = None):
+        if self.name == "":
+            return
         self.trace_data.append(TraceData(tag, trace, tokens))
-
-        # Save the trace to disk using the render function
         html_trace = render_trace(self)
-
-        # Create the traces directory if it doesn't exist
         os.makedirs("traces", exist_ok=True)
-
-        # Save the trace to an HTML file
         with open(f"traces/{self.name}.html", "w") as f:
             f.write(html_trace)
 
@@ -42,7 +38,7 @@ def bind_trace(trace: Trace):
 
 
 def get_trace() -> Trace:
-    return getattr(_thread_local, "trace", Trace("New Trace"))
+    return getattr(_thread_local, "trace", Trace(""))
 
 
 class TraceNotFound(Exception):
