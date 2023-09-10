@@ -17,8 +17,9 @@ class Think(Command):
     def terminal(self):
         return False
 
-    def __init__(self, thought: str):
+    def __init__(self, thought: str, questions: str):
         self.thought: str = thought
+        self.questions: str = questions
 
     def __str__(self):
         """
@@ -40,9 +41,13 @@ class Think(Command):
                     "thought": {
                         "type": "string",
                         "description": "A description of what you plan to do in your next steps",
-                    }
+                    },
+                    "questions": {
+                        "type": "string",
+                        "description": "List anything that is not clear about the instructions",
+                    },
                 },
-                "required": ["thought"],
+                "required": ["thought", "questions"],
             },
         }
 
@@ -51,7 +56,7 @@ class Think(Command):
         """
         Loads the Think command from the provided json_data.
         """
-        return Think(json_data["thought"])
+        return Think(json_data["thought"], json_data["questions"])
 
     def execute(self, state: State) -> str:
         """
