@@ -22,6 +22,8 @@ do
 	# Run the python script
 	python3 src/main.py
 
+	echo -e "\e[95mexecution successful\e[0m"
+
 	# Sleep for 100 hours
 	sleep 360000
 	
