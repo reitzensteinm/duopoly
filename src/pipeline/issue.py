@@ -113,6 +113,8 @@ def get_branch_id(issue):
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
+    from pipeline.issue_state import IssueState
+
     if not repo.is_issue_open(issue.repository, issue.number):
         return
     if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
@@ -128,6 +130,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
     process_directory(issue.description, target_dir)
+    issue_state = IssueState(issue.id)
     if not dry_run:
         repo.commit_local_modifications(
             issue.title, f'Prompt: "{issue.description}"', target_dir
