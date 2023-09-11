@@ -20,6 +20,10 @@ def merge_approved_prs(repository) -> None:
     is_merged = False
     approved_prs = repo.find_approved_prs(repository)
     for pr_id in approved_prs:
+        # Check if PR has a merge conflict
+        if repo.check_pr_conflict(repository, pr_id):
+            cprint(f"PR {pr_id} has conflict. Skipping merge.", "red")
+            continue
         for attempt in range(5):
             if repo.merge_with_rebase_if_possible(repository, pr_id):
                 print(f"Merged PR: {pr_id}")
