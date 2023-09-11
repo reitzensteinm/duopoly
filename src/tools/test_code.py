@@ -25,7 +25,6 @@ def test_replace_node():
     assert "Hello, world!" not in result
 
 
-@pytest.mark.skip
 def test_replace_constant():
     # Use the replace_node function to replace the CONSTANT
     # with the NEW_CONSTANT
