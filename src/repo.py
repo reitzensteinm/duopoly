@@ -24,6 +24,7 @@ class Issue:
     description: str
     repository: str
     comments: List[IssueComment]
+    author: str
 
 
 def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()):
@@ -116,6 +117,7 @@ def fetch_open_issues(repo_name: str) -> list[Issue]:
                 IssueComment(username=comment.user.login, content=comment.body)
                 for comment in issue.get_comments()
             ],
+            author=issue.user.login,
         )
         for issue in issues
         if issue.pull_request is None
@@ -183,7 +185,7 @@ def get_issue_dependencies(repo_name: str, issue_number: int) -> list[int]:
     repo = g.get_repo(repo_name)
     issue = repo.get_issue(issue_number)
     issue_body = issue.body
-    pattern = "#\\d+"
+    pattern = "#\d+"
     matches = re.findall(pattern, issue_body)
     dependencies = [int(match.replace("#", "")) for match in matches]
     return dependencies
