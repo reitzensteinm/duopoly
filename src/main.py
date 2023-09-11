@@ -16,25 +16,31 @@ import settings
 MAX_RETRIES = 3
 
 
+def try_merge_pr(repository, pr_id):
+    if repo.check_pr_conflict(repository, pr_id):
+        cprint(f"PR {pr_id} has conflict. Skipping merge.", "red")
+        return False
+    if repo.merge_with_rebase_if_possible(repository, pr_id):
+        print(f"Merged PR: {pr_id}")
+        return True
+    else:
+        return False
+
+
 def merge_approved_prs(repository) -> None:
     is_merged = False
     approved_prs = repo.find_approved_prs(repository)
     for pr_id in approved_prs:
-        # Check if PR has a merge conflict
-        if repo.check_pr_conflict(repository, pr_id):
-            cprint(f"PR {pr_id} has conflict. Skipping merge.", "red")
-            continue
         for attempt in range(5):
-            if repo.merge_with_rebase_if_possible(repository, pr_id):
-                print(f"Merged PR: {pr_id}")
+            if try_merge_pr(repository, pr_id):
                 is_merged = True
                 break
             else:
                 print(f"Attempt {attempt + 1}: Could not merge PR: {pr_id}")
                 if attempt < 4:
                     time.sleep(5)
-                else:
-                    print(f"Failed to merge PR {pr_id} after 5 attempts.")
+        if not is_merged:
+            print(f"Failed to merge PR {pr_id} after 5 attempts.")
     if is_merged:
         sys.exit(0)
     repo.fetch_new_changes()
@@ -62,7 +68,7 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
                 except Exception as e:
                     cprint(
                         f"""Attempt {attempt + 1} failed for issue {issue.title} with error: {str(e)}
-							{traceback.format_exc()}""",
+                            {traceback.format_exc()}""",
                         "red",
                     )
                     trace(EXCEPTION, str(e))
