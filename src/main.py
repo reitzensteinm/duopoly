@@ -13,7 +13,7 @@ import ast
 import astor
 import settings
 
-MAX_RETRIES = 1
+MAX_RETRIES = 3
 
 
 def merge_approved_prs(repository) -> None:

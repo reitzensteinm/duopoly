@@ -90,7 +90,7 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
 
 def process_directory(prompt: str, target_dir: str) -> None:
     apply_prompt_to_directory(prompt, target_dir)
-    for iteration in range(3):
+    for iteration in range(1):
         pylint_result = run_pylint(os.path.join(target_dir, "src"))
         if pylint_result is not None and iteration < 2:
             apply_prompt_to_directory(
