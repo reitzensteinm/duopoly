@@ -200,6 +200,15 @@ def check_dependency_issues(issue: Issue) -> bool:
     return False
 
 
+def check_pr_conflict(repo_name: str, pr_id: int) -> bool:
+    """Checks if a PR has a conflict."""
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    pr = repo.get_pull(pr_id)
+    return not pr.mergeable
+
+
 def git_reset(directory: str):
     try:
         subprocess.check_call(["git", "reset", "--hard"], cwd=directory)
