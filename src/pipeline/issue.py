@@ -126,15 +126,15 @@ def prepare_branch(issue: Issue, dry_run: bool) -> None:
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
+    if issue.author not in settings.ADMIN_USERS:
+        return
     if not repo.is_issue_open(issue.repository, issue.number):
         return
     if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
         issue.repository, issue.title
     ):
         return
-
     target_dir = prepare_branch(issue, dry_run)
-
     process_directory(issue.description, target_dir)
     issue_state = IssueState(issue.id)
     if not dry_run:
