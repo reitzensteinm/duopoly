@@ -113,13 +113,7 @@ def get_branch_id(issue):
     return f"issue-{issue.id}"
 
 
-def process_issue(issue: Issue, dry_run: bool) -> None:
-    if not repo.is_issue_open(issue.repository, issue.number):
-        return
-    if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
-        issue.repository, issue.title
-    ):
-        return
+def prepare_branch(issue: Issue, dry_run: bool) -> None:
     target_dir = get_target_dir(issue)
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir, ignore_errors=True)
@@ -128,17 +122,30 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     branch_id = get_branch_id(issue)
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
+    return target_dir
+
+
+def process_issue(issue: Issue, dry_run: bool) -> None:
+    if not repo.is_issue_open(issue.repository, issue.number):
+        return
+    if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
+        issue.repository, issue.title
+    ):
+        return
+
+    target_dir = prepare_branch(issue, dry_run)
+
     process_directory(issue.description, target_dir)
     issue_state = IssueState(issue.id)
     if not dry_run:
         repo.commit_local_modifications(
             issue.title, f'Prompt: "{issue.description}"', target_dir
         )
-        repo.push_local_branch_to_origin(branch_id, target_dir)
+        repo.push_local_branch_to_origin(get_branch_id(issue), target_dir)
         if not repo.check_pull_request_title_exists(issue.repository, issue.title):
             repo.create_pull_request(
                 repo_name=issue.repository,
-                branch_id=branch_id,
+                branch_id=get_branch_id(issue),
                 title=issue.title,
                 body=issue.description,
             )
