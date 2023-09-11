@@ -39,7 +39,6 @@ def test_replace_node():
     assert "Hello, world!" not in result
 
 
-@pytest.mark.skip(reason="Dataclass replacement test doesn't functioning properly yet.")
 def test_replace_dataclass():
     # Use the replace_node function to replace the Dataclass
     # with the NEW_DATA_CLASS
