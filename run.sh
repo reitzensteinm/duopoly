@@ -15,15 +15,15 @@ while true
 do
 	# Update git repo
 	git pull
-
+	
 	# Install requirements
 	pip3 install -q -r requirements.txt
-
+	
 	# Run the python script
 	python3 src/main.py
-
-	echo -e "\e[95mexecution successful\e[0m"
-
+	
+	echo -e '\033[95mexecution successful\033[0m'
+	
 	# Sleep for 100 hours
 	sleep 360000
 	
