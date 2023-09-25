@@ -120,7 +120,10 @@ def prepare_branch(issue: Issue, dry_run: bool) -> None:
     if os.path.exists(target_dir):
         shutil.rmtree(target_dir, ignore_errors=True)
     os.makedirs(target_dir, exist_ok=True)
-    repo.clone_repository(f"https://github.com/{issue.repository}.git", target_dir)
+    repo.clone_repository(
+        f"https://{os.environ['GITHUB_API_KEY']}@github.com/{issue.repository}.git",
+        target_dir,
+    )
     branch_id = get_branch_id(issue)
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
