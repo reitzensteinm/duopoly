@@ -43,11 +43,13 @@ def push_local_branch_to_origin(branch_id: str, target_dir: str = os.getcwd()):
 
 
 def create_pull_request(repo_name: str, branch_id: str, title: str, body: str):
+    from settings import PR_REVIEWER_USERNAME
+
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
-    pr = repo.create_pull(title=title, body=body, head=branch_id, base="main")
-    pr.create_review_request(reviewers=["reitzensteinm"])
+    pull_request = repo.create_pull(title=title, body=body, head=branch_id, base="main")
+    pull_request.create_review_request(reviewers=[PR_REVIEWER_USERNAME])
 
 
 def find_approved_prs(repo_name: str) -> list[int]:
@@ -185,7 +187,7 @@ def get_issue_dependencies(repo_name: str, issue_number: int) -> list[int]:
     repo = g.get_repo(repo_name)
     issue = repo.get_issue(issue_number)
     issue_body = issue.body
-    pattern = "#\d+"
+    pattern = "#\\d+"
     matches = re.findall(pattern, issue_body)
     dependencies = [int(match.replace("#", "")) for match in matches]
     return dependencies
