@@ -90,19 +90,21 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
 
 def process_directory(prompt: str, target_dir: str) -> None:
     apply_prompt_to_directory(prompt, target_dir)
-    for iteration in range(1):
-        pylint_result = run_pylint(os.path.join(target_dir, "src"))
-        if pylint_result is not None and iteration < 2:
-            apply_prompt_to_directory(
-                f"Fix these errors identified by PyLint:\n{pylint_result}", target_dir
-            )
-        elif pylint_result is not None and iteration == 2:
-            raise Exception("Pylint failed\n" + pylint_result)
-        elif pylint_result is None:
-            break
-    pytest_result = run_pytest(os.path.join(target_dir, "src"))
-    if pytest_result is not None:
-        raise Exception("Pytest failed\n" + pytest_result)
+    if settings.DO_QUALITY_CHECKS:
+        for iteration in range(1):
+            pylint_result = run_pylint(os.path.join(target_dir, "src"))
+            if pylint_result is not None and iteration < 2:
+                apply_prompt_to_directory(
+                    f"Fix these errors identified by PyLint:\n{pylint_result}",
+                    target_dir,
+                )
+            elif pylint_result is not None and iteration == 2:
+                raise Exception("Pylint failed\n" + pylint_result)
+            elif pylint_result is None:
+                break
+        pytest_result = run_pytest(os.path.join(target_dir, "src"))
+        if pytest_result is not None:
+            raise Exception("Pytest failed\n" + pytest_result)
 
 
 def get_target_dir(issue):
