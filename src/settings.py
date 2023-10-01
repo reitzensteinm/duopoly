@@ -5,3 +5,4 @@ ADMIN_USERS = ["reitzensteinm"]
 TOKEN_LIMIT = 40000
 DO_QUALITY_CHECKS = True
 REQUEST_REVIEW_FOR_PRS = True
+PR_REVIEWER_USERNAME = "reitzensteinm"
