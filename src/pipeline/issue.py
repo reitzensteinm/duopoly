@@ -152,5 +152,8 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
                 repo_name=issue.repository,
                 branch_id=get_branch_id(issue),
                 title=issue.title,
-                body=issue.description,
+                body="This PR addresses issue #"
+                + str(issue.number)
+                + ". "
+                + issue.description,
             )
