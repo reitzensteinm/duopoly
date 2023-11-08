@@ -12,12 +12,16 @@ from typing import List
 
 @dataclass
 class IssueComment:
+    """Represents a comment on a GitHub issue."""
+
     username: str
     content: str
 
 
 @dataclass
 class Issue:
+    """Represents a GitHub issue with related metadata."""
+
     id: int
     number: int
     title: str
@@ -27,7 +31,8 @@ class Issue:
     author: str
 
 
-def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()):
+def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()) -> None:
+    """Switch to a specified branch and reset it to match the origin/main branch."""
     repo = Repo(target_dir)
     if branch_id not in repo.branches:
         repo.create_head(branch_id)
@@ -36,13 +41,15 @@ def switch_and_reset_branch(branch_id: str, target_dir: str = os.getcwd()):
     repo.git.clean("-f", "-d")
 
 
-def push_local_branch_to_origin(branch_id: str, target_dir: str = os.getcwd()):
+def push_local_branch_to_origin(branch_id: str, target_dir: str = os.getcwd()) -> None:
+    """Pushes a local branch to the remote repository, forcibly overwriting it."""
     repo = Repo(target_dir)
     repo.git.checkout(branch_id)
     repo.git.push("origin", branch_id, force=True)
 
 
-def create_pull_request(repo_name: str, branch_id: str, title: str, body: str):
+def create_pull_request(repo_name: str, branch_id: str, title: str, body: str) -> None:
+    """Creates a pull request on GitHub with the specified details."""
     from settings import REQUEST_REVIEW_FOR_PRS, PR_REVIEWER_USERNAME
 
     api_key = os.environ["GITHUB_API_KEY"]
@@ -53,7 +60,8 @@ def create_pull_request(repo_name: str, branch_id: str, title: str, body: str):
         pr.create_review_request(reviewers=[PR_REVIEWER_USERNAME])
 
 
-def find_approved_prs(repo_name: str) -> list[int]:
+def find_approved_prs(repo_name: str) -> List[int]:
+    """Find pull requests that have been approved in a given repository."""
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
@@ -67,6 +75,7 @@ def find_approved_prs(repo_name: str) -> list[int]:
 
 
 def merge_with_rebase_if_possible(repo_name: str, pr_number: int) -> bool:
+    """Attempt to merge a pull request with rebase if it is mergeable and rebaseable."""
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
@@ -81,6 +90,7 @@ def merge_with_rebase_if_possible(repo_name: str, pr_number: int) -> bool:
 
 
 def close_issue_by_title(repo_name: str, issue_title: str) -> None:
+    """Close an issue by its title in the specified repository."""
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
@@ -91,7 +101,8 @@ def close_issue_by_title(repo_name: str, issue_title: str) -> None:
             break
 
 
-def delete_branch_after_merge(g, repo_name, branch):
+def delete_branch_after_merge(g: Github, repo_name: str, branch) -> None:
+    """Delete a branch in the given repository after a merge has occurred."""
     retries = 5
     while retries > 0:
         try:
