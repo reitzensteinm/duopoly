@@ -8,8 +8,8 @@ from tracing.tags import GPT_INPUT, GPT_OUTPUT
 from utilities.cache import memoize
 from utilities.prompts import load_prompt
 
-GPT_3_5 = "gpt-3.5-turbo-0613"
-GPT_4 = "gpt-4-0613"
+GPT_3_5 = "gpt-3.5-turbo-1106"
+GPT_4 = "gpt-4-1106-preview"
 SYSTEM_CHECK_FUNC = load_prompt("check")
 SYSTEM_COMMAND_FUNC = load_prompt("command")
 
@@ -85,7 +85,6 @@ def calculate_text_embedding(text: str):
     embedding_result = openai.Embedding.create(
         model="text-embedding-ada-002", input=text
     )
-
     return list(embedding_result["data"][0]["embedding"])
 
 
