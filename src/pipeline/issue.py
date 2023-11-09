@@ -140,11 +140,12 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     ):
         return
     target_dir = prepare_branch(issue, dry_run)
-    process_directory(issue.description, target_dir)
+    formatted_prompt = f"Title: {issue.title}\nDescription: {issue.description}"
+    process_directory(formatted_prompt, target_dir)
     issue_state = IssueState(issue.id)
     if not dry_run:
         repo.commit_local_modifications(
-            issue.title, f'Prompt: "{issue.description}"', target_dir
+            issue.title, f'Prompt: "{formatted_prompt}"', target_dir
         )
         repo.push_local_branch_to_origin(get_branch_id(issue), target_dir)
         if not repo.check_pull_request_title_exists(issue.repository, issue.title):
@@ -155,5 +156,5 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
                 body="This PR addresses issue #"
                 + str(issue.number)
                 + ". "
-                + issue.description,
+                + formatted_prompt,
             )
