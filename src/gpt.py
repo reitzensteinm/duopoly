@@ -7,6 +7,7 @@ from tracing.trace import trace
 from tracing.tags import GPT_INPUT, GPT_OUTPUT
 from utilities.cache import memoize
 from utilities.prompts import load_prompt
+from settings import MAX_INPUT_CHARS
 
 GPT_3_5 = "gpt-3.5-turbo-1106"
 GPT_4 = "gpt-4-1106-preview"
@@ -21,6 +22,8 @@ def gpt_query(
     model: str = GPT_4,
     require_function: bool = True,
 ) -> str:
+    if len(message) > MAX_INPUT_CHARS:
+        raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
     openai.api_key = os.environ["OPENAI_API_KEY"]
