@@ -4,11 +4,11 @@ import sys
 
 def install_package(package_name):
     try:
-        subprocess.call("pip3 install {}".format(package_name), shell=True)
+        subprocess.call("pip3 install --upgrade {}".format(package_name), shell=True)
     except:
         print("Failed to install using pip3. Retrying with pip...")
         try:
-            subprocess.call("pip install {}".format(package_name), shell=True)
+            subprocess.call("pip install --upgrade {}".format(package_name), shell=True)
         except Exception as err:
             print("Failed to install package using pip.")
             return False
