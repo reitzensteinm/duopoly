@@ -17,6 +17,7 @@ from commands.commands import (
 from commands.loop import command_loop
 import repo
 import settings
+from settings import PYLINT_RETRIES
 import shutil
 from repo import Issue
 from tools.imports import imports
@@ -89,14 +90,14 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
 def process_directory(prompt: str, target_dir: str) -> None:
     apply_prompt_to_directory(prompt, target_dir)
     if settings.DO_QUALITY_CHECKS:
-        for iteration in range(1):
+        for iteration in range(settings.PYLINT_RETRIES + 1):
             pylint_result = run_pylint(os.path.join(target_dir, "src"))
-            if pylint_result is not None and iteration < 2:
+            if pylint_result is not None and iteration < settings.PYLINT_RETRIES:
                 apply_prompt_to_directory(
                     f"Fix these errors identified by PyLint:\n{pylint_result}",
                     target_dir,
                 )
-            elif pylint_result is not None and iteration == 2:
+            elif pylint_result is not None and iteration == settings.PYLINT_RETRIES:
                 raise Exception("Pylint failed\n" + pylint_result)
             elif pylint_result is None:
                 break
