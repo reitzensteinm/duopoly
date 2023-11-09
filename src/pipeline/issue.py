@@ -27,8 +27,6 @@ from tools.advice import generate_advice
 from utilities.prompts import load_prompt
 from pipeline.issue_state import IssueState
 
-CHECK_OPEN_PR = False
-
 
 def check_result(old_files, new_files, prompt) -> bool:
     old_files_filtered = {
@@ -135,7 +133,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         return
     if not repo.is_issue_open(issue.repository, issue.number):
         return
-    if CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
+    if settings.CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
         issue.repository, issue.title
     ):
         return
