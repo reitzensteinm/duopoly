@@ -265,3 +265,30 @@ def repository_exists(repo_name: str) -> bool:
         return True
     except Exception as e:
         return False
+
+
+def revert_commits(commit_hashes: List[str], target_dir: str = os.getcwd()):
+    """Reverts a list of commits in the specified repository in descending order based on their commit times.
+
+    Params:
+            commit_hashes (List[str]): A list of commit SHA hashes to revert.
+            target_dir (str): The directory of the repository where the commits will be reverted.
+
+    Raises:
+            Exception: If reverting any of the commits fails.
+    """
+    repo = Repo(target_dir)
+    commits = [
+        (repo.commit(hash_), repo.commit(hash_).committed_datetime)
+        for hash_ in commit_hashes
+    ]
+    commits.sort(
+        key=lambda x: x[1], reverse=True
+    )  # Sort commits by datetime in descending order.
+
+    for commit, _ in commits:
+        try:
+            repo.git.revert(commit, no_commit=True)
+        except Exception as e:
+            raise Exception(f"Failed to revert commit {commit.hexsha}: {str(e)}") from e
+    repo.git.commit("-m", "Revert commits")
