@@ -198,6 +198,8 @@ def get_issue_dependencies(repo_name: str, issue_number: int) -> list[int]:
     g = Github(api_key)
     repo = g.get_repo(repo_name)
     issue = repo.get_issue(issue_number)
+    if not issue.body:
+        return []
     issue_body = issue.body
     pattern = "#\\d+"
     matches = re.findall(pattern, issue_body)
@@ -282,10 +284,7 @@ def revert_commits(commit_hashes: List[str], target_dir: str = os.getcwd()):
         (repo.commit(hash_), repo.commit(hash_).committed_datetime)
         for hash_ in commit_hashes
     ]
-    commits.sort(
-        key=lambda x: x[1], reverse=True
-    )  # Sort commits by datetime in descending order.
-
+    commits.sort(key=lambda x: x[1], reverse=True)
     for commit, _ in commits:
         try:
             repo.git.revert(commit, no_commit=True)
