@@ -8,3 +8,4 @@
 * When moving a function or class from one file to another, add imports to the old file to ensure that code can still read it, and also add imports to the new file for whatever it depends on.
 * When moving a string constant to a file, remember to remove the quotes around the string.
 * If no files exist yet, please create one.
+* If a package has been updated, you can assume it's on the latest version.
