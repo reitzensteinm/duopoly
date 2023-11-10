@@ -5,7 +5,7 @@ from tools.pip import install_package
 
 class InstallPackage(Command):
     """
-    Class representing InstallPackage command.
+    Installs or updates a package to the latest version using pip.
     """
 
     @classmethod
@@ -48,13 +48,13 @@ class InstallPackage(Command):
 
     def execute(self, state: State):
         """
-        Executes the InstallPackage command.
+        Executes the InstallPackage command and ensures the package has been installed or updated and is on the latest version.
         """
         requirements_contents = install_package(self.tool)
 
         state.files["requirements.txt"] = requirements_contents
 
-        return f"Tool {self.tool} has been installed."
+        return f"Tool {self.tool} has been installed or updated and is on the latest version."
 
     def __str__(self):
         return f"Function Called: {self.name()} tool={self.tool}"
