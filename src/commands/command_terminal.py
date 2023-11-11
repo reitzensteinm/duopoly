@@ -16,7 +16,12 @@ class Terminal(Command):
 
     @property
     def terminal(self):
-        return True
+        """
+        A property that indicates whether the command should terminate the sequence when executed.
+        This returns False as executing a command on the console does not necessarily mean
+        the end of the command sequence.
+        """
+        return False
 
     def __init__(self, command_string: str):
         self.command_string: str = command_string
