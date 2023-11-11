@@ -1,6 +1,8 @@
 import subprocess
 from .command import Command
 from .state import State
+from tracing.trace import trace
+from tracing.tags import SYSTEM
 
 
 class Terminal(Command):
@@ -50,9 +52,11 @@ class Terminal(Command):
         """
         Executes the Terminal command.
         """
+        trace(SYSTEM, f"Executing terminal command: {self.command_string}")
         result = subprocess.run(
             self.command_string, shell=True, capture_output=True, text=True
         )
+        trace(SYSTEM, f"Terminal command output: {result.stdout}")
         return result.stdout
 
     def __str__(self):
