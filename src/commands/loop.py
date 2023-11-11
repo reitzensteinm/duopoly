@@ -45,8 +45,14 @@ def command_loop_iterate(state, system, command_classes):
     return (None, state)
 
 
-def command_loop(prompt: str, system: str, command_classes: list, files: dict = {}):
-    state = State(files)
+def command_loop(
+    prompt: str,
+    system: str,
+    command_classes: list,
+    files: dict = {},
+    target_dir: str = None,
+):
+    state = State(files, target_dir=target_dir)
     state.scratch = prompt
     exception_count = 0
 
