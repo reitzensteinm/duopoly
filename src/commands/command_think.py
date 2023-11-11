@@ -34,7 +34,7 @@ class Think(Command):
         """
         return {
             "name": "Think",
-            "description": "Write out a plan for the steps you are about to take. Please think before taking any action. Include at least a paragraph of detail",
+            "description": "Write out a plan for the steps you are about to take. Please think before taking any action. Include at least a paragraph of detail. It is important to ensure that the think command is not called more than once in succession to avoid redundant operations.",
             "parameters": {
                 "type": "object",
                 "properties": {
