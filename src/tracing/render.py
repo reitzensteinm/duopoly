@@ -5,6 +5,7 @@ TAG_COLOR_MAPPING = {
     "gpt-input": {"background": "#000000", "border": "#808080", "text": "#2DE864"},
     "gpt-output": {"background": "#000000", "border": "#808080", "text": "#A3E8FA"},
     "exception": {"background": "#000000", "border": "#FF0000", "text": "#FF9698"},
+    "system": {"background": "#FFFFFF", "border": "#000000", "text": "#A9A9A9"},
     # Add tag to color mapping here
     # Format: 'tag': {'background': 'color', 'border': 'color', 'text': 'color'}
 }
