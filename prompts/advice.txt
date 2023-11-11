@@ -10,3 +10,4 @@
 * If no files exist yet, please create one.
 * If a package has been updated, you can assume it's on the latest version.
 * If depends on #{issue} is part of the task, you can assume that the other task has been successfully completed before you're seeing this task.
+* For software versions represented with semver, x.y.z is newer than a.b.c if x > a, or if x == a and y > b, or if x == a and y == b then if z > c
