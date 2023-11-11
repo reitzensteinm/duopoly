@@ -1,4 +1,5 @@
 import subprocess
+import os
 from .command import Command
 from .state import State
 from tracing.trace import trace
@@ -57,12 +58,21 @@ class Terminal(Command):
         """
         Executes the Terminal command.
         """
-        trace(SYSTEM, f"Executing terminal command: {self.command_string}")
-        result = subprocess.run(
-            self.command_string, shell=True, capture_output=True, text=True
-        )
-        trace(SYSTEM, f"Terminal command output: {result.stdout}")
-        return result.stdout
+        original_dir = os.getcwd()
+        try:
+            if state.target_dir:
+                os.chdir(state.target_dir)
+            trace(SYSTEM, f"Executing terminal command: {self.command_string}")
+            result = subprocess.run(
+                self.command_string, shell=True, capture_output=True, text=True
+            )
+            trace(SYSTEM, f"Terminal command output: {result.stdout}")
+            return result.stdout
+        except Exception as e:
+            trace(SYSTEM, f"Error executing terminal command: {e}")
+            raise e
+        finally:
+            os.chdir(original_dir)
 
     def __str__(self):
         return f"Function Called: Terminal command_string={self.command_string}"
