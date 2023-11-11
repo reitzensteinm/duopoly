@@ -56,7 +56,7 @@ OBJECTIVE:
     return command.verdict
 
 
-def apply_prompt_to_files(prompt: str, files: dict) -> dict:
+def apply_prompt_to_files(prompt: str, files: dict, target_dir: str = None) -> dict:
     old_files = files
     advice = generate_advice(prompt)
     context = {
@@ -71,7 +71,7 @@ def apply_prompt_to_files(prompt: str, files: dict) -> dict:
     }
     prompt = load_prompt("issue", context)
     command, state = command_loop(
-        prompt, gpt.SYSTEM_COMMAND_FUNC, COMMANDS_GENERATE, files
+        prompt, gpt.SYSTEM_COMMAND_FUNC, COMMANDS_GENERATE, files, target_dir=target_dir
     )
     check_result(old_files, state.files, prompt)
     return state.files
@@ -83,7 +83,7 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
         for f in repo.list_files(target_dir, settings.GITIGNORE_PATH)
         if os.path.isfile(os.path.join(target_dir, f))
     }
-    updated_files = apply_prompt_to_files(prompt, files)
+    updated_files = apply_prompt_to_files(prompt, files, target_dir=target_dir)
     synchronize_files(target_dir, files, updated_files)
 
 
