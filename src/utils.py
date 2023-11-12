@@ -22,11 +22,11 @@ def partition_by_predicate(sequence: list, predicate: callable) -> list:
     with that element.
 
     Args:
-        sequence (list): A list of items to be partitioned.
-        predicate (callable): A function that returns a boolean.
+            sequence (list): A list of items to be partitioned.
+            predicate (callable): A function that returns a boolean.
 
     Returns:
-        list: A list of lists containing partitioned items based on the predicate.
+            list: A list of lists containing partitioned items based on the predicate.
     """
     result = []
     current_group = []
@@ -79,10 +79,28 @@ def list_files(files):
     return file_info
 
 
-def synchronize_files(target_dir, old_files, updated_files):
+def synchronize_files_write(target_dir, old_files, updated_files):
+    """Writes the contents of updated_files to disk and removes files that no longer exist."""
     for k, v in updated_files.items():
         write_file(os.path.join(target_dir, k), v)
 
     deleted_files = [f for f in old_files.keys() if f not in updated_files]
     for f in deleted_files:
         os.remove(os.path.join(target_dir, f))
+
+
+def synchronize_files_read(target_dir, old_files, updated_files):
+    """
+    Copies file contents from the disk into updated_files. Removes entries from updated_files if they no longer exist on disk.
+    This does not add new files that have been added to the disk.
+    """
+    all_files_in_directory = os.listdir(target_dir)
+    for file_name_on_disk in all_files_in_directory:
+        file_path = os.path.join(target_dir, file_name_on_disk)
+        if os.path.isfile(file_path):
+            with open(file_path, "r", encoding="utf-8") as file:
+                updated_files[file_name_on_disk] = file.read()
+
+    files_not_found = set(old_files.keys()) - set(updated_files.keys())
+    for file_name in files_not_found:
+        updated_files.pop(file_name, None)
