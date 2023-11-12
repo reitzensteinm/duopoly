@@ -2,7 +2,13 @@ import os
 import uuid
 import subprocess
 import gpt
-from utils import read_file, write_file, add_line_numbers, list_files, synchronize_files
+from utils import (
+    read_file,
+    write_file,
+    add_line_numbers,
+    list_files,
+    synchronize_files_write,
+)
 from commands import command
 from commands.commands import (
     Think,
@@ -84,7 +90,7 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
         if os.path.isfile(os.path.join(target_dir, f))
     }
     updated_files = apply_prompt_to_files(prompt, files, target_dir=target_dir)
-    synchronize_files(target_dir, files, updated_files)
+    synchronize_files_write(target_dir, files, updated_files)
 
 
 def process_directory(prompt: str, target_dir: str) -> None:
