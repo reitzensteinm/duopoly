@@ -60,7 +60,8 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
             return
         if issue_name is None or issue_name in issue.title:
             for attempt in range(MAX_RETRIES):
-                trace_instance = create_trace(f"{issue.title}")
+                current_time = time.strftime("%Y%m%d_%H%M%S")
+                trace_instance = create_trace(f"{issue.title}_{current_time}")
                 bind_trace(trace_instance)
                 try:
                     process_issue(issue, dry_run)
@@ -68,7 +69,7 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
                 except Exception as e:
                     cprint(
                         f"""Attempt {attempt + 1} failed for issue {issue.title} with error: {str(e)}
-                            {traceback.format_exc()}""",
+						{traceback.format_exc()}""",
                         "red",
                     )
                     trace(EXCEPTION, str(e))
