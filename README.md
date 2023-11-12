@@ -1,6 +1,6 @@
 # Duopoly
 
-Duopoly is a GPT-4 powered software engineer. It's building itself, right from
+Duopoly is a GPT-4 software developer. It's building itself, right from
 the [second commit](https://github.com/reitzensteinm/duopoly/commit/7646e1be5a281e87d58ea995f694bf39d247d264).
 
 ### Aims
@@ -12,7 +12,7 @@ the [second commit](https://github.com/reitzensteinm/duopoly/commit/7646e1be5a28
 
 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟥 92% Commits AI Written
 
-💰 OpenAI GPT-4 Cost: Approximately $3 per commit
+💰 OpenAI GPT-4 Turbo Cost: Approximately $2 per commit
 
 - [x] Read GitHub Issues and create Pull Requests
 - [x] First class support for Python tooling
