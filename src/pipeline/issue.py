@@ -65,15 +65,12 @@ OBJECTIVE:
 def apply_prompt_to_files(prompt: str, files: dict, target_dir: str = None) -> dict:
     old_files = files
     advice = generate_advice(prompt)
+    code_path = settings.CODE_PATH
     context = {
         "files": ", ".join(files.keys()),
         "advice": advice,
         "goal": prompt,
-        "details": "Imports should be relative to "
-        + settings.CODE_PATH
-        + ", so "
-        + settings.CODE_PATH
-        + "/cat/dog.py should be imported as 'cat.dog'",
+        "code_path": code_path,
     }
     prompt = load_prompt("issue", context)
     command, state = command_loop(

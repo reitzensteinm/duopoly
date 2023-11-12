@@ -8,4 +8,4 @@
 {{goal}}
 
 ### DETAILS ###
-{{details}}
+Imports should be relative to {{code_path}}, so {{code_path}}/cat/dog.py should be imported as 'cat.dog'
