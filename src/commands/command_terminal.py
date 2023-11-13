@@ -68,13 +68,13 @@ class Terminal(Command):
                 self.command_string, shell=True, capture_output=True, text=True
             )
             trace(SYSTEM, f"Terminal command output: {result.stdout}")
-            synchronize_files_read(state.target_dir, state.original_files, state.files)
             return result.stdout
         except Exception as e:
             trace(SYSTEM, f"Error executing terminal command: {e}")
             raise e
         finally:
             os.chdir(original_dir)
+            synchronize_files_read(state.target_dir, state.original_files, state.files)
 
     def __str__(self):
         return f"Function Called: Terminal command_string={self.command_string}"
