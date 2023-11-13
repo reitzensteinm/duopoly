@@ -4,6 +4,7 @@ from .command import Command
 from .state import State
 from tracing.trace import trace
 from tracing.tags import SYSTEM
+from utils import synchronize_files_read
 
 
 class Terminal(Command):
@@ -67,6 +68,7 @@ class Terminal(Command):
                 self.command_string, shell=True, capture_output=True, text=True
             )
             trace(SYSTEM, f"Terminal command output: {result.stdout}")
+            synchronize_files_read(state.target_dir, state.original_files, state.files)
             return result.stdout
         except Exception as e:
             trace(SYSTEM, f"Error executing terminal command: {e}")
