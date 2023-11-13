@@ -35,7 +35,7 @@ class Files(Command):
         return False
 
     def __init__(self, files: list):
-        self.files: list = files
+        self.files: list = [file.lstrip("./") for file in files]
 
     @staticmethod
     def schema() -> dict:
