@@ -45,11 +45,10 @@ def gpt_query(
                 completion = openai.ChatCompletion.create(
                     model=model, messages=messages
                 )
-            if (
-                functions is not None
-                and "function_call" not in completion.choices[0].message
-                and require_function
-            ):
+            function_call = getattr(
+                completion.choices[0].message, "function_call", None
+            )
+            if functions is not None and function_call is None and require_function:
                 cprint(
                     f"No functions returned. Message received: {completion.choices[0].message.content}",
                     "red",
@@ -70,8 +69,8 @@ def gpt_query(
             time.sleep(backoff)
             backoff *= 2
     trace(GPT_INPUT, message, (tokens_in, tokens_out))
-    if "function_call" in completion.choices[0].message:
-        function_result = completion.choices[0].message["function_call"]
+    if function_call is not None:
+        function_result = function_call
         trace(GPT_OUTPUT, function_result, (tokens_in, tokens_out))
         cprint(f"Function call result: {function_result}", "cyan")
         return function_result
