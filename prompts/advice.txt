@@ -12,3 +12,4 @@
 * If depends on #{issue} is part of the task, you can assume that the other task has been successfully completed before you're seeing this task.
 * For software versions represented with semver, x.y.z is newer than a.b.c if x > a, or if x == a and y > b, or if x == a and y == b then if z > c
 * Always use the install package command when installing versions. Installing a package this way will modify requirements.txt, but ReplaceFile should not be used to modify it directly.
+* Always refer to files by relative paths like "a.txt". Never use Linux style "./a.txt"
