@@ -18,31 +18,23 @@ def parse_gpt_response(command_classes, gpt_response):
     Parses the response from GPT and returns a Command instance for that response.
     """
     for command_class in command_classes:
-        if command_class.name() == gpt_response["name"]:
-            return command_class.load_from_json(json.loads(gpt_response["arguments"]))
-
-    raise ValueError(f"Unrecognized command name: {gpt_response['name']}")
+        if command_class.name() == gpt_response.name:
+            return command_class.load_from_json(json.loads(gpt_response.arguments))
+    raise ValueError(f"Unrecognized command name: {gpt_response.name}")
 
 
 def command_loop_iterate(state, system, command_classes):
     result = gpt_query(state.scratch + "\n", system, extract_schemas(command_classes))
-
     if isinstance(result, str):
-        return (result, state)
-
+        return result, state
     command = parse_gpt_response(command_classes, result)
-
     if command.terminal:
-        return (command, state)
-
+        return command, state
     output = command.execute(state)
-
     state.scratch += "\n" + str(command)
-
     state.scratch += "\n" + output
-
     exception_count = 0
-    return (None, state)
+    return None, state
 
 
 def command_loop(
@@ -55,12 +47,11 @@ def command_loop(
     state = State(files, target_dir=target_dir)
     state.scratch = prompt
     exception_count = 0
-
     while True:
         try:
-            (result, state) = command_loop_iterate(state, system, command_classes)
+            result, state = command_loop_iterate(state, system, command_classes)
             if result is not None:
-                return (result, state)
+                return result, state
         except Exception as e:
             exception_count += 1
             cprint(f"Exception occurred: {str(e)}", "red")
@@ -68,5 +59,5 @@ def command_loop(
                 raise e
             else:
                 print(
-                    f"Retrying command execution, attempt number {exception_count+1}..."
+                    f"Retrying command execution, attempt number {exception_count + 1}..."
                 )
