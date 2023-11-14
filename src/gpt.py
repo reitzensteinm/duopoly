@@ -57,8 +57,8 @@ def gpt_query(
                 raise Exception("No functions returned")
             end_time = time.time()
             call_duration = end_time - start_time
-            tokens_in = completion["usage"]["prompt_tokens"]
-            tokens_out = completion["usage"]["completion_tokens"]
+            tokens_in = completion.usage.prompt_tokens
+            tokens_out = completion.usage.completion_tokens
             cprint(
                 f"Call took {call_duration:.1f}s, {tokens_in} tokens in, {tokens_out} tokens out",
                 "yellow",
