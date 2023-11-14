@@ -67,7 +67,8 @@ class Terminal(Command):
             result = subprocess.run(
                 self.command_string, shell=True, capture_output=True, text=True
             )
-            trace(SYSTEM, f"Terminal command output: {result.stdout}")
+            trace(SYSTEM, f"Terminal command stdout: {result.stdout}")
+            trace(SYSTEM, f"Terminal command stderr: {result.stderr}")
             return result.stdout
         except Exception as e:
             trace(SYSTEM, f"Error executing terminal command: {e}")
