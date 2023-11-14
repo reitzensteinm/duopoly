@@ -1,5 +1,7 @@
 import os
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 import time
 from utils import read_file, write_file, partition_by_predicate
 from termcolor import cprint
@@ -26,7 +28,6 @@ def gpt_query(
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
-    openai.api_key = os.environ["OPENAI_API_KEY"]
     retries = 2
     backoff = 1
     for i in range(retries):
@@ -38,11 +39,11 @@ def gpt_query(
                 {"role": "user", "content": message},
             ]
             if functions is not None:
-                completion = openai.ChatCompletion.create(
+                completion = client.chat.completions.create(
                     model=model, messages=messages, functions=functions
                 )
             else:
-                completion = openai.ChatCompletion.create(
+                completion = client.chat.completions.create(
                     model=model, messages=messages
                 )
             function_call = getattr(
@@ -83,8 +84,7 @@ def gpt_query(
 
 @memoize
 def calculate_text_embedding(text: str):
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    embedding_result = openai.Embedding.create(
+    embedding_result = client.embeddings.create(
         model="text-embedding-ada-002", input=text
     )
     return list(embedding_result["data"][0]["embedding"])
