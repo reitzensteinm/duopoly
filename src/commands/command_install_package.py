@@ -1,3 +1,4 @@
+import os
 from commands.command import Command
 from commands.state import State
 from tools.pip import install_package
@@ -50,7 +51,13 @@ class InstallPackage(Command):
         """
         Executes the InstallPackage command and ensures the package has been installed or updated and is on the latest version.
         """
-        requirements_contents = install_package(self.tool)
+        original_dir = os.getcwd()
+        try:
+            if state.target_dir:
+                os.chdir(state.target_dir)
+            requirements_contents = install_package(self.tool)
+        finally:
+            os.chdir(original_dir)
 
         state.files["requirements.txt"] = requirements_contents
 
