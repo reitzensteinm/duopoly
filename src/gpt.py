@@ -82,6 +82,65 @@ def gpt_query(
         return content
 
 
+def gpt_query_tools(
+    message: str,
+    system: str,
+    functions,
+    model: str = GPT_4,
+) -> str:
+    if len(message) > MAX_INPUT_CHARS:
+        raise ValueError("Input exceeds maximum allowed character count")
+    if model not in [GPT_4, GPT_3_5]:
+        raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
+    retries = 2
+    backoff = 1
+    for i in range(retries):
+        try:
+            start_time = time.time()
+            cprint(f"GPT Input: {message}", "blue")
+            messages = [
+                {"role": "system", "content": system},
+                {"role": "user", "content": message},
+            ]
+            completion = client.chat.completions.create(
+                model=model, messages=messages, functions=functions
+            )
+            function_call = getattr(
+                completion.choices[0].message, "function_call", None
+            )
+            if function_call is None:
+                cprint(
+                    f"No functions returned. Message received: {completion.choices[0].message.content}",
+                    "red",
+                )
+                raise Exception("No functions returned")
+            end_time = time.time()
+            call_duration = end_time - start_time
+            tokens_in = completion.usage.prompt_tokens
+            tokens_out = completion.usage.completion_tokens
+            cprint(
+                f"Call took {call_duration:.1f}s, {tokens_in} tokens in, {tokens_out} tokens out",
+                "yellow",
+            )
+            break
+        except Exception as e:
+            if i == retries - 1:
+                raise e
+            time.sleep(backoff)
+            backoff *= 2
+    trace(GPT_INPUT, message, (tokens_in, tokens_out))
+    if function_call is not None:
+        function_result = function_call
+        trace(GPT_OUTPUT, function_result, (tokens_in, tokens_out))
+        cprint(f"Function call result: {function_result}", "cyan")
+        return function_result
+    else:
+        content = completion.choices[0].message.content
+        trace(GPT_OUTPUT, content, (tokens_in, tokens_out))
+        cprint(f"GPT Output: {content}", "cyan")
+        return content
+
+
 @memoize
 def calculate_text_embedding(text: str):
     embedding_result = client.embeddings.create(
