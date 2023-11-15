@@ -80,7 +80,7 @@ class Files(Command):
             if file in state.files:
                 content_with_tabs = replace_spaces_with_tabs(state.files[file])
                 annotated_content = annotate_with_line_numbers(content_with_tabs)
-                result += f"{file}: \n{annotated_content}"
+                result += f"\n\n{file}: \n{annotated_content}"
             else:
-                result += f"File {file} does not exist.\n"
-        return result
+                result += f"\n\nFile {file} does not exist.\n"
+        return result.strip()
