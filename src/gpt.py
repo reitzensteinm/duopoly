@@ -88,6 +88,7 @@ def gpt_query_tools(
     functions,
     model: str = GPT_4,
 ) -> str:
+    tools = [{"type": "function", "function": f} for f in functions]
     if len(message) > MAX_INPUT_CHARS:
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
@@ -103,17 +104,15 @@ def gpt_query_tools(
                 {"role": "user", "content": message},
             ]
             completion = client.chat.completions.create(
-                model=model, messages=messages, functions=functions
+                model=model, messages=messages, tools=tools
             )
-            function_call = getattr(
-                completion.choices[0].message, "function_call", None
-            )
-            if function_call is None:
+            tool_calls = getattr(completion.choices[0].message, "tool_calls", None)
+            if tool_calls is None:
                 cprint(
-                    f"No functions returned. Message received: {completion.choices[0].message.content}",
+                    f"No tool calls returned. Message received: {completion.choices[0].message.content}",
                     "red",
                 )
-                raise Exception("No functions returned")
+                raise Exception("No tool calls returned")
             end_time = time.time()
             call_duration = end_time - start_time
             tokens_in = completion.usage.prompt_tokens
@@ -129,11 +128,10 @@ def gpt_query_tools(
             time.sleep(backoff)
             backoff *= 2
     trace(GPT_INPUT, message, (tokens_in, tokens_out))
-    if function_call is not None:
-        function_result = function_call
-        trace(GPT_OUTPUT, function_result, (tokens_in, tokens_out))
-        cprint(f"Function call result: {function_result}", "cyan")
-        return function_result
+    if tool_calls is not None:
+        trace(GPT_OUTPUT, tool_calls, (tokens_in, tokens_out))
+        cprint(f"Tool calls result: {tool_calls}", "cyan")
+        return tool_calls
     else:
         content = completion.choices[0].message.content
         trace(GPT_OUTPUT, content, (tokens_in, tokens_out))
