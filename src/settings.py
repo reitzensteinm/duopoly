@@ -1,3 +1,8 @@
+class Settings:
+    def __init__(self):
+        self.reviewers = []
+
+
 REPOSITORY_PATH = ["reitzensteinm/duopoly", "reitzensteinm/duopoly-website"]
 CODE_PATH = "src"
 GITIGNORE_PATH = ".gitignore"
@@ -9,3 +14,5 @@ PR_REVIEWER_USERNAME = "reitzensteinm"
 MAX_INPUT_CHARS = 48000
 PYLINT_RETRIES = 0
 CHECK_OPEN_PR = False
+
+settings = Settings()
