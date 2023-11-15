@@ -9,4 +9,4 @@
 
 ### DETAILS ###
 Imports should be relative to {{code_path}}, so {{code_path}}/cat/dog.py should be imported as 'cat.dog'
-Always use absolute imports from the top level of the project. Never use relative imports.
+Never use a relative import that reaches into a parent directory, like ..cat.dog.
