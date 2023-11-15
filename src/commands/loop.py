@@ -24,6 +24,10 @@ def parse_gpt_response(command_classes, gpt_response):
 
 
 def command_loop_iterate(state, system, command_classes):
+    if state.last_command:
+        command_classes = [
+            cmd_cls for cmd_cls in command_classes if cmd_cls != state.last_command
+        ]
     result = gpt_query(state.scratch + "\n", system, extract_schemas(command_classes))
     if isinstance(result, str):
         return result, state
