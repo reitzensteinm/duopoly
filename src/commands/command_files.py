@@ -75,12 +75,12 @@ class Files(Command):
         """
         Executes the Files command.
         """
-        result = ""
+        messages = []
         for file in self.files:
             if file in state.files:
                 content_with_tabs = replace_spaces_with_tabs(state.files[file])
-                annotated_content = annotate_with_line_numbers(content_with_tabs)
-                result += f"\n\n{file}: \n{annotated_content}"
+                state.information[file] = content_with_tabs
+                messages.append(f"File {file} has been added to context")
             else:
-                result += f"\n\nFile {file} does not exist.\n"
-        return result.strip()
+                messages.append(f"File {file} does not exist.")
+        return "\n".join(messages)
