@@ -11,6 +11,7 @@ from .command_delete_file import DeleteFile
 from .command_terminal import Terminal
 from .command_think import Think
 from .command_verdict import Verdict
+from .command_revert import Revert
 
 COMMANDS_CHECK = [Verdict, Files]
 
@@ -25,4 +26,5 @@ COMMANDS_GENERATE = [
     InstallPackage,
     ReplaceNode,
     Terminal,
+    Revert,
 ]
