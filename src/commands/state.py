@@ -8,3 +8,4 @@ class State:
         self.original_files: Dict[str, str] = copy.deepcopy(files_dict)
         self.scratch: str = ""
         self.target_dir: str = target_dir
+        self.last_command = None

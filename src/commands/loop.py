@@ -33,6 +33,7 @@ def command_loop_iterate(state, system, command_classes):
     output = command.execute(state)
     state.scratch += "\n" + str(command)
     state.scratch += "\n" + output
+    state.last_command = command.__class__
     exception_count = 0
     return None, state
 
