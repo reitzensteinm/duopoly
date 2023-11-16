@@ -1,6 +1,16 @@
+import yaml
+
+
 class Settings:
     def __init__(self):
         self.reviewers = []
+
+    def load_from_yaml(self, filepath="duopoly.yaml"):
+        with open(filepath, "r") as yamlfile:
+            data = yaml.safe_load(yamlfile)
+
+        if "reviewers" in data:
+            self.reviewers = data["reviewers"]
 
 
 REPOSITORY_PATH = ["reitzensteinm/duopoly", "reitzensteinm/duopoly-website"]
