@@ -3,6 +3,26 @@ from datetime import datetime, timedelta
 import pprint
 
 
+def format_date_with_ordinal(date):
+    """
+    Format a datetime date with the day having an ordinal suffix.
+
+    Parameters:
+    - date: datetime object.
+
+    Returns:
+    A string formatted in the style of '28th November, 2023'.
+    """
+    day = date.day
+    if 4 <= day <= 20 or 24 <= day <= 30:
+        suffix = "th"
+    else:
+        suffix = ["st", "nd", "rd"][day % 10 - 1]
+
+    formatted_date = date.strftime(f"%d{suffix} %B, %Y")
+    return formatted_date
+
+
 def print_analysis(repo_dir):
     pprinter = pprint.PrettyPrinter(indent=4)
 
@@ -13,6 +33,9 @@ def print_analysis(repo_dir):
     # Last month statistics
     last_month_stats = generate_statistics(repo_dir, (one_month_ago, datetime.now()))
     print("Last month statistics:")
+    for key, value in last_month_stats.items():
+        if key == "last_human_commit_date" and value:
+            last_month_stats[key] = format_date_with_ordinal(value)
     pprinter.pprint(last_month_stats)
 
     # Last three months statistics
@@ -20,11 +43,17 @@ def print_analysis(repo_dir):
         repo_dir, (three_months_ago, datetime.now())
     )
     print("Last three months statistics:")
+    for key, value in last_three_months_stats.items():
+        if key == "last_human_commit_date" and value:
+            last_three_months_stats[key] = format_date_with_ordinal(value)
     pprinter.pprint(last_three_months_stats)
 
     # All-time statistics
     all_time_stats = generate_statistics(repo_dir, (beginning_of_time, datetime.now()))
     print("All-time statistics:")
+    for key, value in all_time_stats.items():
+        if key == "last_human_commit_date" and value:
+            all_time_stats[key] = format_date_with_ordinal(value)
     pprinter.pprint(all_time_stats)
 
 
@@ -67,7 +96,11 @@ def generate_statistics(repo_dir, time_range):
             commit_counts["ai"] += 1
         else:
             commit_counts["human"] += 1
-            last_human_commit_date = commit.committed_datetime
+            if (
+                not last_human_commit_date
+                or commit.committed_datetime > last_human_commit_date
+            ):
+                last_human_commit_date = commit.committed_datetime
 
     total_commits = commit_counts["ai"] + commit_counts["human"]
 
