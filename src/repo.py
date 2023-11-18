@@ -291,3 +291,21 @@ def revert_commits(commit_hashes: List[str], target_dir: str = os.getcwd()):
         except Exception as e:
             raise Exception(f"Failed to revert commit {commit.hexsha}: {str(e)}") from e
     repo.git.commit("-m", "Revert commits")
+
+
+def list_commit_titles_and_authors(target_dir: str = os.getcwd()) -> List[str]:
+    """List commit titles and authors for all commits in a repository at the specified path.
+
+    Args:
+        target_dir (str): Path to the repository. Defaults to the current working directory.
+
+    Returns:
+        List[str]: A list of strings with each entry in the format 'Commit title - Author email'
+    """
+    repo = Repo(target_dir)
+    commit_info_list = []
+    for commit in repo.iter_commits():
+        title = commit.summary
+        author_email = commit.author.email
+        commit_info_list.append(f"{title} - {author_email}")
+    return commit_info_list
