@@ -1,4 +1,5 @@
 import os
+from typing import List
 from commands.command import Command
 from commands.state import State
 from tools.pip import install_package
@@ -6,7 +7,7 @@ from tools.pip import install_package
 
 class InstallPackage(Command):
     """
-    Installs or updates a package to the latest version using pip.
+    Installs or updates packages to the latest versions using pip.
     """
 
     @classmethod
@@ -17,8 +18,8 @@ class InstallPackage(Command):
     def terminal(self):
         return False
 
-    def __init__(self, tool: str):
-        self.tool: str = tool
+    def __init__(self, tools: List[str]):
+        self.tools: List[str] = tools
 
     @staticmethod
     def schema() -> dict:
@@ -27,16 +28,17 @@ class InstallPackage(Command):
         """
         return {
             "name": "InstallPackage",
-            "description": "Install a tool using pip",
+            "description": "Install multiple tools using pip",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "tool": {
-                        "type": "string",
-                        "description": "Name of the tool to be installed",
+                    "tools": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Names of the tools to be installed",
                     },
                 },
-                "required": ["tool"],
+                "required": ["tools"],
             },
         }
 
@@ -45,23 +47,28 @@ class InstallPackage(Command):
         """
         Loads the InstallPackage command from the provided json_data.
         """
-        return InstallPackage(json_data["tool"])
+        return InstallPackage(json_data["tools"])
 
     def execute(self, state: State):
         """
-        Executes the InstallPackage command and ensures the package has been installed or updated and is on the latest version.
+        Executes the InstallPackage command and ensures the packages have been installed or updated and are on the latest versions.
         """
         original_dir = os.getcwd()
+        requirements_contents = ""
         try:
             if state.target_dir:
                 os.chdir(state.target_dir)
-            requirements_contents = install_package(self.tool)
+            for tool in self.tools[:-1]:
+                install_package(tool)
+            if self.tools:
+                requirements_contents = install_package(self.tools[-1])
         finally:
             os.chdir(original_dir)
 
         state.files["requirements.txt"] = requirements_contents
 
-        return f"Tool {self.tool} has been installed or updated and is on the latest version."
+        return f"Tools have been installed or updated and are on the latest versions."
 
     def __str__(self):
-        return f"Function Called: {self.name()} tool={self.tool}"
+        tools_str = ", ".join(self.tools)
+        return f"Function Called: {self.name()} tools=[{tools_str}]"
