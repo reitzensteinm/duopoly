@@ -8,7 +8,11 @@ from pipeline.issue import process_issue
 import repo
 from evals.evals import process_evals
 from tracing.trace import create_trace, bind_trace, trace
+from website.analysis import generate_statistics
 from tracing.tags import EXCEPTION
+from datetime import datetime, timedelta
+import os
+import pprint
 import ast
 import astor
 import settings
@@ -107,7 +111,17 @@ def main():
         required=False,
         default=None,
     )
+    parser.add_argument("--analyse", action="store_true", help="Activate analysis mode")
     args = parser.parse_args()
+
+    if args.analyse:
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=30)
+        repo_dir = os.getcwd()
+        statistics = generate_statistics(repo_dir, (start_date, end_date))
+        pprint.pprint(statistics)
+        sys.exit(0)
+
     if args.evals:
         evals(args.evals)
     else:
