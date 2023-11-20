@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if a git tag is provided as a command-line argument and checkout that tag before running the script
+if [ ! -z "$1" ]; then
+	git checkout "$1"
+	echo "Checked out to tag $1"
+fi
+
 # Check if traces/ directory exists. If it does, delete it.
 if [ -d "traces/" ]; then
 	rm -rf traces/
