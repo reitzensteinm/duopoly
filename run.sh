@@ -4,6 +4,9 @@
 if [ ! -z "$1" ]; then
 	git checkout "$1"
 	echo "Checked out to tag $1"
+else
+	git checkout main
+	echo "Checked out to main branch"
 fi
 
 # Check if traces/ directory exists. If it does, delete it.
