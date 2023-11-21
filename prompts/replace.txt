@@ -14,3 +14,4 @@ Requirements:
 11) Use project relative imports. e.g. to import 'src/a/b.py', write 'import a.b'.
 12) Never import relative to the current directory, always import relative to the project's top level directory.
 13) All imports should live at the top of the file, before any other code.
+14) Do not delete any functionality from the previous file unrelated to the change being made.
