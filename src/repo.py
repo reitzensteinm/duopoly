@@ -247,7 +247,7 @@ def list_files(target_directory, gitignore_path):
     """Lists all the files in a directory that aren't excluded by a gitignore file."""
     with open(gitignore_path, "r") as f:
         lines = f.readlines()
-    lines.append(".git")
+    lines.append(".git/")
     spec = pathspec.PathSpec.from_lines("gitwildmatch", lines)
     matches = []
     for root, dirs, files in os.walk(target_directory):
@@ -273,11 +273,11 @@ def revert_commits(commit_hashes: List[str], target_dir: str = os.getcwd()):
     """Reverts a list of commits in the specified repository in descending order based on their commit times.
 
     Params:
-            commit_hashes (List[str]): A list of commit SHA hashes to revert.
-            target_dir (str): The directory of the repository where the commits will be reverted.
+                    commit_hashes (List[str]): A list of commit SHA hashes to revert.
+                    target_dir (str): The directory of the repository where the commits will be reverted.
 
     Raises:
-            Exception: If reverting any of the commits fails.
+                    Exception: If reverting any of the commits fails.
     """
     repo = Repo(target_dir)
     commits = [
@@ -297,10 +297,10 @@ def list_commit_titles_and_authors(target_dir: str = os.getcwd()) -> List[str]:
     """List commit titles and authors for all commits in a repository at the specified path.
 
     Args:
-        target_dir (str): Path to the repository. Defaults to the current working directory.
+            target_dir (str): Path to the repository. Defaults to the current working directory.
 
     Returns:
-        List[str]: A list of strings with each entry in the format 'Commit title - Author email'
+            List[str]: A list of strings with each entry in the format 'Commit title - Author email'
     """
     repo = Repo(target_dir)
     commit_info_list = []
