@@ -1,9 +1,31 @@
-basic:
-  prompt: "In main.py, rename the main function to main2"
-  tests: [ "test_main_rename" ]
-ambiguous_file:
-  prompt: "Rename the main function to main2"
-  tests: [ "test_main_rename" ]
-short:
-  prompt: "Rename the main to main2"
-  tests: [ "test_main_rename" ]
+prompts:
+  advice.txt:
+    - What do you advise on fixing this issue?
+    - Can you provide some advice on how to proceed with solving this problem?
+  issue.txt:
+    - I think there's an issue with this file, can you check it?
+    - Can you take a look at this file and tell me what’s wrong?
+  check.txt:
+    - Please check this file and let me know if anything is wrong.
+    - Perform a check on the code and report any issues.
+  hydrate.txt:
+    - I need this code hydrated please, can you do it?
+    - Please hydrate this piece of code.
+  summarize.txt:
+    - Can you give me a summary of what this file does?
+    - Provide a summary of the file’s functionality, please.
+  replace_think.txt:
+    - Please think about how you would replace this node.
+    - Contemplate the approach to replace this node, please.
+  replace.txt:
+    - Can you replace this piece of code?
+    - Please proceed and replace this code snippet.
+  command.txt:
+    - Execute this command for me, will you?
+    - Please carry out this command.
+  basic.py:
+    - Run the basic evaluation script with these parameters, please.
+    - Execute the basic.py evaluation script for me, with the following parameters.
+  test_basic.py:
+    - Perform a test using test_basic.py with the specified parameters.
+    - Use the test_basic.py script to run a test with these parameters, thanks.
