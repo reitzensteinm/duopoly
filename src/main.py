@@ -113,13 +113,17 @@ def main():
     parser.add_argument(
         "--analysis", action="store_true", help="Activate analysis mode"
     )
+    parser.add_argument("--context", action="store_true", help="Activate context mode")
     args = parser.parse_args()
-
     if args.analysis:
         repo_dir = os.getcwd()
         print_analysis(repo_dir)
         sys.exit(0)
+    if args.context:
+        from context.repl import repl
 
+        repl()
+        sys.exit(0)
     if args.evals:
         evals(args.evals)
     else:
