@@ -56,16 +56,15 @@ class ReplaceFile(Command):
         """
         Executes the ReplaceFile command.
         """
+        temp_scratch = state.scratch + "\n\n" + state.render_information()
         new_content = modify_file(
             state.files.get(self.filename, ""),
             self.instructions,
-            state.scratch,
+            temp_scratch,
             self.filename,
         )
-        if self.filename.endswith(".py"):  # Check if it's a Python file
-            new_content = format_python_code(
-                new_content
-            )  # Format the content if it's a Python file
+        if self.filename.endswith(".py"):
+            new_content = format_python_code(new_content)
         state.files[self.filename] = new_content
         return f"File {self.filename} has been replaced with instructions instructions={self.instructions}."
 
