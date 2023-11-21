@@ -1,3 +1,10 @@
+### DETAILS ###
+Imports should be relative to {{code_path}}, so {{code_path}}/cat/dog.py should be imported as 'cat.dog'
+Never use a relative import that reaches into a parent directory, like ..cat.dog.
+
+### STYLE ###
+{{style}}
+
 ### FILES ###
 {{files}}
 
@@ -6,7 +13,3 @@
 
 ### GOAL ###
 {{goal}}
-
-### DETAILS ###
-Imports should be relative to {{code_path}}, so {{code_path}}/cat/dog.py should be imported as 'cat.dog'
-Never use a relative import that reaches into a parent directory, like ..cat.dog.
