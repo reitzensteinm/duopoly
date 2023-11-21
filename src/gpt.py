@@ -28,6 +28,7 @@ def gpt_query(
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
+    trace(GPT_INPUT, message)
     retries = 2
     backoff = 1
     for i in range(retries):
@@ -67,7 +68,7 @@ def gpt_query(
                 raise e
             time.sleep(backoff)
             backoff *= 2
-    trace(GPT_INPUT, message, (tokens_in, tokens_out))
+
     if function_call is not None:
         function_result = function_call
         trace(GPT_OUTPUT, function_result, (tokens_in, tokens_out))
@@ -86,6 +87,7 @@ def gpt_query_tools(message: str, system: str, functions, model: str = GPT_4) ->
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
+    trace(GPT_INPUT, message)
     retries = 2
     backoff = 1
     for i in range(retries):
@@ -120,7 +122,7 @@ def gpt_query_tools(message: str, system: str, functions, model: str = GPT_4) ->
                 raise e
             time.sleep(backoff)
             backoff *= 2
-    trace(GPT_INPUT, message, (tokens_in, tokens_out))
+
     trace(GPT_OUTPUT, tool_calls, (tokens_in, tokens_out))
     cprint(f"Tool calls result: {tool_calls}", "cyan")
     return tool_calls
