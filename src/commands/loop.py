@@ -28,8 +28,8 @@ def command_loop_iterate(state, system, command_classes):
         command_classes = [
             cmd_cls for cmd_cls in command_classes if cmd_cls != state.last_command
         ]
-    state.scratch += "\n\n" + state.render_information()
-    result = gpt_query(state.scratch + "\n", system, extract_schemas(command_classes))
+    temp_scratch = state.scratch + "\n\n" + state.render_information()
+    result = gpt_query(temp_scratch + "\n", system, extract_schemas(command_classes))
     if isinstance(result, str):
         return result, state
     command = parse_gpt_response(command_classes, result)
