@@ -1,4 +1,7 @@
 import yaml
+import threading
+
+_thread_local_settings = threading.local()
 
 
 class Settings:
@@ -11,6 +14,18 @@ class Settings:
 
         if "reviewers" in data:
             self.reviewers = data["reviewers"]
+
+
+def get_settings():
+    if hasattr(_thread_local_settings, "settings"):
+        return _thread_local_settings.settings
+    return settings
+
+
+def apply_settings(yaml_path):
+    instance = Settings()
+    instance.load_from_yaml(yaml_path)
+    _thread_local_settings.settings = instance
 
 
 REPOSITORY_PATH = ["reitzensteinm/duopoly", "reitzensteinm/duopoly-website"]
