@@ -16,7 +16,7 @@ import ast
 import astor
 import settings
 
-MAX_RETRIES = 3
+MAX_RETRIES = 1
 
 
 def try_merge_pr(repository, pr_id):
