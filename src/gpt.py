@@ -46,9 +46,7 @@ def gpt_query(
                 completion = client.chat.completions.create(
                     model=model, messages=messages
                 )
-            function_call = getattr(
-                completion.choices[0].message, "function_call", None
-            )
+            function_call = completion.choices[0].message.function_call
             if functions is not None and function_call is None and require_function:
                 cprint(
                     f"No functions returned. Message received: {completion.choices[0].message.content}",
@@ -101,7 +99,7 @@ def gpt_query_tools(message: str, system: str, functions, model: str = GPT_4) ->
             completion = client.chat.completions.create(
                 model=model, messages=messages, tools=tools
             )
-            tool_calls = getattr(completion.choices[0].message, "tool_calls", None)
+            tool_calls = completion.choices[0].message.tool_calls
             if tool_calls is None:
                 cprint(
                     f"No tool calls returned. Message received: {completion.choices[0].message.content}",
