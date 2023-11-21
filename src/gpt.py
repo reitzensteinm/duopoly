@@ -82,12 +82,7 @@ def gpt_query(
         return content
 
 
-def gpt_query_tools(
-    message: str,
-    system: str,
-    functions,
-    model: str = GPT_4,
-) -> str:
+def gpt_query_tools(message: str, system: str, functions, model: str = GPT_4) -> str:
     tools = [{"type": "function", "function": f} for f in functions]
     if len(message) > MAX_INPUT_CHARS:
         raise ValueError("Input exceeds maximum allowed character count")
@@ -128,15 +123,9 @@ def gpt_query_tools(
             time.sleep(backoff)
             backoff *= 2
     trace(GPT_INPUT, message, (tokens_in, tokens_out))
-    if tool_calls is not None:
-        trace(GPT_OUTPUT, tool_calls, (tokens_in, tokens_out))
-        cprint(f"Tool calls result: {tool_calls}", "cyan")
-        return tool_calls
-    else:
-        content = completion.choices[0].message.content
-        trace(GPT_OUTPUT, content, (tokens_in, tokens_out))
-        cprint(f"GPT Output: {content}", "cyan")
-        return content
+    trace(GPT_OUTPUT, tool_calls, (tokens_in, tokens_out))
+    cprint(f"Tool calls result: {tool_calls}", "cyan")
+    return tool_calls
 
 
 @memoize
