@@ -66,11 +66,13 @@ def apply_prompt_to_files(prompt: str, files: dict, target_dir: str = None) -> d
     old_files = files
     advice = generate_advice(prompt)
     code_path = settings.CODE_PATH
+    style = files.get("STYLE", "")
     context = {
         "files": ", ".join(files.keys()),
         "advice": advice,
         "goal": prompt,
         "code_path": code_path,
+        "style": style,
     }
     prompt = load_prompt("issue", context)
     command, state = command_loop(
