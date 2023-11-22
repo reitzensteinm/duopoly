@@ -9,11 +9,6 @@ else
 	echo "Checked out to main branch"
 fi
 
-# Check if traces/ directory exists. If it does, delete it.
-if [ -d "traces/" ]; then
-	rm -rf traces/
-fi
-
 # Create a new traces/ directory
 mkdir traces/
 
