@@ -1,5 +1,3 @@
-# src/commands/command_think.py
-
 from commands.command import Command
 from commands.state import State
 
@@ -8,6 +6,8 @@ class Think(Command):
     """
     Class representing a Think command.
     """
+
+    can_repeat = False
 
     @classmethod
     def name(cls) -> str:

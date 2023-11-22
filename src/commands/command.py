@@ -2,10 +2,7 @@ import json
 from tools.replace_file import modify_file
 from commands.state import State
 from utils import annotate_with_line_numbers, format_python_code
-from black import (
-    FileMode,
-    format_str,
-)  # Added import for Black's format_str and FileMode
+from black import FileMode, format_str
 
 """
 Example Command schema:
@@ -31,6 +28,9 @@ class Command:
     """
     Class representing a command.
     """
+
+    def __init__(self):
+        self.can_repeat = True
 
     @classmethod
     def name(cls) -> str:
