@@ -10,7 +10,6 @@ from evals.evals import process_evals
 from tracing.trace import create_trace, bind_trace, trace
 from website.analysis import print_analysis
 from tracing.tags import EXCEPTION
-from datetime import datetime
 import os
 import ast
 import astor
@@ -63,8 +62,7 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
             return
         if issue_name is None or issue_name in issue.title:
             for attempt in range(MAX_RETRIES):
-                current_time = time.strftime("%Y%m%d_%H%M%S")
-                trace_instance = create_trace(f"{issue.title}_{current_time}")
+                trace_instance = create_trace(issue.title)
                 bind_trace(trace_instance)
                 try:
                     process_issue(issue, dry_run)

@@ -16,7 +16,10 @@ class TraceData:
 
 class Trace:
     def __init__(self, name: str):
-        self.name = name
+        from datetime import datetime
+
+        current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.name = f"{current_time}_{name}"
         self.trace_data = []
 
     def add_trace_data(self, tag, trace, tokens: Optional[Tuple[int, int]] = None):
