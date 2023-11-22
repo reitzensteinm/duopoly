@@ -1,3 +1,2 @@
 1) All functions should be explicitly typed, and contain a one paragraph docstring and a one sentence description of arguments and return values.
-2) Functions should not be imported from namespaces. Instead, import the namespace, and use the namespace when calling functions inside of it.
-3) Tests for a specific file (e.g., file.py) should be placed in a corresponding test file (e.g., test_file.py) within the same directory.
+2) Tests for a specific file (e.g., file.py) should be placed in a corresponding test file (e.g., test_file.py) within the same directory.
