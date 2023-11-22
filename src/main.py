@@ -87,7 +87,7 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
     if dry_run:
         process_open_issue(open_issues[0])
         return
-    with ThreadPoolExecutor(max_workers=5) as executor:
+    with ThreadPoolExecutor(max_workers=settings.MAX_WORKERS) as executor:
         results = executor.map(process_open_issue, open_issues)
     for result in results:
         pass
