@@ -3,6 +3,8 @@ import threading
 
 _thread_local_settings = threading.local()
 
+MAX_WORKERS = 10
+
 
 class Settings:
     def __init__(self):
