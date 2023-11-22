@@ -135,7 +135,7 @@ def gpt_query_tools(
                 raise e
             time.sleep(backoff)
             backoff *= 2
-    function_calls = [call["function"] for call in tool_calls]
+    function_calls = [call.function for call in tool_calls]
     trace(GPT_OUTPUT, function_calls, (tokens_in, tokens_out))
     cprint(f"Function calls result: {function_calls}", "cyan")
     return function_calls
