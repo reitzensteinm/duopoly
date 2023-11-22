@@ -9,8 +9,13 @@ else
 	echo "Checked out to main branch"
 fi
 
-# Create a new traces/ directory
-mkdir traces/
+# Check if the traces/ directory already exists
+if [ -d "traces/" ]; then
+	echo "The traces/ directory already exists."
+else
+	# Create a new traces/ directory
+	mkdir traces/
+fi
 
 # Run a python web server on port 8000 in the background
 nohup python3 -m http.server -d traces/ 8000 > /dev/null 2>&1 &
