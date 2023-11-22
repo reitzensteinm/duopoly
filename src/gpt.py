@@ -68,7 +68,6 @@ def gpt_query(
                 raise e
             time.sleep(backoff)
             backoff *= 2
-
     if function_call is not None:
         function_result = function_call
         trace(GPT_OUTPUT, function_result, (tokens_in, tokens_out))
@@ -81,7 +80,21 @@ def gpt_query(
         return content
 
 
-def gpt_query_tools(message: str, system: str, functions, model: str = GPT_4) -> str:
+def gpt_query_tools(
+    message: str, system: str, functions: list, model: str = GPT_4
+) -> list:
+    """
+    This function makes a query to the GPT model with specific system messages and function calls, then returns the function calls made by the model.
+
+    Arguments:
+    message: A str representing the user message to be sent to the GPT model.
+    system: A str representing the system's part of the conversation.
+    functions: A list of functions to be sent to the GPT model.
+    model: A str representing the GPT model to be used. Defaults to 'gpt-4'.
+
+    Returns:
+    A list of function calls made by the GPT model.
+    """
     tools = [{"type": "function", "function": f} for f in functions]
     if len(message) > MAX_INPUT_CHARS:
         raise ValueError("Input exceeds maximum allowed character count")
@@ -122,10 +135,10 @@ def gpt_query_tools(message: str, system: str, functions, model: str = GPT_4) ->
                 raise e
             time.sleep(backoff)
             backoff *= 2
-
-    trace(GPT_OUTPUT, tool_calls, (tokens_in, tokens_out))
-    cprint(f"Tool calls result: {tool_calls}", "cyan")
-    return tool_calls
+    function_calls = [call["function"] for call in tool_calls]
+    trace(GPT_OUTPUT, function_calls, (tokens_in, tokens_out))
+    cprint(f"Function calls result: {function_calls}", "cyan")
+    return function_calls
 
 
 @memoize
