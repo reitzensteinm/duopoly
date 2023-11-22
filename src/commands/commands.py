@@ -11,7 +11,7 @@ from .command_think import Think
 from .command_verdict import Verdict
 from .command_revert import Revert
 
-COMMANDS_CHECK = [Verdict, Files, Terminal]
+COMMANDS_CHECK = [Verdict, Terminal]
 COMMANDS_GENERATE = [
     Think,
     Verdict,
