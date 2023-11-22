@@ -1,16 +1,20 @@
 #!/bin/bash
 
-# Check if a git tag is provided as a command-line argument and checkout that tag before running the script
+# Ensure the repository is not on a detached head or checkout to the tag if provided
 if [ ! -z "$1" ]; then
 	git checkout "$1"
 	echo "Checked out to tag $1"
 else
-	git checkout main
-	echo "Checked out to main branch"
+	# Check if the repository is in a detached head state
+	HEAD_REF=$(git symbolic-ref -q HEAD)
+	if [ -z "$HEAD_REF" ]; then
+		git checkout main
+		echo "Checked out to main branch due to detached head"
+	fi
 fi
 
 # Create a new traces/ directory
-mkdir traces/
+mkdir -p traces/
 
 # Run a python web server on port 8000 in the background
 nohup python3 -m http.server -d traces/ 8000 > /dev/null 2>&1 &
