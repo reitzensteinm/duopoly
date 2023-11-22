@@ -1,4 +1,3 @@
-# command_files.py
 from commands.command import Command
 from commands.state import State
 from utils import annotate_with_line_numbers
@@ -35,7 +34,9 @@ class Files(Command):
         return False
 
     def __init__(self, files: list):
-        self.files: list = [file.lstrip("./") for file in files]
+        self.files: list = [
+            (file[2:] if file.startswith("./") else file) for file in files
+        ]
 
     @staticmethod
     def schema() -> dict:
