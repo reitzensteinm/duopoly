@@ -179,8 +179,14 @@ def is_issue_open(repo_name: str, issue_number: int) -> bool:
     return issue.state == "open"
 
 
-def clone_repository(repo_url: str, path: str):
-    """Clone the specified repository from GitHub to the specified path."""
+def clone_repository(repo_url: str, path: str) -> None:
+    """Clone the specified repository from GitHub to the specified path after ensuring the path is cleared."""
+    import os
+    import shutil
+
+    if os.path.exists(path):
+        shutil.rmtree(path, ignore_errors=True)
+    os.makedirs(path, exist_ok=True)
     Repo.clone_from(repo_url, path)
 
 
