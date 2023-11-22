@@ -24,7 +24,6 @@ from commands.loop import command_loop
 import repo
 import settings
 from settings import PYLINT_RETRIES
-import shutil
 from repo import Issue
 from tools.imports import imports
 from tools.search import search_tool
@@ -111,19 +110,29 @@ def process_directory(prompt: str, target_dir: str) -> None:
             raise Exception("Pytest failed\n" + pytest_result)
 
 
-def get_target_dir(issue):
+def get_target_dir(issue: Issue) -> str:
+    """Constructs the target directory path for the given issue."""
     return f"target/issue-{issue.number}/{issue.repository}"
 
 
-def get_branch_id(issue):
+def get_branch_id(issue: Issue) -> str:
+    """Generates a unique branch identifier for the given issue."""
     return f"issue-{issue.id}"
 
 
-def prepare_branch(issue: Issue, dry_run: bool) -> None:
+def prepare_branch(issue: Issue, dry_run: bool) -> str:
+    """Sets up the local branch for processing an issue.
+
+    Cloning and directory preparation are handled by the clone_repository function.
+
+    Params:
+            issue (Issue): The issue object containing details required to prepare the branch.
+            dry_run (bool): Indicates whether the branch setup should actually be performed or not.
+
+    Returns:
+            str: The path to the directory where the branch is set up.
+    """
     target_dir = get_target_dir(issue)
-    if os.path.exists(target_dir):
-        shutil.rmtree(target_dir, ignore_errors=True)
-    os.makedirs(target_dir, exist_ok=True)
     repo.clone_repository(
         f"https://{os.environ['GITHUB_API_KEY']}@github.com/{issue.repository}.git",
         target_dir,
@@ -135,6 +144,14 @@ def prepare_branch(issue: Issue, dry_run: bool) -> None:
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
+    """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests.
+
+    Does not process the issue if the author is not marked as an admin, if the issue is not open, or if there is already an open PR for the issue.
+
+    Params:
+            issue (Issue): The issue to be processed.
+            dry_run (bool): If true, does not conduct any writes or branch modifications.
+    """
     if issue.author not in settings.ADMIN_USERS:
         return
     if not repo.is_issue_open(issue.repository, issue.number):
