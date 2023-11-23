@@ -1,5 +1,6 @@
 import os
 from openai import OpenAI
+from typing import List
 
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 import time
@@ -15,6 +16,20 @@ GPT_3_5 = "gpt-3.5-turbo-1106"
 GPT_4 = "gpt-4-1106-preview"
 SYSTEM_CHECK_FUNC = load_prompt("check")
 SYSTEM_COMMAND_FUNC = load_prompt("command")
+
+
+class FunctionCall:
+    """
+    The FunctionCall class holds information about function calls made by the GPT model.
+
+    Attributes:
+            name: A string representing the name of the function called.
+            arguments: A dictionary with strings as keys and any type as values, representing the arguments to the function.
+    """
+
+    def __init__(self, name: str, arguments: dict[str, any]):
+        self.name = name
+        self.arguments = arguments
 
 
 def gpt_query(
@@ -82,7 +97,7 @@ def gpt_query(
 
 def gpt_query_tools(
     message: str, system: str, functions: list, model: str = GPT_4
-) -> list:
+) -> List[FunctionCall]:
     """
     This function makes a query to the GPT model with specific system messages and function calls, then returns the function calls made by the model.
 
@@ -93,7 +108,7 @@ def gpt_query_tools(
     model: A str representing the GPT model to be used. Defaults to 'gpt-4'.
 
     Returns:
-    A list of function calls made by the GPT model.
+    A list of FunctionCall objects representing the function calls made by the GPT model.
     """
     tools = [{"type": "function", "function": f} for f in functions]
     if len(message) > MAX_INPUT_CHARS:
@@ -135,7 +150,9 @@ def gpt_query_tools(
                 raise e
             time.sleep(backoff)
             backoff *= 2
-    function_calls = [call.function for call in tool_calls]
+    function_calls = [
+        FunctionCall(call["name"], call["arguments"]) for call in tool_calls
+    ]
     trace(GPT_OUTPUT, function_calls, (tokens_in, tokens_out))
     cprint(f"Function calls result: {function_calls}", "cyan")
     return function_calls
