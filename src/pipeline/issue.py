@@ -162,6 +162,9 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         return
     target_dir = prepare_branch(issue, dry_run)
     formatted_prompt = f"Title: {issue.title}\nDescription: {issue.description}"
+    duopoly_path = os.path.join(target_dir, "duopoly.yaml")
+    if os.path.exists(duopoly_path):
+        settings.apply_settings(duopoly_path)
     process_directory(formatted_prompt, target_dir)
     issue_state = IssueState(issue.id)
     if not dry_run:
