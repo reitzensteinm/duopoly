@@ -13,12 +13,24 @@ from tracing.tags import EXCEPTION
 import os
 import ast
 import astor
-import settings
+from settings import get_settings, REPOSITORY_PATH
 
 MAX_RETRIES = 1
 
 
-def try_merge_pr(repository, pr_id):
+def try_merge_pr(repository: str, pr_id: int) -> bool:
+    """
+    Attempt to merge a pull request on the given repository.
+
+    This function checks for conflicts and attempts a rebase merge.
+
+    Arguments:
+        repository: A string representing the repository name.
+        pr_id: An integer representing the ID of the pull request to merge.
+
+    Returns:
+        A boolean indicating success or failure of the merge.
+    """
     if repo.check_pr_conflict(repository, pr_id):
         cprint(f"PR {pr_id} has conflict. Skipping merge.", "red")
         return False
@@ -29,7 +41,18 @@ def try_merge_pr(repository, pr_id):
         return False
 
 
-def merge_approved_prs(repository) -> None:
+def merge_approved_prs(repository: str) -> None:
+    """
+    Merge all approved pull requests for the given repository.
+
+    This function finds all approved pull requests and attempts to merge them.
+
+    Arguments:
+        repository: A string representing the repository name where PRs will be merged.
+
+    Returns:
+        None.
+    """
     is_merged = False
     approved_prs = repo.find_approved_prs(repository)
     for pr_id in approved_prs:
@@ -48,7 +71,22 @@ def merge_approved_prs(repository) -> None:
     repo.fetch_new_changes()
 
 
-def process_repository(dry_run=False, issue_name=None, repository="") -> None:
+def process_repository(
+    dry_run: bool = False, issue_name: str = None, repository: str = ""
+) -> None:
+    """
+    Process the given repository, merging PRs and processing issues.
+
+    If not in dry run mode, it merges approved pull requests and processes open issues.
+
+    Arguments:
+        dry_run: A boolean indicating whether to perform a dry run.
+        issue_name: An optional string filtering issues by name.
+        repository: A string defining the repository to process.
+
+    Returns:
+        None.
+    """
     if not repo.repository_exists(repository):
         print(f'Warning: The repository "{repository}" does not exist.')
         return
@@ -85,17 +123,39 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
     if dry_run:
         process_open_issue(open_issues[0])
         return
-    with ThreadPoolExecutor(max_workers=settings.MAX_WORKERS) as executor:
+    with ThreadPoolExecutor(max_workers=get_settings().max_workers) as executor:
         results = executor.map(process_open_issue, open_issues)
     for result in results:
         pass
 
 
 def evals(directory: str) -> None:
+    """
+    Process evaluations for a given directory.
+
+    This function runs evaluations specified within the directory.
+
+    Arguments:
+        directory: A string representing the directory containing evaluation tests.
+
+    Returns:
+        None.
+    """
     process_evals(directory)
 
 
-def main():
+def main() -> None:
+    """
+    Main function for running the script.
+
+    It parses command-line arguments and activates different modes based on those arguments.
+
+    Arguments:
+        None.
+
+    Returns:
+        None.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
     parser.add_argument(
@@ -125,7 +185,7 @@ def main():
     if args.evals:
         evals(args.evals)
     else:
-        for repository in settings.REPOSITORY_PATH:
+        for repository in REPOSITORY_PATH:
             process_repository(
                 dry_run=args.dry_run, issue_name=args.issue, repository=repository
             )
