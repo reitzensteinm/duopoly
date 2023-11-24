@@ -38,12 +38,12 @@ def command_loop_iterate(state: State, system: str, command_classes: list) -> tu
     of a command based on the GPT-generated response and updates the state accordingly.
 
     Args:
-            state (State): The current state of the command loop.
-            system (str): The GPT-3 system being used.
-            command_classes (list): A list of available command classes.
+                    state (State): The current state of the command loop.
+                    system (str): The GPT-3 system being used.
+                    command_classes (list): A list of available command classes.
 
     Returns:
-            tuple: A tuple containing execution result and the updated state.
+                    tuple: A tuple containing execution result and the updated state.
     """
     if (
         state.last_command
@@ -58,18 +58,23 @@ def command_loop_iterate(state: State, system: str, command_classes: list) -> tu
             if cmd_cls != state.last_command.__class__
         ]
     temp_scratch = state.scratch + "\n\n" + state.render_information()
-    result = gpt_query(temp_scratch + "\n", system, extract_schemas(command_classes))
-    if isinstance(result, str):
-        return result, state
-    command = parse_gpt_response(command_classes, result)
-    if command.terminal:
-        return command, state
-    output = command.execute(state)
-    state.scratch += "\n" + str(command)
-    state.scratch += "\n" + output
-    state.last_command = command
-    exception_count = 0
-    return None, state
+    try:
+        result = gpt_query(
+            temp_scratch + "\n", system, extract_schemas(command_classes)
+        )
+        if isinstance(result, str):
+            return result, state
+        command = parse_gpt_response(command_classes, result)
+        if command.terminal:
+            return command, state
+        output = command.execute(state)
+        state.scratch += "\n" + str(command)
+        state.scratch += "\n" + output
+        state.last_command = command
+        return None, state
+    except Exception as e:
+        state.scratch += "\nException thrown calling command! " + str(e)
+        return None, state
 
 
 def command_loop(
