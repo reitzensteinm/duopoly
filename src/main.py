@@ -102,7 +102,8 @@ def main() -> None:
     Entry point of the application which parses command-line arguments and initiates corresponding actions.
 
     The function supports running the application in various modes, such as dry run, analysis, context,
-    and evaluations, through the use of command-line arguments.
+    and evaluations, through the use of command-line arguments. The --use-tools flag enables the use
+    of the new OpenAI tools API.
 
     :return: None
     """
@@ -129,11 +130,13 @@ def main() -> None:
         required=False,
         default=False,
     )
+    parser.add_argument(
+        "--use-tools",
+        action="store_true",
+        help="Enable the use of the new OpenAI tools API",
+    )
     args = parser.parse_args()
-
-    # Apply command-line argument overrides to settings
     settings.get_settings().apply_commandline_overrides(args.quality_checks)
-
     if args.analysis:
         repo_dir = os.getcwd()
         print_analysis(repo_dir)
