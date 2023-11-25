@@ -11,7 +11,8 @@ class Settings:
         self.reviewers = []
         self.max_workers = 10
         self.MAX_INPUT_CHARS = 48000
-        self.use_tools: bool = False  # New field indicating whether to use tools.
+        self.use_tools: bool = False
+        self.do_quality_checks: bool = True
 
     def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
         """Load settings from the specified YAML file.
@@ -30,7 +31,7 @@ class Settings:
         Args:
                         do_quality_checks (bool): Indicate whether to perform quality checks.
         """
-        self.DO_QUALITY_CHECKS = do_quality_checks
+        self.do_quality_checks = do_quality_checks
 
 
 def get_settings() -> Settings:

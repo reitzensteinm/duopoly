@@ -136,6 +136,8 @@ def main() -> None:
         help="Enable the use of the new OpenAI tools API",
     )
     args = parser.parse_args()
+    settings.get_settings().do_quality_checks = args.quality_checks
+    settings.get_settings().use_tools = args.use_tools
     settings.PARSED_ARGS = vars(args)
     if args.analysis:
         repo_dir = os.getcwd()
