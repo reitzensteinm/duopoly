@@ -7,11 +7,17 @@ _thread_local_settings = threading.local()
 
 class Settings:
     def __init__(self):
-        """Initialize the Settings with the default configuration values."""
+        """Initialize the Settings with the default configuration values.
+
+        This constructor sets up the Settings object with default values such as an empty list of reviewers,
+        maximum number of workers, maximum input characters, and the use of tools flag. It also adds
+        the new quality_checks field, defaulting to True.
+        """
         self.reviewers = []
         self.max_workers = 10
         self.MAX_INPUT_CHARS = 48000
-        self.use_tools: bool = False  # New field indicating whether to use tools.
+        self.use_tools: bool = False
+        self.quality_checks: bool = True
 
     def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
         """Load settings from the specified YAML file.
@@ -28,8 +34,6 @@ class Settings:
         """Override certain settings values based on PARSED_ARGS.
 
         This function accesses the global PARSED_ARGS and utilizes it to determine if quality checks should be performed.
-        Args:
-                self: The instance of Settings on which the method is being called.
         """
         global PARSED_ARGS
         self.DO_QUALITY_CHECKS = (
