@@ -8,6 +8,7 @@ class Settings:
     def __init__(self):
         self.reviewers = []
         self.max_workers = 10
+        self.MAX_INPUT_CHARS = 48000
 
     def load_from_yaml(self, filepath="duopoly.yaml"):
         with open(filepath, "r") as yamlfile:
@@ -52,7 +53,6 @@ TOKEN_LIMIT = 40000
 DO_QUALITY_CHECKS = True
 REQUEST_REVIEW_FOR_PRS = True
 PR_REVIEWER_USERNAME = "reitzensteinm"
-MAX_INPUT_CHARS = 48000
 PYLINT_RETRIES = 1
 CHECK_OPEN_PR = False
 settings = Settings()
