@@ -130,6 +130,10 @@ def main() -> None:
         default=False,
     )
     args = parser.parse_args()
+
+    # Apply command-line argument overrides to settings
+    settings.get_settings().apply_commandline_overrides(args.quality_checks)
+
     if args.analysis:
         repo_dir = os.getcwd()
         print_analysis(repo_dir)
