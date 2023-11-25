@@ -1,13 +1,25 @@
 #!/bin/bash
 
-# Check if a git tag is provided as a command-line argument and checkout that tag before running the script
-if [ ! -z "$1" ]; then
-	git checkout "$1"
-	echo "Checked out to tag $1"
-else
-	git checkout main
-	echo "Checked out to main branch"
-fi
+# Default to the main branch if no version is specified
+version="main"
+# Initialize an empty array for additional arguments
+extra_args=()
+
+# Iterate over arguments to find a version and collect additional arguments
+for arg in "$@"; do
+	if [[ $arg == "--version" ]]; then
+		expect_version_val=true
+	elif [[ $expect_version_val == true ]]; then
+		version=$arg
+		expect_version_val=false
+	else
+		extra_args+=("$arg")
+	fi
+done
+
+# Checkout to the specified version or main if version is not set
+git checkout "$version"
+echo "Checked out to $version"
 
 # Check if the traces/ directory already exists
 if [ -d "traces/" ]; then
@@ -24,18 +36,18 @@ while true
 do
 	# Update git repo
 	git pull
-	
+
 	# Install requirements
 	pip3 install -q -r requirements.txt
-	
-	# Run the python script
-	python3 src/main.py
-	
+
+	# Run the python script with additional arguments
+	python3 src/main.py "${extra_args[@]}"
+
 	echo -e '\033[95mexecution successful\033[0m'
-	
+
 	# Sleep for 100 hours
 	sleep 360000
-	
+
 	# Exit the loop
 	break
 done
