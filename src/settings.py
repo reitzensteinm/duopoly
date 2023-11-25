@@ -6,15 +6,17 @@ _thread_local_settings = threading.local()
 
 class Settings:
     def __init__(self):
+        """Initialize the Settings with the default configuration values."""
         self.reviewers = []
         self.max_workers = 10
         self.MAX_INPUT_CHARS = 48000
+        self.use_tools: bool = False  # New field indicating whether to use tools.
 
     def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
         """Load settings from the specified YAML file.
 
         Args:
-                filepath (str): The path to the YAML settings file to load.
+                        filepath (str): The path to the YAML settings file to load.
         """
         with open(filepath, "r") as yamlfile:
             data = yaml.safe_load(yamlfile)
@@ -25,7 +27,7 @@ class Settings:
         """Override class variables based on command line arguments.
 
         Args:
-                do_quality_checks (bool): Indicate whether to perform quality checks.
+                        do_quality_checks (bool): Indicate whether to perform quality checks.
         """
         self.DO_QUALITY_CHECKS = do_quality_checks
 
@@ -34,7 +36,7 @@ def get_settings() -> Settings:
     """Retrieve the current settings instance.
 
     Returns:
-        Settings: The current thread-local Settings instance.
+            Settings: The current thread-local Settings instance.
 
     This function fetches the Settings object associated with the thread-local
     storage. If it does not exist, it returns the global Settings instance.
@@ -48,7 +50,7 @@ def apply_settings(yaml_path: str) -> None:
     """Apply settings from a YAML file to the current Settings instance.
 
     Args:
-        yaml_path (str): The path to the YAML file from which to load settings.
+            yaml_path (str): The path to the YAML file from which to load settings.
 
     This function creates a new Settings instance, loads settings from the
     specified YAML file, and stores it in the thread-local storage.
