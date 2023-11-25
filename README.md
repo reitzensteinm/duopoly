@@ -11,8 +11,8 @@ the [second commit](https://github.com/reitzensteinm/duopoly/commit/7646e1be5a28
 ### Status
 
 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100% commits AI written last month  
-🟩🟩🟩🟩🟩🟩🟩🟩🟩🟥 97% commits AI written last three months  
-🟩🟩🟩🟩🟩🟩🟩🟩🟥🟥 84% commits AI written all time  
+🟩🟩🟩🟩🟩🟩🟩🟩🟩🟥 98% commits AI written last three months  
+🟩🟩🟩🟩🟩🟩🟩🟩🟥🟥 85% commits AI written all time  
 
 **Last human commit: 10th September, 2023**
 
