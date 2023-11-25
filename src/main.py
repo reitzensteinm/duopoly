@@ -136,7 +136,7 @@ def main() -> None:
         help="Enable the use of the new OpenAI tools API",
     )
     args = parser.parse_args()
-    settings.get_settings().apply_commandline_overrides(args.quality_checks)
+    settings.PARSED_ARGS = vars(args)
     if args.analysis:
         repo_dir = os.getcwd()
         print_analysis(repo_dir)

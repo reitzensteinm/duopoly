@@ -1,5 +1,6 @@
 import yaml
 import threading
+from typing import Optional, Any
 
 _thread_local_settings = threading.local()
 
@@ -67,3 +68,11 @@ DO_QUALITY_CHECKS = True
 PYLINT_RETRIES = 1
 CHECK_OPEN_PR = False
 settings = Settings()
+PARSED_ARGS: Optional[Any] = None
+"""A dictionary of the parsed command line arguments.
+
+This constant is intended to be set in main.py with the actual parsed arguments
+from the command line after argparse processing. It is initialized as None and
+should be of type Optional[dict] to allow for type checking and to indicate that
+it may not yet be set at the time of module import.
+"""
