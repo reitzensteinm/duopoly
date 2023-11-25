@@ -50,13 +50,8 @@ class Settings:
         """
         global PARSED_ARGS
         if PARSED_ARGS:
-            self.do_quality_checks = PARSED_ARGS.get(
-                "quality_checks", self.quality_checks
-            )
+            self.quality_checks = PARSED_ARGS.get("quality_checks", self.quality_checks)
             self.use_tools = PARSED_ARGS.get("use_tools", self.use_tools)
-        else:
-            self.do_quality_checks = self.quality_checks
-            self.use_tools = self.use_tools
 
 
 def get_settings() -> Settings:
