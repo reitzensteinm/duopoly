@@ -14,12 +14,20 @@ class Settings:
         """Load settings from the specified YAML file.
 
         Args:
-            filepath (str): The path to the YAML settings file to load.
+                filepath (str): The path to the YAML settings file to load.
         """
         with open(filepath, "r") as yamlfile:
             data = yaml.safe_load(yamlfile)
         if "reviewers" in data:
             self.reviewers = data["reviewers"]
+
+    def apply_commandline_overrides(self, do_quality_checks: bool) -> None:
+        """Override class variables based on command line arguments.
+
+        Args:
+                do_quality_checks (bool): Indicate whether to perform quality checks.
+        """
+        self.DO_QUALITY_CHECKS = do_quality_checks
 
 
 def get_settings() -> Settings:
