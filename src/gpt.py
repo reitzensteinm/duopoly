@@ -9,7 +9,7 @@ from tracing.trace import trace
 from tracing.tags import GPT_INPUT, GPT_OUTPUT
 from utilities.cache import memoize
 from utilities.prompts import load_prompt
-from settings import MAX_INPUT_CHARS
+from settings import get_settings
 
 GPT_3_5 = "gpt-3.5-turbo-1106"
 GPT_4 = "gpt-4-1106-preview"
@@ -24,7 +24,21 @@ def gpt_query(
     model: str = GPT_4,
     require_function: bool = True,
 ) -> str:
-    if len(message) > MAX_INPUT_CHARS:
+    """
+    Get a response from the GPT model based on the input message and system state.
+
+    Arguments:
+    message: A str representing the input message for the GPT model.
+    system: A str representing the system state input for the GPT model.
+    functions: Optional; A list of dict representing the functions that can be used within the GPT model.
+    model: A str representing the model to be used. Defaults to GPT_4.
+    require_function: A bool indicating whether a function response is required. Defaults to True.
+
+    Returns:
+    str: A string representing the GPT model's output or function call result.
+    """
+    settings = get_settings()
+    if len(message) > settings.MAX_INPUT_CHARS:
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
@@ -95,8 +109,9 @@ def gpt_query_tools(
     Returns:
     A list of function calls made by the GPT model.
     """
+    settings = get_settings()
     tools = [{"type": "function", "function": f} for f in functions]
-    if len(message) > MAX_INPUT_CHARS:
+    if len(message) > settings.MAX_INPUT_CHARS:
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
