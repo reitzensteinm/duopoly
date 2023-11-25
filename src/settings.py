@@ -17,20 +17,24 @@ class Settings:
         """Load settings from the specified YAML file.
 
         Args:
-                        filepath (str): The path to the YAML settings file to load.
+                filepath (str): The path to the YAML settings file to load.
         """
         with open(filepath, "r") as yamlfile:
             data = yaml.safe_load(yamlfile)
         if "reviewers" in data:
             self.reviewers = data["reviewers"]
 
-    def apply_commandline_overrides(self, do_quality_checks: bool) -> None:
-        """Override class variables based on command line arguments.
+    def apply_commandline_overrides(self) -> None:
+        """Override certain settings values based on PARSED_ARGS.
 
+        This function accesses the global PARSED_ARGS and utilizes it to determine if quality checks should be performed.
         Args:
-                        do_quality_checks (bool): Indicate whether to perform quality checks.
+                self: The instance of Settings on which the method is being called.
         """
-        self.DO_QUALITY_CHECKS = do_quality_checks
+        global PARSED_ARGS
+        self.DO_QUALITY_CHECKS = (
+            PARSED_ARGS.get("do_quality_checks", True) if PARSED_ARGS else True
+        )
 
 
 def get_settings() -> Settings:
@@ -39,8 +43,7 @@ def get_settings() -> Settings:
     Returns:
             Settings: The current thread-local Settings instance.
 
-    This function fetches the Settings object associated with the thread-local
-    storage. If it does not exist, it returns the global Settings instance.
+    This function fetches the Settings object associated with the thread-local storage. If it does not exist, it returns the global Settings instance.
     """
     if hasattr(_thread_local_settings, "settings"):
         return _thread_local_settings.settings
@@ -53,8 +56,7 @@ def apply_settings(yaml_path: str) -> None:
     Args:
             yaml_path (str): The path to the YAML file from which to load settings.
 
-    This function creates a new Settings instance, loads settings from the
-    specified YAML file, and stores it in the thread-local storage.
+    This function creates a new Settings instance, loads settings from the specified YAML file, and stores it in the thread-local storage.
     """
     instance = Settings()
     instance.load_from_yaml(yaml_path)
@@ -73,8 +75,5 @@ settings = Settings()
 PARSED_ARGS: Optional[Any] = None
 """A dictionary of the parsed command line arguments.
 
-This constant is intended to be set in main.py with the actual parsed arguments
-from the command line after argparse processing. It is initialized as None and
-should be of type Optional[dict] to allow for type checking and to indicate that
-it may not yet be set at the time of module import.
+This constant is intended to be set in main.py with the actual parsed arguments from the command line after argparse processing. It is initialized as None and should be of type Optional[dict] to allow for type checking and to indicate that it may not yet be set at the time of module import.
 """
