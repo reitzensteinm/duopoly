@@ -1,4 +1,4 @@
-### v0.0.2 (WIP)
+### v0.0.2
 
 Per project settings, read in via duopoly.yaml
 Reduced context size by not sending duplicate files
