@@ -29,7 +29,7 @@ class Settings:
         """Load settings from the specified YAML file and ensure command line arguments override the loaded settings.
 
         Args:
-                filepath (str): The path to the YAML settings file to load.
+                        filepath (str): The path to the YAML settings file to load.
 
         This method loads configuration values from a YAML file and ensures that afterwards,
         command line parameters take priority by calling apply_commandline_overrides.
@@ -44,12 +44,17 @@ class Settings:
         """Override certain settings values based on PARSED_ARGS.
 
         This function accesses the global PARSED_ARGS and utilizes it to determine if certain settings like quality checks
-        should be performed.
+        and the use of tools should be performed.
         """
         global PARSED_ARGS
-        self.DO_QUALITY_CHECKS = (
-            PARSED_ARGS.get("do_quality_checks", True) if PARSED_ARGS else True
-        )
+        if PARSED_ARGS:
+            self.do_quality_checks = PARSED_ARGS.get(
+                "quality_checks", self.quality_checks
+            )
+            self.use_tools = PARSED_ARGS.get("use_tools", self.use_tools)
+        else:
+            self.do_quality_checks = self.quality_checks
+            self.use_tools = self.use_tools
 
 
 def get_settings() -> Settings:
