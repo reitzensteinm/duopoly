@@ -9,8 +9,8 @@ def extract_schemas(command_classes: list) -> list:
     """
     Extracts and returns the schema from each command class in the provided list.
 
-    :param command_classes: List of command classes to inspect.
-    :return: List of schema dictionaries for the commands.
+    Args: command_classes (list): List of command classes to inspect.
+    Returns: List of schema dictionaries for the commands.
     """
     schemas = [command_class.schema() for command_class in command_classes]
     return schemas
@@ -20,10 +20,13 @@ def parse_gpt_response(command_classes: list, gpt_response: "GPTResponse") -> "C
     """
     Parses a GPT response and returns a corresponding Command instance.
 
-    :param command_classes: A list of command classes to match the GPT response against.
-    :param gpt_response: The GPT response containing the name of the command and its arguments.
-    :return: An instance of the Command that corresponds to the GPT response.
-    :raises ValueError: If the command name from GPT response is not recognized.
+    Args:
+            command_classes: A list of command classes to match the GPT response against.
+            gpt_response: The GPT response containing the name of the command and its arguments.
+    Returns:
+            An instance of the Command that corresponds to the GPT response.
+    Raises:
+            ValueError: If the command name from GPT response is not recognized.
     """
     for command_class in command_classes:
         if command_class.name() == gpt_response.name:
@@ -40,12 +43,11 @@ def command_loop_iterate(state: State, system: str, command_classes: list) -> tu
     The function supports processing multiple results, but currently, GPT queries return a single result.
 
     Args:
-                                            state (State): The current state of the command loop.
-                                            system (str): The GPT-3 system being used.
-                                            command_classes (list): A list of available command classes.
-
+            state (State): The current state of the command loop.
+            system (str): The GPT-3 system being used.
+            command_classes (list): A list of available command classes.
     Returns:
-                                            tuple: A tuple containing execution results and the updated state.
+            tuple: A tuple containing execution results and the updated state.
     """
     if (
         state.last_command
@@ -62,6 +64,7 @@ def command_loop_iterate(state: State, system: str, command_classes: list) -> tu
     temp_scratch = state.scratch + "\n\n" + state.render_information()
     try:
         if get_settings().use_tools:
+            cprint("Using experimental tools feature", "red")
             results = gpt_query_tools(
                 temp_scratch + "\n", system, extract_schemas(command_classes)
             )
@@ -97,12 +100,14 @@ def command_loop(
     """
     Initiates a command loop where GPT can iteratively execute a series of commands based on user prompts.
 
-    :param prompt: The initial prompt to start the command loop.
-    :param system: The system which is used for GPT querying.
-    :param command_classes: A list of Command classes available for execution.
-    :param files: An optional dictionary of file names to file contents.
-    :param target_dir: An optional target directory for file operations.
-    :return: A tuple containing any terminal output as a string and the final state.
+    Args:
+            prompt: The initial prompt to start the command loop.
+            system: The system which is used for GPT querying.
+            command_classes: A list of Command classes available for execution.
+            files: An optional dictionary of file names to file contents.
+            target_dir: An optional target directory for file operations.
+    Returns:
+            A tuple containing any terminal output as a string and the final state.
     """
     state = State(files, target_dir=target_dir)
     state.scratch = prompt
