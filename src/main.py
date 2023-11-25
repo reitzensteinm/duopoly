@@ -97,7 +97,15 @@ def evals(directory: str) -> None:
     process_evals(directory)
 
 
-def main():
+def main() -> None:
+    """
+    Entry point of the application which parses command-line arguments and initiates corresponding actions.
+
+    The function supports running the application in various modes, such as dry run, analysis, context,
+    and evaluations, through the use of command-line arguments.
+
+    :return: None
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
     parser.add_argument(
@@ -114,6 +122,13 @@ def main():
         "--analysis", action="store_true", help="Activate analysis mode"
     )
     parser.add_argument("--context", action="store_true", help="Activate context mode")
+    parser.add_argument(
+        "--quality-checks",
+        action="store_true",
+        help="Activate quality checks mode",
+        required=False,
+        default=False,
+    )
     args = parser.parse_args()
     if args.analysis:
         repo_dir = os.getcwd()
