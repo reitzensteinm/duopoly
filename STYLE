@@ -1,2 +1,2 @@
-1) All functions should be explicitly typed, and contain a one paragraph docstring and a one sentence description of arguments and return values.
+1) All functions should be explicitly typed, and contain one long sentence docstring along with a one sentence description of arguments and return values.
 2) Tests for a specific file (e.g., file.py) should be placed in a corresponding test file (e.g., test_file.py) within the same directory.
