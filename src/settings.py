@@ -26,18 +26,20 @@ class Settings:
         self.apply_commandline_overrides()
 
     def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
-        """Load settings from the specified YAML file and ensure command line arguments override the loaded settings.
+        """Load settings from a YAML file including quality checks and reviewer information, and apply command line overrides.
 
         Args:
-                        filepath (str): The path to the YAML settings file to load.
+                filepath (str): The path to the YAML settings file to load.
 
-        This method loads configuration values from a YAML file and ensures that afterwards,
-        command line parameters take priority by calling apply_commandline_overrides.
+        This method updates the instance attributes from the YAML file specified by `filepath`,
+        and calls `apply_commandline_overrides` to ensure consistent settings.
         """
         with open(filepath, "r") as yamlfile:
             data = yaml.safe_load(yamlfile)
         if "reviewers" in data:
             self.reviewers = data["reviewers"]
+        if "quality_checks" in data:
+            self.quality_checks = data["quality_checks"]
         self.apply_commandline_overrides()
 
     def apply_commandline_overrides(self) -> None:
