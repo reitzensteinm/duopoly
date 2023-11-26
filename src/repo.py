@@ -281,22 +281,24 @@ def list_files(target_directory: str, gitignore_path: str) -> List[str]:
     return matches
 
 
-def repository_exists(repo_name: str) -> bool:
-    """Check if a repository with the given name exists on GitHub.
+def get_issue_body_from_pr(repo_name: str, pr_id: int) -> str:
+    """
+    Retrieves the body of the GitHub issue linked to the pull request.
 
     Args:
-        repo_name (str): The name of the repository to check.
+            repo_name: The name of the repository.
+            pr_id: The ID of the pull request.
 
     Returns:
-        bool: True if the repository exists, False otherwise.
+            The body of the linked issue as a string.
     """
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
-    try:
-        g.get_repo(repo_name)
-        return True
-    except:
-        return False
+    pr = g.get_repo(repo_name).get_pull(pr_id)
+    if pr.issue_url:
+        issue = g.get_repo(repo_name).get_issue(pr.number)
+        return issue.body if issue.body else ""
+    raise Exception(f"Issue not found for PR {pr_id} in {repo_name}")
 
 
 def revert_commits(commit_hashes: List[str], target_dir: str = os.getcwd()) -> None:

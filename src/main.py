@@ -145,5 +145,21 @@ def main() -> None:
             )
 
 
+def try_squash_merge_pr(repository: str, pr_id: int) -> None:
+    """
+    Attempts to squash merge a PR on the specified repository using the PR title as the commit title and the linked Issue's body as the commit message formatted as 'Prompt: <Issue body>'.
+
+    Args:
+        repository: The name of the GitHub repository.
+        pr_id: The ID of the pull request to be merged.
+
+    Returns:
+        None
+    """
+    issue_body = repo.get_issue_body_from_pr(repository, pr_id)
+    commit_message = f"Prompt: {issue_body}"
+    repo.merge_with_squash(repository, pr_id, commit_message)
+
+
 if __name__ == "__main__":
     main()
