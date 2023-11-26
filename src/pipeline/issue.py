@@ -146,7 +146,7 @@ def prepare_branch(issue: Issue, dry_run: bool) -> str:
 def process_issue(issue: Issue, dry_run: bool) -> None:
     """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests.
 
-    Does not process the issue if the author is not marked as an admin, if the issue is not open, or if there is already an open PR for the issue.
+    Increases the retry count after an open PR check if no open PR was found, and does not process the issue if the author is not marked as an admin, if the issue is not open, or if there is already an open PR for the issue.
 
     Params:
             issue (Issue): The issue to be processed.
@@ -160,13 +160,18 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         issue.repository, issue.title
     ):
         return
+
+    issue_state = IssueState.retrieve_by_id(issue.id)
+    issue_state.retry_count += 1
+    issue_state.store()
+
     target_dir = prepare_branch(issue, dry_run)
     formatted_prompt = f"Title: {issue.title}\nDescription: {issue.description}"
     duopoly_path = os.path.join(target_dir, "duopoly.yaml")
     if os.path.exists(duopoly_path):
         settings.apply_settings(duopoly_path)
     process_directory(formatted_prompt, target_dir)
-    issue_state = IssueState(issue.id)
+
     if not dry_run:
         repo.commit_local_modifications(
             issue.title, f'Prompt: "{formatted_prompt}"', target_dir
