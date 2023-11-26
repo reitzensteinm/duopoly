@@ -15,7 +15,7 @@ class Settings:
         """Initialize the Settings with default configuration values including reviewers, workers, input chars, tools, quality checks, and issue retries.
 
         This constructor sets up the Settings object with default values such as an empty list of reviewers (list),
-        a maximum number of workers (int), maximum input characters (int), flags for use of tools (bool) and quality checks (bool),
+        a maximum number of workers (int), maximum input characters (int), flags for use of tools (bool), and quality checks (bool),
         and a maximum number of issue retries (int, defaulting to 2).
         Command line arguments can override these settings by call to apply_commandline_overrides at the end.
         """
@@ -23,7 +23,7 @@ class Settings:
         self.max_workers: int = 10
         self.MAX_INPUT_CHARS: int = 48000
         self.use_tools: bool = False
-        self.quality_checks: Optional[bool] = None
+        self.quality_checks: bool = True
         self.max_issue_retries: int = 2
         self.apply_commandline_overrides()
 
@@ -31,7 +31,7 @@ class Settings:
         """Load settings from a YAML file and apply command line overrides.
 
         Args:
-                filepath (str): The path to the YAML settings file to load.
+                        filepath (str): The path to the YAML settings file to load.
 
         This method updates the instance with settings from the YAML file at `filepath` and applies overrides.
         """
