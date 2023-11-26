@@ -12,7 +12,13 @@ class State:
         self.information: Dict[str, str] = {}
 
     def render_information(self) -> str:
+        """
+        Renders information as a string where every key is surrounded by '***' and displayed above its value.
+
+        Returns:
+                str: The formatted string containing keys and values.
+        """
         rendered_info = []
         for key, value in self.information.items():
-            rendered_info.append(f"{key}:\n{value}")
+            rendered_info.append(f"*** {key} ***\n{value}")
         return "\n\n".join(rendered_info)
