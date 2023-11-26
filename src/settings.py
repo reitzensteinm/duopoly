@@ -23,7 +23,7 @@ class Settings:
         self.max_workers: int = 10
         self.MAX_INPUT_CHARS: int = 48000
         self.use_tools: bool = False
-        self.quality_checks: bool = True
+        self.quality_checks: Optional[bool] = None
         self.max_issue_retries: int = 2
         self.apply_commandline_overrides()
 
@@ -31,7 +31,7 @@ class Settings:
         """Load settings from a YAML file and apply command line overrides.
 
         Args:
-            filepath (str): The path to the YAML settings file to load.
+                filepath (str): The path to the YAML settings file to load.
 
         This method updates the instance with settings from the YAML file at `filepath` and applies overrides.
         """
@@ -39,7 +39,7 @@ class Settings:
             data = yaml.safe_load(yamlfile)
         if "reviewers" in data:
             self.reviewers = data["reviewers"]
-        if "quality_checks" in data:
+        if "quality_checks" in data and data["quality_checks"] is not None:
             self.quality_checks = data["quality_checks"]
         self.apply_commandline_overrides()
 
@@ -50,7 +50,13 @@ class Settings:
         """
         global PARSED_ARGS
         if PARSED_ARGS:
-            self.quality_checks = PARSED_ARGS.get("quality_checks", self.quality_checks)
+            if (
+                "quality_checks" in PARSED_ARGS
+                and PARSED_ARGS["quality_checks"] is not None
+            ):
+                self.quality_checks = PARSED_ARGS.get(
+                    "quality_checks", self.quality_checks
+                )
             self.use_tools = PARSED_ARGS.get("use_tools", self.use_tools)
 
 
