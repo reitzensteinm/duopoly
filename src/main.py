@@ -15,8 +15,6 @@ import ast
 import astor
 import settings
 
-MAX_RETRIES = 1
-
 
 def try_merge_pr(repository, pr_id):
     if repo.check_pr_conflict(repository, pr_id):
@@ -57,30 +55,26 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
     open_issues = repo.fetch_open_issues(repository)
 
     def process_open_issue(issue):
+        """
+        Processes the provided issue based on its characteristics and the running mode.
+
+        :param issue: The issue to process.
+        :return: None
+        """
         if repo.check_dependency_issues(issue):
             cprint(f"Not processing issue {issue.number}: blocked", "yellow")
             return
-        if issue_name is None or issue_name in issue.title:
-            for attempt in range(MAX_RETRIES):
-                trace_instance = create_trace(issue.title)
-                bind_trace(trace_instance)
-                try:
-                    process_issue(issue, dry_run)
-                    break
-                except Exception as e:
-                    cprint(
-                        f"""Attempt {attempt + 1} failed for issue {issue.title} with error: {str(e)}
-						{traceback.format_exc()}""",
-                        "red",
-                    )
-                    trace(EXCEPTION, str(e))
-                    if attempt == MAX_RETRIES - 1:
-                        print(
-                            f"Failed to process issue {issue.title} after {MAX_RETRIES} attempts."
-                        )
-                        raise
-                    else:
-                        print(f"Retrying to process issue {issue.title}...")
+        trace_instance = create_trace(issue.title)
+        bind_trace(trace_instance)
+        try:
+            process_issue(issue, dry_run)
+        except Exception as e:
+            cprint(
+                f"Issue {issue.title} processing failed with error: {str(e)}\n{traceback.format_exc()}",
+                "red",
+            )
+            trace(EXCEPTION, str(e))
+            raise
 
     if dry_run:
         process_open_issue(open_issues[0])
