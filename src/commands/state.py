@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 import copy
 
 
@@ -10,6 +10,7 @@ class State:
         self.target_dir: str = target_dir
         self.last_command = None
         self.information: Dict[str, str] = {}
+        self.context_files: List[str] = []
 
     def render_information(self) -> str:
         """
@@ -22,3 +23,16 @@ class State:
         for key, value in self.information.items():
             rendered_info.append(f"*** {key} ***\n{value}")
         return "\n\n".join(rendered_info)
+
+    def add_file(self, filename: str) -> None:
+        """
+        Adds a filename to the context_files list, ignoring duplicates.
+
+        Arguments:
+                filename (str): The filename to add.
+
+        Returns:
+                None
+        """
+        if filename not in self.context_files:
+            self.context_files.append(filename)
