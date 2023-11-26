@@ -5,10 +5,10 @@ class IssueState:
     """Represents the state of an issue with a retry count.
 
     Args:
-        id (int): The identifier of the issue.
+            id (int): The identifier of the issue.
 
     Returns:
-        IssueState: An instance representing the issue state.
+            IssueState: An instance representing the issue state.
 
     """
 
@@ -16,7 +16,7 @@ class IssueState:
         """Initialize the IssueState with an ID and a retry count set to zero.
 
         Args:
-            id (int): The identifier of the issue.
+                id (int): The identifier of the issue.
 
         """
         self.id = id
@@ -24,20 +24,17 @@ class IssueState:
 
     @staticmethod
     def retrieve_by_id(id: int) -> "IssueState":
-        """Retrieve the issue state by id, if not found, create a new one and store.
+        """Retrieve the issue state by id directly if it exists, or create and store a new one if not found.
 
         Args:
-            id (int): The identifier of the issue.
+                id (int): The identifier of the issue.
 
         Returns:
-            IssueState: The retrieved or newly created issue state.
+                IssueState: The retrieved or newly created issue state.
 
         """
         try:
-            issue_dict = read(f"issue-{id}")
-            new_issue = IssueState(id)
-            new_issue.__dict__.update(issue_dict)
-            return new_issue
+            return read(f"issue-{id}")
         except FileNotFoundError:
             new_issue = IssueState(id)
             write(f"issue-{id}", new_issue)
@@ -47,7 +44,7 @@ class IssueState:
         """Store the current issue state.
 
         Returns:
-            None
+                None
         """
         write(f"issue-{self.id}", self)
 
@@ -55,7 +52,7 @@ class IssueState:
         """Return a string representation of the issue state.
 
         Returns:
-            str: The string representation of the issue state.
+                str: The string representation of the issue state.
 
         """
         return str(self.__dict__)
