@@ -115,10 +115,10 @@ def main() -> None:
     parser.add_argument("--context", action="store_true", help="Activate context mode")
     parser.add_argument(
         "--quality-checks",
-        action="store_true",
-        help="Activate quality checks mode",
+        type=str,
+        help="Specify the quality checks",
         required=False,
-        default=False,
+        default=None,
     )
     parser.add_argument(
         "--use-tools",
