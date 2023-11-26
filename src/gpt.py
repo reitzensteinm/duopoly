@@ -157,11 +157,19 @@ def gpt_query_tools(
 
 
 @memoize
-def calculate_text_embedding(text: str):
+def calculate_text_embedding(text: str) -> list:
+    """Calculate text embedding using OpenAI embedding model for the input text.
+
+    Arguments:
+    text: A str representing the input text to calculate embeddings for.
+
+    Returns:
+    list: A list representing the numerical embedding of the input text.
+    """
     embedding_result = client.embeddings.create(
         model="text-embedding-ada-002", input=text
     )
-    return list(embedding_result["data"][0]["embedding"])
+    return list(embedding_result.data[0].embedding)
 
 
 @memoize
