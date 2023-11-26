@@ -88,5 +88,5 @@ GITIGNORE_PATH = ".gitignore"
 ADMIN_USERS = ["reitzensteinm", "Zylatis", "atroche"]
 TOKEN_LIMIT = 40000
 PYLINT_RETRIES = 1
-CHECK_OPEN_PR = False
+CHECK_OPEN_PR = True
 settings = Settings()
