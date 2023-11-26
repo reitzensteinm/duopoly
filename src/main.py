@@ -15,12 +15,18 @@ import ast
 import astor
 import settings
 
-MAX_RETRIES = 1
 
+def try_merge_pr(repository: str, pr_id: int) -> bool:
+    """
+    Try to merge a pull request in the specified repository.
+    If there's a conflict or merging fails, it returns False; otherwise, it returns True if the merge is successful.
 
-def try_merge_pr(repository, pr_id):
+    :param repository: The repository where the pull request exists.
+    :param pr_id: The ID of the pull request to be merged.
+    :return: Boolean indicating if the merge was successful or not.
+    """
     if repo.check_pr_conflict(repository, pr_id):
-        cprint(f"PR {pr_id} has conflict. Skipping merge.", "red")
+        cprint(f"PR {pr_id} has conflicts. Skipping merge.", "red")
         return False
     if repo.merge_with_rebase_if_possible(repository, pr_id):
         print(f"Merged PR: {pr_id}")
@@ -29,31 +35,39 @@ def try_merge_pr(repository, pr_id):
         return False
 
 
-def merge_approved_prs(repository) -> None:
-    is_merged = False
+def merge_approved_prs(repository: str) -> None:
+    """
+    Merges all approved pull requests for the given repository.
+    Attempts to merge each pull request once and retries once more if the first attempt fails.
+
+    :param repository: The repository to merge approved pull requests in.
+    :return: None
+    """
     approved_prs = repo.find_approved_prs(repository)
     for pr_id in approved_prs:
-        for attempt in range(5):
-            if try_merge_pr(repository, pr_id):
-                is_merged = True
-                break
-            else:
-                print(f"Attempt {attempt + 1}: Could not merge PR: {pr_id}")
-                if attempt < 4:
-                    time.sleep(5)
-        if not is_merged:
-            print(f"Failed to merge PR {pr_id} after 5 attempts.")
-    if is_merged:
-        sys.exit(0)
+        if not try_merge_pr(repository, pr_id):
+            print(f"Attempt 1: Could not merge PR: {pr_id}, retrying...")
+            time.sleep(5)
+            if not try_merge_pr(repository, pr_id):
+                print(f"Failed to merge PR {pr_id} after 2 attempts.")
     repo.fetch_new_changes()
 
 
-def process_repository(dry_run=False, issue_name=None, repository="") -> None:
+def process_repository(
+    dry_run: bool = False, issue_name: str = None, repository: str = ""
+) -> None:
+    """
+    Processes all issues for the specified repository.
+    It will retry processing an issue once if it fails on the first try.
+
+    :param dry_run: Flag to simulate processing without making any changes.
+    :param issue_name: The name of the specific issue to process, or None to process all issues.
+    :param repository: The repository whose issues are to be processed.
+    :return: None
+    """
     if not repo.repository_exists(repository):
         print(f'Warning: The repository "{repository}" does not exist.')
         return
-    if not dry_run:
-        merge_approved_prs(repository)
     open_issues = repo.fetch_open_issues(repository)
 
     def process_open_issue(issue):
@@ -61,39 +75,46 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
             cprint(f"Not processing issue {issue.number}: blocked", "yellow")
             return
         if issue_name is None or issue_name in issue.title:
-            for attempt in range(MAX_RETRIES):
-                trace_instance = create_trace(issue.title)
-                bind_trace(trace_instance)
+            trace_instance = create_trace(issue.title)
+            bind_trace(trace_instance)
+            try:
+                process_issue(issue, dry_run)
+            except Exception as e:
+                cprint(
+                    f"""Attempt 1 failed for issue {issue.title} with error: {str(e)}
+{traceback.format_exc()}""",
+                    "red",
+                )
+                trace(EXCEPTION, str(e))
+                print(f"Retrying to process issue {issue.title}...")
                 try:
                     process_issue(issue, dry_run)
-                    break
                 except Exception as e:
                     cprint(
-                        f"""Attempt {attempt + 1} failed for issue {issue.title} with error: {str(e)}
-						{traceback.format_exc()}""",
+                        f"Failed to process issue {issue.title} after 2 attempts with error: {str(e)}",
                         "red",
                     )
                     trace(EXCEPTION, str(e))
-                    if attempt == MAX_RETRIES - 1:
-                        print(
-                            f"Failed to process issue {issue.title} after {MAX_RETRIES} attempts."
-                        )
-                        raise
-                    else:
-                        print(f"Retrying to process issue {issue.title}...")
+                    raise
 
     if dry_run:
         process_open_issue(open_issues[0])
-        return
-    with ThreadPoolExecutor(
-        max_workers=settings.get_settings().max_workers
-    ) as executor:
-        results = executor.map(process_open_issue, open_issues)
-    for result in results:
-        pass
+    else:
+        if not dry_run:
+            merge_approved_prs(repository)
+        with ThreadPoolExecutor(
+            max_workers=settings.get_settings().max_workers
+        ) as executor:
+            list(executor.map(process_open_issue, open_issues))
 
 
 def evals(directory: str) -> None:
+    """
+    Processes evaluation of the provided directory using the eval module.
+
+    :param directory: The directory containing the evaluation data to be processed.
+    :return: None
+    """
     process_evals(directory)
 
 
@@ -137,6 +158,11 @@ def main() -> None:
     )
     args = parser.parse_args()
     settings.PARSED_ARGS = vars(args)
+    if args.experimentation:
+        from tools.experiment import run_experimentation
+
+        run_experimentation(args.experimentation)
+        sys.exit(0)
     if args.analysis:
         repo_dir = os.getcwd()
         print_analysis(repo_dir)
