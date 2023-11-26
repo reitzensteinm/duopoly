@@ -93,7 +93,8 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
 
 def process_directory(prompt: str, target_dir: str) -> None:
     apply_prompt_to_directory(prompt, target_dir)
-    if settings.DO_QUALITY_CHECKS:
+    settings_instance = settings.get_settings()
+    if settings_instance.quality_checks:
         for iteration in range(settings.PYLINT_RETRIES + 1):
             pylint_result = run_pylint(os.path.join(target_dir, "src"))
             if pylint_result is not None and iteration < settings.PYLINT_RETRIES:
@@ -160,18 +161,15 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         issue.repository, issue.title
     ):
         return
-
     issue_state = IssueState.retrieve_by_id(issue.id)
     issue_state.retry_count += 1
     issue_state.store()
-
     target_dir = prepare_branch(issue, dry_run)
     formatted_prompt = f"Title: {issue.title}\nDescription: {issue.description}"
     duopoly_path = os.path.join(target_dir, "duopoly.yaml")
     if os.path.exists(duopoly_path):
         settings.apply_settings(duopoly_path)
     process_directory(formatted_prompt, target_dir)
-
     if not dry_run:
         repo.commit_local_modifications(
             issue.title, f'Prompt: "{formatted_prompt}"', target_dir

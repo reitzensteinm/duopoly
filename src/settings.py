@@ -87,7 +87,6 @@ CODE_PATH = "src"
 GITIGNORE_PATH = ".gitignore"
 ADMIN_USERS = ["reitzensteinm", "Zylatis", "atroche"]
 TOKEN_LIMIT = 40000
-DO_QUALITY_CHECKS = True
 PYLINT_RETRIES = 1
 CHECK_OPEN_PR = False
 settings = Settings()
