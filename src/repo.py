@@ -1,4 +1,5 @@
 import re
+import shutil
 from git import Repo
 from github import Github
 import os
@@ -52,10 +53,10 @@ def create_pull_request(repo_name: str, branch_id: str, title: str, body: str) -
     """Creates a pull request on GitHub with the specified details and requests reviews based on settings.
 
     Args:
-            repo_name (str): The name of the target repository.
-            branch_id (str): The id of the branch for which the pull request is created.
-            title (str): The title of the pull request.
-            body (str): The body description of the pull request.
+        repo_name (str): The name of the target repository.
+        branch_id (str): The id of the branch for which the pull request is created.
+        title (str): The title of the pull request.
+        body (str): The body description of the pull request.
     """
     from settings import get_settings
 
@@ -158,13 +159,13 @@ def check_pull_request_title_exists(repo_name: str, pr_title: str) -> bool:
 
 def commit_local_modifications(
     commit_subject: str, commit_body: str, target_dir: str = os.getcwd()
-):
+) -> None:
     repo = Repo(target_dir)
     repo.git.add("--all")
     repo.index.commit(f"{commit_subject}\n\n{commit_body}")
 
 
-def get_all_checked_in_files(target_dir: str = os.getcwd()):
+def get_all_checked_in_files(target_dir: str = os.getcwd()) -> List[str]:
     repo = Repo(target_dir)
     file_list = []
     for obj in repo.tree().traverse():
@@ -173,7 +174,7 @@ def get_all_checked_in_files(target_dir: str = os.getcwd()):
     return file_list
 
 
-def fetch_new_changes(target_dir: str = os.getcwd()):
+def fetch_new_changes(target_dir: str = os.getcwd()) -> None:
     repo = Repo(target_dir)
     repo.git.fetch()
 
@@ -189,9 +190,6 @@ def is_issue_open(repo_name: str, issue_number: int) -> bool:
 
 def clone_repository(repo_url: str, path: str) -> None:
     """Clone the specified repository from GitHub to the specified path after ensuring the path is cleared."""
-    import os
-    import shutil
-
     if os.path.exists(path):
         shutil.rmtree(path, ignore_errors=True)
     os.makedirs(path, exist_ok=True)
@@ -239,7 +237,8 @@ def check_pr_conflict(repo_name: str, pr_id: int) -> bool:
     return not pr.mergeable
 
 
-def git_reset(directory: str):
+def git_reset(directory: str) -> None:
+    """Reset the repository in the specified directory using the git reset command."""
     try:
         subprocess.check_call(["git", "reset", "--hard"], cwd=directory)
     except subprocess.CalledProcessError as e:
@@ -247,6 +246,7 @@ def git_reset(directory: str):
 
 
 def find_git_repo(directory: str) -> str:
+    """Find the .git directory in the specified directory or any of its parents."""
     while directory != os.path.dirname(directory):
         try:
             Repo(directory)
@@ -254,11 +254,19 @@ def find_git_repo(directory: str) -> str:
         except Exception:
             pass
         directory = os.path.dirname(directory)
-    return None
+    return ""
 
 
-def list_files(target_directory, gitignore_path):
-    """Lists all the files in a directory that aren't excluded by a gitignore file."""
+def list_files(target_directory: str, gitignore_path: str) -> List[str]:
+    """Lists all the files in a directory that aren't excluded by a gitignore file.
+
+    Args:
+        target_directory (str): The directory to search within.
+        gitignore_path (str): The path to .gitignore file to apply exclusions.
+
+    Returns:
+        List[str]: List of file paths that are not ignored by .gitignore.
+    """
     with open(gitignore_path, "r") as f:
         lines = f.readlines()
     lines.append(".git/")
@@ -274,24 +282,29 @@ def list_files(target_directory, gitignore_path):
 
 
 def repository_exists(repo_name: str) -> bool:
+    """Check if a repository with the given name exists on GitHub.
+
+    Args:
+        repo_name (str): The name of the repository to check.
+
+    Returns:
+        bool: True if the repository exists, False otherwise.
+    """
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     try:
-        repo = g.get_repo(repo_name)
+        g.get_repo(repo_name)
         return True
-    except Exception as e:
+    except:
         return False
 
 
-def revert_commits(commit_hashes: List[str], target_dir: str = os.getcwd()):
+def revert_commits(commit_hashes: List[str], target_dir: str = os.getcwd()) -> None:
     """Reverts a list of commits in the specified repository in descending order based on their commit times.
 
-    Params:
-                    commit_hashes (List[str]): A list of commit SHA hashes to revert.
-                    target_dir (str): The directory of the repository where the commits will be reverted.
-
-    Raises:
-                    Exception: If reverting any of the commits fails.
+    Args:
+        commit_hashes (List[str]): A list of commit SHA hashes to revert.
+        target_dir (str): The directory of the repository where the commits will be reverted.
     """
     repo = Repo(target_dir)
     commits = [
@@ -311,10 +324,10 @@ def list_commit_titles_and_authors(target_dir: str = os.getcwd()) -> List[str]:
     """List commit titles and authors for all commits in a repository at the specified path.
 
     Args:
-            target_dir (str): Path to the repository. Defaults to the current working directory.
+        target_dir (str): Path to the repository. Defaults to the current working directory.
 
     Returns:
-            List[str]: A list of strings with each entry in the format 'Commit title - Author email'
+        List[str]: A list of strings with each entry in the format 'Commit title - Author email'
     """
     repo = Repo(target_dir)
     commit_info_list = []
@@ -323,3 +336,18 @@ def list_commit_titles_and_authors(target_dir: str = os.getcwd()) -> List[str]:
         author_email = commit.author.email
         commit_info_list.append(f"{title} - {author_email}")
     return commit_info_list
+
+
+def merge_with_squash(repo_name: str, pr_number: int, body: str) -> None:
+    """Perform a squash merge on a pull request with a specified body and PR title as the commit title.
+
+    Args:
+            repo_name (str): The name of the repository.
+            pr_number (int): The number of the pull request to merge.
+            body (str): The body to use in the commit message.
+    """
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    pr = repo.get_pull(pr_number)
+    pr.merge(merge_method="squash", commit_title=pr.title, commit_message=body)
