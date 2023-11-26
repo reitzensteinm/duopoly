@@ -16,7 +16,15 @@ import astor
 import settings
 
 
-def try_merge_pr(repository, pr_id):
+def try_merge_pr(repository: str, pr_id: int) -> bool:
+    """Attempt to merge a pull request.
+
+    This function checks for conflicts and attempts to merge a pull request with a rebase if possible.
+
+    :param repository: The name of the repository containing the pull request.
+    :param pr_id: The ID of the pull request to merge.
+    :return: True if the pull request was successfully merged, False otherwise.
+    """
     if repo.check_pr_conflict(repository, pr_id):
         cprint(f"PR {pr_id} has conflict. Skipping merge.", "red")
         return False
@@ -24,6 +32,30 @@ def try_merge_pr(repository, pr_id):
         print(f"Merged PR: {pr_id}")
         return True
     else:
+        return False
+
+
+def try_squash_merge_pr(repository: str, pr_id: int) -> bool:
+    """
+    Attempts to perform a squash merge on the specified pull request using its title for the commit title and the linked issue's body with 'Prompt: ' as the commit description.
+
+    The 'repository' argument identifies the GitHub repository, while 'pr_id' is the identifier for the pull request. Returns True if the merge operation is successful, False otherwise.
+    """
+    pr_details = repo.get_pull_request_details(repository, pr_id)
+    if not pr_details:
+        cprint(f"Pull Request #{pr_id} not found in '{repository}'.", "red")
+        return False
+    issue_body = repo.get_issue_body(repository, pr_details["linked_issue_number"])
+    if not issue_body:
+        cprint(f"No linked Issue found for PR #{pr_id}.", "red")
+        return False
+    commit_message = f"Prompt: {issue_body}"
+    try:
+        repo.merge_with_squash(repository, pr_id, pr_details["title"], commit_message)
+        print(f"Squashed and merged PR #{pr_id} into '{repository}'.")
+        return True
+    except Exception as e:
+        cprint(f"Failed to squash and merge PR #{pr_id}: {e}", "red")
         return False
 
 
