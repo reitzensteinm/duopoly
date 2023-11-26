@@ -17,11 +17,18 @@ class State:
         Renders information as a string where every key is surrounded by '***' and displayed above its value.
 
         Returns:
-                str: The formatted string containing keys and values.
+                        str: The formatted string containing keys and values.
         """
-        rendered_info = []
+        rendered_info = ["### FILES ###"]
         for key, value in self.information.items():
             rendered_info.append(f"*** {key} ***\n{value}")
+        for filename, contents in self.files.items():
+            formatted_content = ""
+            lines = contents.split("\n")
+            for i, line in enumerate(lines):
+                indented_line = line.replace("    ", "\t")
+                formatted_content += f"{i + 1}) {indented_line}\n"
+            rendered_info.append(f"## {filename} ##\n{formatted_content}")
         return "\n\n".join(rendered_info)
 
     def add_file(self, filename: str) -> None:
@@ -29,10 +36,10 @@ class State:
         Adds a filename to the context_files list, ignoring duplicates.
 
         Arguments:
-                filename (str): The filename to add.
+            filename (str): The filename to add.
 
         Returns:
-                None
+            None
         """
         if filename not in self.context_files:
             self.context_files.append(filename)
