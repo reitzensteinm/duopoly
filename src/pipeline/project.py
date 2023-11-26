@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Project:
     def __init__(self, path: str):
         """Initialize the Project with a path and an empty list of code paths.
