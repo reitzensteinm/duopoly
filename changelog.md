@@ -1,3 +1,7 @@
+### v0.0.3 (WIP)
+
+- Now configured for continuous operation.
+
 ### v0.0.2
 
 - Per project settings, read in via duopoly.yaml
