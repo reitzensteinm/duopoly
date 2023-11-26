@@ -45,9 +45,6 @@ do
 
 	echo -e '\033[95mexecution successful\033[0m'
 
-	# Sleep for 100 hours
-	sleep 360000
-
-	# Exit the loop
-	break
+	# Sleep for 20 seconds
+	sleep 20
 done
