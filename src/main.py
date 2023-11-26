@@ -90,11 +90,7 @@ def evals(directory: str) -> None:
 def main() -> None:
     """
     Entry point of the application which parses command-line arguments and initiates corresponding actions.
-
-    The function supports running the application in various modes, such as dry run, analysis, context,
-    and evaluations, through the use of command-line arguments. The --use-tools flag enables the use
-    of the new OpenAI tools API.
-
+    Arguments include dry run, issue name specification, eval directory, analysis mode, context mode, quality checks mode, and the new OpenAI tools API.
     :return: None
     """
     parser = argparse.ArgumentParser()
@@ -118,7 +114,7 @@ def main() -> None:
         action="store_true",
         help="Activate quality checks mode",
         required=False,
-        default=False,
+        default=None,
     )
     parser.add_argument(
         "--use-tools",
