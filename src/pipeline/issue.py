@@ -147,11 +147,16 @@ def prepare_branch(issue: Issue, dry_run: bool) -> str:
 def process_issue(issue: Issue, dry_run: bool) -> None:
     """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests.
 
-    Increases the retry count after an open PR check if no open PR was found, and does not process the issue if the author is not marked as an admin, if the issue is not open, or if there is already an open PR for the issue.
+    Checks the retry count before processing and skips the issue with a message if it exceeds max_issue_retries.
+    Increases the retry count after an open PR check if no open PR was found, and does not process the issue if the author is not marked as an admin,
+    if the issue is not open, or if there is already an open PR for the issue.
 
     Params:
             issue (Issue): The issue to be processed.
             dry_run (bool): If true, does not conduct any writes or branch modifications.
+
+    Returns:
+            None
     """
     if issue.author not in settings.ADMIN_USERS:
         return
@@ -162,6 +167,11 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     ):
         return
     issue_state = IssueState.retrieve_by_id(issue.id)
+    if issue_state.retry_count > settings.max_issue_retries:
+        print(
+            f"\x1b[91mSkipping processing of issue {issue.number} due to too many attempts\x1b[0m"
+        )
+        return
     issue_state.retry_count += 1
     issue_state.store()
     target_dir = prepare_branch(issue, dry_run)
