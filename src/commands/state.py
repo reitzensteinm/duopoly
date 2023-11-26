@@ -12,7 +12,13 @@ class State:
         self.information: Dict[str, str] = {}
 
     def render_information(self) -> str:
+        """
+        Formats the information dictionary into a string for display.
+
+        Returns:
+                A string representing the formatted information.
+        """
         rendered_info = []
         for key, value in self.information.items():
-            rendered_info.append(f"{key}:\n{value}")
+            rendered_info.append(f"*** {key} ***\n{value}")
         return "\n\n".join(rendered_info)
