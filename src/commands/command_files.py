@@ -1,11 +1,16 @@
 from commands.command import Command
 from commands.state import State
-from utils import annotate_with_line_numbers
 
 
 def replace_spaces_with_tabs(content: str) -> str:
     """
-    Replaces 4 spaces at the beginning of each line with tabs.
+    Replaces each occurrence of 4 spaces at the beginning of a line with a tab character.
+
+    Arguments:
+        content (str): The string where initial groups of 4 spaces will be replaced with tabs.
+
+    Returns:
+        str: The modified string with leading spaces replaced by tabs.
     """
     lines = content.split("\n")
     modified_lines = []
@@ -74,21 +79,19 @@ class Files(Command):
 
     def execute(self, state: State) -> str:
         """
-        Executes the Files command.
-        Adds line numbers to the file contents.
+        Executes the Files command and provides a message indicating the status of each file.
 
-        Args:
-                state (State): The current state object.
+        Arguments:
+            state (State): The current state object which holds the file details.
 
         Returns:
-                str: Messages indicating the status of each file.
+            str: A message indicating the status of each file processed by the command.
         """
         messages = []
         for file in self.files:
             if file in state.files:
                 content_with_tabs = replace_spaces_with_tabs(state.files[file])
-                annotated_content = annotate_with_line_numbers(content_with_tabs)
-                state.information[file] = annotated_content
+                state.information[file] = content_with_tabs
                 messages.append(f"File {file} has been added to context")
             else:
                 messages.append(f"File {file} does not exist.")

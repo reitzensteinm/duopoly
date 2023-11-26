@@ -55,12 +55,18 @@ def write_file(path: str, contents: str) -> None:
 def annotate_with_line_numbers(content: str) -> str:
     """
     Annotate a file content with line numbers.
-    Now handles empty content, and returns '1: <blank line>'.
+    Handles empty content, returning '1: <blank line>' if necessary.
+
+    Arguments:
+            content (str): The content to annotate with line numbers.
+
+    Returns:
+            str: The content annotated with line numbers.
     """
     if not content:
         return "1: <blank line>"
     annotated_lines = [
-        f"{i + 1}: {line}" for i, line in enumerate(content.splitlines())
+        f"{i + 1}): {line}" for i, line in enumerate(content.splitlines())
     ]
     return "\n".join(annotated_lines)
 
