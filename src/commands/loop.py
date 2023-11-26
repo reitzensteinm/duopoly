@@ -43,11 +43,11 @@ def command_loop_iterate(state: State, system: str, command_classes: list) -> tu
     The function supports processing multiple results, but currently, GPT queries return a single result.
 
     Args:
-            state (State): The current state of the command loop.
-            system (str): The GPT-3 system being used.
-            command_classes (list): A list of available command classes.
+                    state (State): The current state of the command loop.
+                    system (str): The GPT-3 system being used.
+                    command_classes (list): A list of available command classes.
     Returns:
-            tuple: A tuple containing execution results and the updated state.
+                    tuple: A tuple containing execution results and the updated state.
     """
     if (
         state.last_command
@@ -75,7 +75,6 @@ def command_loop_iterate(state: State, system: str, command_classes: list) -> tu
             if isinstance(result, str):
                 return result, state
             results = [result]
-
         for result in results:
             command = parse_gpt_response(command_classes, result)
             if command.terminal:
@@ -87,7 +86,7 @@ def command_loop_iterate(state: State, system: str, command_classes: list) -> tu
         return None, state
     except Exception as e:
         state.scratch += "\nException thrown calling command! " + str(e)
-        return None, state
+        raise
 
 
 def command_loop(
