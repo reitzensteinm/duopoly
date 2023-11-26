@@ -27,12 +27,32 @@ def try_merge_pr(repository, pr_id):
         return False
 
 
+def try_squash_merge_pr(repository: str, pr_id: int) -> bool:
+    """
+    Attempts to squash merge a pull request using the PR title as the commit title, and setting the commit message to the linked Issue body.
+
+    :param repository: The repository where the pull request resides.
+    :param pr_id: The ID of the pull request to be merged.
+    :return: True if the squash merge was successful, False otherwise.
+    """
+    pr = repo.get_pull_request(repository, pr_id)
+    if not pr:
+        cprint(f"PR {pr_id} not found. Skipping squash merge.", "yellow")
+        return False
+    linked_issue = repo.get_linked_issue_from_pr(pr)
+    if not linked_issue:
+        cprint(f"PR {pr_id} has no linked issue. Skipping squash merge.", "yellow")
+        return False
+    commit_message = f"Prompt: {linked_issue.description}"
+    return repo.merge_with_squash(repository, pr_id, pr.title, commit_message)
+
+
 def merge_approved_prs(repository) -> None:
     is_merged = False
     approved_prs = repo.find_approved_prs(repository)
     for pr_id in approved_prs:
         for attempt in range(5):
-            if try_merge_pr(repository, pr_id):
+            if try_squash_merge_pr(repository, pr_id):
                 is_merged = True
                 break
             else:
@@ -87,62 +107,34 @@ def evals(directory: str) -> None:
     process_evals(directory)
 
 
-def main() -> None:
+def try_squash_merge_pr(repository: str, pr_id: int) -> bool:
     """
-    Entry point of the application which parses command-line arguments and initiates corresponding actions.
+    Attempt to perform a squash merge on a pull request identified by the pr_id in the given repository.
 
-    The function supports running the application in various modes, such as dry run, analysis, context,
-    and evaluations, through the use of command-line arguments. The --use-tools flag enables the use
-    of the new OpenAI tools API.
+    Retrieves the title of the pull request, looks for the linked issue by examining the pull request description,
+    and formats the commit message as "Prompt: <Issue body>". Uses the title of the pull request as the commit title.
+    The merge is performed using the squash method.
 
-    :return: None
+    Args:
+            repository (str): The name of the repository containing the pull request.
+            pr_id (int): The identifier of the pull request to be merged.
+
+    Returns:
+            bool: True if the squash merge was successful, False otherwise.
     """
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--dry-run", action="store_true", help="Activate dry run mode")
-    parser.add_argument(
-        "--issue", type=str, help="Specify the issue name", required=False, default=None
-    )
-    parser.add_argument(
-        "--evals",
-        type=str,
-        help="Specify the eval directory",
-        required=False,
-        default=None,
-    )
-    parser.add_argument(
-        "--analysis", action="store_true", help="Activate analysis mode"
-    )
-    parser.add_argument("--context", action="store_true", help="Activate context mode")
-    parser.add_argument(
-        "--quality-checks",
-        action="store_true",
-        help="Activate quality checks mode",
-        required=False,
-        default=False,
-    )
-    parser.add_argument(
-        "--use-tools",
-        action="store_true",
-        help="Enable the use of the new OpenAI tools API",
-    )
-    args = parser.parse_args()
-    settings.PARSED_ARGS = vars(args)
-    if args.analysis:
-        repo_dir = os.getcwd()
-        print_analysis(repo_dir)
-        sys.exit(0)
-    if args.context:
-        from context.repl import repl
+    from repo import merge_with_squash, find_linked_issue_for_pr
 
-        repl()
-        sys.exit(0)
-    if args.evals:
-        evals(args.evals)
-    else:
-        for repository in settings.REPOSITORY_PATH:
-            process_repository(
-                dry_run=args.dry_run, issue_name=args.issue, repository=repository
-            )
+    linked_issue = find_linked_issue_for_pr(repository, pr_id)
+    if linked_issue is None:
+        print(f"No linked issue found for PR {pr_id}.")
+        return False
+    commit_message = f"Prompt: {linked_issue.description}"
+    try:
+        merge_with_squash(repository, pr_id, commit_message)
+        return True
+    except Exception as e:
+        print(f"Failed to squash merge PR {pr_id}: {str(e)}")
+        return False
 
 
 if __name__ == "__main__":
