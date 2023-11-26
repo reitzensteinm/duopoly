@@ -118,7 +118,7 @@ def main() -> None:
         action="store_true",
         help="Activate quality checks mode",
         required=False,
-        default=False,
+        default=None,
     )
     parser.add_argument(
         "--use-tools",
