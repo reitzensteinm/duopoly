@@ -21,7 +21,7 @@ class Settings:
         """
         self.reviewers: List[str] = []
         self.max_workers: int = 10
-        self.MAX_INPUT_CHARS: int = 48000
+        self.max_input_chars: int = 48000
         self.use_tools: bool = False
         self.quality_checks: bool = True
         self.max_issue_retries: int = 2
@@ -92,7 +92,6 @@ REPOSITORY_PATH = ["reitzensteinm/duopoly", "reitzensteinm/duopoly-website"]
 CODE_PATH = "src"
 GITIGNORE_PATH = ".gitignore"
 ADMIN_USERS = ["reitzensteinm", "Zylatis", "atroche"]
-TOKEN_LIMIT = 40000
 PYLINT_RETRIES = 1
 CHECK_OPEN_PR = True
 settings = Settings()

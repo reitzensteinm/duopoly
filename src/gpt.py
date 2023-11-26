@@ -38,7 +38,7 @@ def gpt_query(
     str: A string representing the GPT model's output or function call result.
     """
     settings = get_settings()
-    if len(message) > settings.MAX_INPUT_CHARS:
+    if len(message) > settings.max_input_chars:
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
@@ -111,7 +111,7 @@ def gpt_query_tools(
     """
     settings = get_settings()
     tools = [{"type": "function", "function": f} for f in functions]
-    if len(message) > settings.MAX_INPUT_CHARS:
+    if len(message) > settings.max_input_chars:
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
         raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
