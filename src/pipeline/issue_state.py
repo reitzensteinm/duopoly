@@ -2,7 +2,7 @@ from utilities.cache import read, write
 
 
 class IssueState:
-    """Represents the state of an issue with a retry count.
+    """Represents the state of an issue with a retry count and an associated prompt.
 
     Args:
             id (int): The identifier of the issue.
@@ -13,14 +13,15 @@ class IssueState:
     """
 
     def __init__(self, id: int):
-        """Initialize the IssueState with an ID and a retry count set to zero.
+        """Initialize the IssueState with an ID, a retry count set to zero, and an empty prompt.
 
         Args:
                 id (int): The identifier of the issue.
 
         """
         self.id = id
-        self.retry_count: int = 0  # Initialize the retry count.
+        self.retry_count: int = 0
+        self.prompt: str = ""
 
     @staticmethod
     def retrieve_by_id(id: int) -> "IssueState":
