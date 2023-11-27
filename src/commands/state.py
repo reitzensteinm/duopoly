@@ -1,5 +1,6 @@
 from typing import Dict, List
 import copy
+from utils import replace_spaces_with_tabs, annotate_with_line_numbers
 
 
 class State:
@@ -14,12 +15,20 @@ class State:
 
     def render_information(self) -> str:
         """
-        Renders information as a string where every key is surrounded by '***' and displayed above its value.
+        Renders information including files as a string with a FILES header, filenames, and
+        processed contents with replace_spaces_with_tabs and annotate_with_line_numbers from utils.py.
 
         Returns:
-                str: The formatted string containing keys and values.
+            str: The formatted string containing keys with values and annotated file contents.
         """
-        rendered_info = []
+        rendered_info = ["### FILES ###"]
+        for filename in self.context_files:
+            contents = self.files.get(filename, "")
+            processed_contents = replace_spaces_with_tabs(contents)
+            processed_contents = annotate_with_line_numbers(processed_contents)
+            file_header = f"*** {filename} ***"
+            rendered_info.append(f"{file_header}\n{processed_contents}")
+
         for key, value in self.information.items():
             rendered_info.append(f"*** {key} ***\n{value}")
         return "\n\n".join(rendered_info)
@@ -29,10 +38,10 @@ class State:
         Adds a filename to the context_files list, ignoring duplicates.
 
         Arguments:
-                filename (str): The filename to add.
+            filename (str): The filename to add.
 
         Returns:
-                None
+            None
         """
         if filename not in self.context_files:
             self.context_files.append(filename)
