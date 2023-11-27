@@ -351,3 +351,47 @@ def merge_with_squash(repo_name: str, pr_number: int, body: str) -> None:
     repo = g.get_repo(repo_name)
     pr = repo.get_pull(pr_number)
     pr.merge(merge_method="squash", commit_title=pr.title, commit_message=body)
+
+
+def get_linked_issue(repo_name: str, pr_id: int) -> Issue:
+    """Retrieves the Issue linked to a given pull request in the specified repository.
+
+    Args:
+        repo_name (str): The name of the repository containing the pull request.
+        pr_id (int): The unique identifier of the pull request.
+
+    Returns:
+        Issue: The Issue object linked to the pull request if found; otherwise, None.
+    """
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    pr = repo.get_pull(pr_id)
+    linked_issue_number = None
+    # Check PR body for linked Issue
+    match = re.search(r"#(\d+)", pr.body)
+    if match:
+        linked_issue_number = int(match.group(1))
+    # If not found in PR body, check PR comments for linked Issue
+    if not linked_issue_number:
+        comments = pr.get_issue_comments()
+        for comment in comments:
+            match = re.search(r"#(\d+)", comment.body)
+            if match:
+                linked_issue_number = int(match.group(1))
+                break
+    if linked_issue_number:
+        issue = repo.get_issue(linked_issue_number)
+        return Issue(
+            id=issue.id,
+            number=issue.number,
+            title=issue.title,
+            description=issue.body,
+            repository=repo_name,
+            comments=[
+                IssueComment(username=comment.user.login, content=comment.body)
+                for comment in issue.get_comments()
+            ],
+            author=issue.user.login,
+        )
+    return None
