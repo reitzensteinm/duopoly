@@ -75,7 +75,7 @@ class Files(Command):
     def execute(self, state: State) -> str:
         """
         Executes the Files command.
-        Adds line numbers to the file contents.
+        Calls add_file on the state object for each file.
 
         Args:
                 state (State): The current state object.
@@ -86,9 +86,7 @@ class Files(Command):
         messages = []
         for file in self.files:
             if file in state.files:
-                content_with_tabs = replace_spaces_with_tabs(state.files[file])
-                annotated_content = annotate_with_line_numbers(content_with_tabs)
-                state.information[file] = annotated_content
+                state.add_file(file)
                 messages.append(f"File {file} has been added to context")
             else:
                 messages.append(f"File {file} does not exist.")
