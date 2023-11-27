@@ -52,6 +52,22 @@ def write_file(path: str, contents: str) -> None:
         file.write(contents)
 
 
+def replace_spaces_with_tabs(content: str) -> str:
+    """
+    Replaces spaces at the beginning of each line with tabs.
+
+    Args:
+            content (str): The string content to process.
+
+    Returns:
+            str: The modified string where initial spaces are replaced with tabs.
+    """
+    return "\n".join(
+        line.replace("    ", "\t", 1) if line.startswith("    ") else line
+        for line in content.split("\n")
+    )
+
+
 def annotate_with_line_numbers(content: str) -> str:
     """
     Annotate a file content with line numbers.
