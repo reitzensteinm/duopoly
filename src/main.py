@@ -45,13 +45,21 @@ def try_squash_merge_pr(repository: str, pr_id: str) -> bool:
     return False
 
 
-def merge_approved_prs(repository) -> None:
+def merge_approved_prs(repository: str, squash_merge: bool = False) -> None:
+    """
+    Merges approved pull requests for the given repository with an option to squash merge.
+    The 'repository' argument specifies the repository, while 'squash_merge' controls whether to perform a squash merge (True) or regular merge (False).
+    :return: None
+    """
     is_merged = False
     approved_prs = repo.find_approved_prs(repository)
     for pr_id in approved_prs:
         for attempt in range(5):
-            if try_merge_pr(repository, pr_id):
-                is_merged = True
+            if squash_merge:
+                is_merged = try_squash_merge_pr(repository, pr_id)
+            else:
+                is_merged = try_merge_pr(repository, pr_id)
+            if is_merged:
                 break
             else:
                 print(f"Attempt {attempt + 1}: Could not merge PR: {pr_id}")
@@ -64,12 +72,22 @@ def merge_approved_prs(repository) -> None:
     repo.fetch_new_changes()
 
 
-def process_repository(dry_run=False, issue_name=None, repository="") -> None:
+def process_repository(
+    dry_run: bool = False,
+    issue_name: str = None,
+    repository: str = "",
+    squash_merge: bool = False,
+) -> None:
+    """
+    Processes a given repository's issues and PRs based on specified arguments.
+    Arguments dry_run and issue_name control the processing mode and issue filtering respectively, while repository specifies the target repository and squash_merge indicates if PRs should be squash merged.
+    :return: None
+    """
     if not repo.repository_exists(repository):
         print(f'Warning: The repository "{repository}" does not exist.')
         return
     if not dry_run:
-        merge_approved_prs(repository)
+        merge_approved_prs(repository, squash_merge=squash_merge)
     open_issues = repo.fetch_open_issues(repository)
 
     def process_open_issue(issue):
@@ -84,7 +102,7 @@ def process_repository(dry_run=False, issue_name=None, repository="") -> None:
             except Exception as e:
                 cprint(
                     f"""Failed processing issue {issue.title} with error: {str(e)}
-				{traceback.format_exc()}""",
+					{traceback.format_exc()}""",
                     "red",
                 )
                 trace(EXCEPTION, str(e))
@@ -138,6 +156,11 @@ def main() -> None:
         "--use-tools",
         action="store_true",
         help="Enable the use of the new OpenAI tools API",
+    )
+    parser.add_argument(
+        "--squash-merge",
+        action="store_true",
+        help="Enable squash merging for pull requests when processing repositories.",
     )
     args = parser.parse_args()
     settings.PARSED_ARGS = vars(args)
