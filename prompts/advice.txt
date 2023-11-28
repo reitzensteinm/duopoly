@@ -13,3 +13,4 @@
 * For software versions represented with semver, x.y.z is newer than a.b.c if x > a, or if x == a and y > b, or if x == a and y == b then if z > c
 * Always use the install package command when installing versions. Installing a package this way will modify requirements.txt, but ReplaceFile should not be used to modify it directly.
 * Always refer to files by relative paths like "a.txt". Never use Linux style "./a.txt"
+* Never call any functions or reference classes or any other type of code without knowing it exists. The resulting code should compile and run as is.
