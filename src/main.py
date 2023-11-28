@@ -11,8 +11,6 @@ from tracing.trace import create_trace, bind_trace, trace
 from website.analysis import print_analysis
 from tracing.tags import EXCEPTION
 import os
-import ast
-import astor
 import settings
 
 
