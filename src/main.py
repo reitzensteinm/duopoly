@@ -16,7 +16,12 @@ import astor
 import settings
 
 
-def try_merge_pr(repository, pr_id):
+def try_merge_pr(repository: str, pr_id: str) -> bool:
+    """
+    Tries to merge a pull request by rebasing if possible, and reports on the success or failure of the action.
+    Receives a repository path as 'repository' and the pull request identifier as 'pr_id'.
+    Returns a boolean indicating the success of the merge.
+    """
     if repo.check_pr_conflict(repository, pr_id):
         cprint(f"PR {pr_id} has conflict. Skipping merge.", "red")
         return False
@@ -25,6 +30,19 @@ def try_merge_pr(repository, pr_id):
         return True
     else:
         return False
+
+
+def try_squash_merge_pr(repository: str, pr_id: str) -> bool:
+    """
+    Attempts to execute a squash merge for a given pull request using the pr_id, with commit title as PR title and the Issue body as commit message prefixed with 'Prompt: '.
+    The 'repository' argument specifies the repository to operate on, and 'pr_id' represents the identifier of the pull request to be squashed and merged.
+    Returns a boolean indicating whether the squash and merge was successful.
+    """
+    linked_issue = repo.get_linked_issue(repository, pr_id)
+    if linked_issue:
+        commit_message = f"Prompt: {linked_issue.description}"
+        return repo.merge_with_squash(repository, pr_id, commit_message)
+    return False
 
 
 def merge_approved_prs(repository) -> None:
