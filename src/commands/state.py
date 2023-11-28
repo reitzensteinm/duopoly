@@ -15,13 +15,16 @@ class State:
 
     def render_information(self) -> str:
         """
-        Renders information including files as a string with a FILES header, filenames, and
+        Renders information including files as a string with a REQUESTED FILES header, filenames, and
         processed contents with replace_spaces_with_tabs and annotate_with_line_numbers from utils.py.
 
         Returns:
-            str: The formatted string containing keys with values and annotated file contents.
+                str: The formatted string containing keys with values and the specified header indicating requested files.
         """
-        rendered_info = ["### FILES ###"]
+        files_list = ", ".join(self.context_files)
+        rendered_info = [
+            f"### REQUESTED FILES ###\nYou have requested and have access to the following files: {files_list}"
+        ]
         for filename in self.context_files:
             contents = self.files.get(filename, "")
             processed_contents = replace_spaces_with_tabs(contents)
@@ -38,10 +41,10 @@ class State:
         Adds a filename to the context_files list, ignoring duplicates.
 
         Arguments:
-            filename (str): The filename to add.
+                filename (str): The filename to add.
 
         Returns:
-            None
+                None
         """
         if filename not in self.context_files:
             self.context_files.append(filename)
