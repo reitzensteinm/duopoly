@@ -178,7 +178,10 @@ def main() -> None:
     else:
         for repository in settings.REPOSITORY_PATH:
             process_repository(
-                dry_run=args.dry_run, issue_name=args.issue, repository=repository
+                dry_run=args.dry_run,
+                issue_name=args.issue,
+                repository=repository,
+                squash_merge=args.squash_merge,
             )
 
 
