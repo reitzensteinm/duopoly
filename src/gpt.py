@@ -1,9 +1,6 @@
 import os
 from openai import OpenAI
-
-client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 import time
-from utils import read_file, write_file, partition_by_predicate
 from termcolor import cprint
 from tracing.trace import trace
 from tracing.tags import GPT_INPUT, GPT_OUTPUT
@@ -15,6 +12,7 @@ GPT_3_5 = "gpt-3.5-turbo-1106"
 GPT_4 = "gpt-4-1106-preview"
 SYSTEM_CHECK_FUNC = load_prompt("check")
 SYSTEM_COMMAND_FUNC = load_prompt("command")
+client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 
 def gpt_query(
