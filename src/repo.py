@@ -8,7 +8,7 @@ from dataclasses import dataclass
 import time
 import subprocess
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 
 @dataclass
@@ -353,7 +353,7 @@ def merge_with_squash(repo_name: str, pr_number: int, body: str) -> None:
     pr.merge(merge_method="squash", commit_title=pr.title, commit_message=body)
 
 
-def get_linked_issue(repo_name: str, pr_id: int) -> Issue:
+def get_linked_issue(repo_name: str, pr_id: int) -> Optional[Issue]:
     """Retrieves the Issue linked to a given pull request in the specified repository.
 
     Args:
@@ -361,25 +361,27 @@ def get_linked_issue(repo_name: str, pr_id: int) -> Issue:
         pr_id (int): The unique identifier of the pull request.
 
     Returns:
-        Issue: The Issue object linked to the pull request if found; otherwise, None.
+        Optional[Issue]: The Issue object linked to the pull request, or None if no linked issue is found.
     """
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
     pr = repo.get_pull(pr_id)
     linked_issue_number = None
+
     # Check PR body for linked Issue
     match = re.search(r"#(\d+)", pr.body)
     if match:
         linked_issue_number = int(match.group(1))
-    # If not found in PR body, check PR comments for linked Issue
-    if not linked_issue_number:
+    else:
+        # Check PR comments for linked Issue if none found in body
         comments = pr.get_issue_comments()
         for comment in comments:
             match = re.search(r"#(\d+)", comment.body)
             if match:
                 linked_issue_number = int(match.group(1))
                 break
+
     if linked_issue_number:
         issue = repo.get_issue(linked_issue_number)
         return Issue(
