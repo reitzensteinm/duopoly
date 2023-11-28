@@ -1,8 +1,12 @@
 import subprocess
-import os
+from typing import Optional
 
 
-def run_pylint(directory: str, warnings: bool = False) -> str:
+def run_pylint(directory: str, warnings: bool = False) -> Optional[str]:
+    """Run pylint on a given directory and return the processed output or None if no issues are found.
+
+    This function takes a 'directory' parameter which is a string specifying the directory to be analyzed. The 'warnings' parameter, when set to True, includes warnings in the results. Returns a string containing the lint results with the directory replaced by 'src', or None if there are no lint issues.
+    """
     if warnings:
         command = ["pylint", "--disable=R,C", directory]
     else:
