@@ -338,19 +338,27 @@ def list_commit_titles_and_authors(target_dir: str = os.getcwd()) -> List[str]:
     return commit_info_list
 
 
-def merge_with_squash(repo_name: str, pr_number: int, body: str) -> None:
+def merge_with_squash(repo_name: str, pr_number: int, body: str) -> bool:
     """Perform a squash merge on a pull request with a specified body and PR title as the commit title.
 
     Args:
             repo_name (str): The name of the repository.
             pr_number (int): The number of the pull request to merge.
             body (str): The body to use in the commit message.
+
+    Returns:
+            bool: True if the pull request was successfully merged, False if it could not be merged.
     """
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
     pr = repo.get_pull(pr_number)
-    pr.merge(merge_method="squash", commit_title=pr.title, commit_message=body)
+    try:
+        pr.merge(merge_method="squash", commit_title=pr.title, commit_message=body)
+        return True
+    except Exception as e:
+        print(f"Failed to squash merge PR: {pr_number} - {str(e)}")
+        return False
 
 
 def get_linked_issue(repo_name: str, pr_id: int) -> Optional[Issue]:
