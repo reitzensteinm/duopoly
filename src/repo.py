@@ -84,7 +84,11 @@ def find_approved_prs(repo_name: str) -> List[int]:
 
 
 def merge_with_rebase_if_possible(repo_name: str, pr_number: int) -> bool:
-    """Attempt to merge a pull request with rebase if it is mergeable and rebaseable."""
+    """
+    Attempt to merge a pull request with rebase if it is mergeable and rebaseable.
+    The 'repo_name' argument specifies the repository name, 'pr_number' is the pull request number.
+    Returns True if the pull request was successfully merged, the branch and issue are closed; otherwise, returns False.
+    """
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
@@ -93,7 +97,7 @@ def merge_with_rebase_if_possible(repo_name: str, pr_number: int) -> bool:
     if pr.mergeable and pr.rebaseable:
         pr.merge(merge_method="rebase")
         close_issue_by_title(repo_name, pr.title)
-        delete_branch_after_merge(g, repo_name, branch)
+        delete_branch_after_merge(g, repo_name, branch.ref)
         return True
     return False
 
@@ -110,12 +114,15 @@ def close_issue_by_title(repo_name: str, issue_title: str) -> None:
             break
 
 
-def delete_branch_after_merge(g: Github, repo_name: str, branch) -> None:
-    """Delete a branch in the given repository after a merge has occurred."""
+def delete_branch_after_merge(g: Github, repo_name: str, branch_ref: str) -> None:
+    """
+    Delete a branch in the given repository after a merge has occurred.
+    The 'g' argument is a Github instance, 'repo_name' specifies the repository, and 'branch_ref' is the reference to the branch to delete.
+    """
     retries = 5
     while retries > 0:
         try:
-            g.get_repo(repo_name).get_git_ref(f"heads/{branch.ref}").delete()
+            g.get_repo(repo_name).get_git_ref(f"heads/{branch_ref}").delete()
             break
         except Exception as e:
             print(e)
