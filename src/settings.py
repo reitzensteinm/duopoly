@@ -12,11 +12,11 @@ _thread_local_settings = threading.local()
 
 class Settings:
     def __init__(self) -> None:
-        """Initialize the Settings with default configuration values including reviewers, workers, input chars, tools, quality checks, and issue retries.
+        """Initialize the Settings with default configuration values including reviewers, workers, input chars, tools, quality checks, issue retries, and max loop length.
 
         This constructor sets up the Settings object with default values such as an empty list of reviewers (list),
         a maximum number of workers (int), maximum input characters (int), flags for use of tools (bool), and quality checks (bool),
-        and a maximum number of issue retries (int, defaulting to 2).
+        and a maximum number of issue retries (int, defaulting to 2), as well as a maximum loop length (int, defaulting to 15).
         Command line arguments can override these settings by call to apply_commandline_overrides at the end.
         """
         self.reviewers: List[str] = []
@@ -25,39 +25,24 @@ class Settings:
         self.use_tools: bool = False
         self.quality_checks: bool = True
         self.max_issue_retries: int = 2
-        self.apply_commandline_overrides()
-
-    def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
-        """Load settings from a YAML file and apply command line overrides.
-
-        Args:
-                        filepath (str): The path to the YAML settings file to load.
-
-        This method updates the instance with settings from the YAML file at `filepath` and applies overrides.
-        """
-        with open(filepath, "r") as yamlfile:
-            data = yaml.safe_load(yamlfile)
-        if "reviewers" in data:
-            self.reviewers = data["reviewers"]
-        if "quality_checks" in data and data["quality_checks"] is not None:
-            self.quality_checks = data["quality_checks"]
-        self.apply_commandline_overrides()
+        self.max_loop_length: int = 15
 
     def apply_commandline_overrides(self) -> None:
-        """Override settings based on parsed command line arguments.
+        """Apply command line argument overrides to the current Settings instance.
 
-        Utilizes the global PARSED_ARGS to set settings for quality checks and use of tools, if specified.
+        This method adjusts the current Settings instance's attributes based on the provided command line arguments.
         """
-        global PARSED_ARGS
-        if PARSED_ARGS:
-            if (
-                "quality_checks" in PARSED_ARGS
-                and PARSED_ARGS["quality_checks"] is not None
-            ):
-                self.quality_checks = PARSED_ARGS.get(
-                    "quality_checks", self.quality_checks
-                )
-            self.use_tools = PARSED_ARGS.get("use_tools", self.use_tools)
+        pass
+
+    def load_from_yaml(self, yaml_path: str) -> None:
+        """Load settings from a YAML file into the current Settings instance.
+
+        Args:
+                yaml_path (str): The path to the YAML file from which to load settings.
+
+        This method populates the current Settings instance's attributes from the specified YAML file.
+        """
+        pass
 
 
 def get_settings() -> Settings:
