@@ -28,24 +28,29 @@ class Settings:
         self.max_loop_length: int = 15
         """An integer specifying the maximum length for loops within the system.
 
-        The default value is set to 15 and it determines how many times a loop can iterate before being terminated to prevent infinite looping.
-        """
+		The default value is set to 15 and it determines how many times a loop can iterate before being terminated to prevent infinite looping.
+		"""
         self.apply_commandline_overrides()
 
     def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
-        """Load settings from a YAML file and apply command line overrides.
+        """Load settings from a 'settings' subsection of a YAML file and apply command line overrides.
 
         Args:
-            filepath (str): The path to the YAML settings file to load.
+                filepath (str): The path to the YAML settings file to load.
 
-        This method updates the instance with settings from the YAML file at `filepath` and applies overrides.
+        This method updates the instance with settings from the 'settings' subsection of the YAML file at `filepath` and applies overrides.
         """
         with open(filepath, "r") as yamlfile:
             data = yaml.safe_load(yamlfile)
-        if "reviewers" in data:
-            self.reviewers = data["reviewers"]
-        if "quality_checks" in data and data["quality_checks"] is not None:
-            self.quality_checks = data["quality_checks"]
+        if "settings" in data:
+            settings_data = data["settings"]
+            if "reviewers" in settings_data:
+                self.reviewers = settings_data["reviewers"]
+            if (
+                "quality_checks" in settings_data
+                and settings_data["quality_checks"] is not None
+            ):
+                self.quality_checks = settings_data["quality_checks"]
         self.apply_commandline_overrides()
 
     def apply_commandline_overrides(self) -> None:
