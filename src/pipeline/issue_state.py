@@ -1,8 +1,9 @@
 from utilities.cache import read, write
+from typing import Optional, Dict
 
 
 class IssueState:
-    """Represents the state of an issue with a retry count and an associated prompt.
+    """Represents the state of an issue with a retry count and an associated prompt, as well as a record of initial file states.
 
     Args:
             id (int): The identifier of the issue.
@@ -10,10 +11,13 @@ class IssueState:
     Returns:
             IssueState: An instance representing the issue state.
 
+    Attributes:
+            initial_files (Optional[Dict[str, str]]): A mapping of filenames to their contents representing initial file states, or None if there are no initial files.
+
     """
 
     def __init__(self, id: int):
-        """Initialize the IssueState with an ID, a retry count set to zero, and an empty prompt.
+        """Initialize the IssueState with an ID, a retry count set to zero, an empty prompt, and no initial files.
 
         Args:
                 id (int): The identifier of the issue.
@@ -22,6 +26,7 @@ class IssueState:
         self.id = id
         self.retry_count: int = 0
         self.prompt: str = ""
+        self.initial_files: Optional[Dict[str, str]] = None
 
     @staticmethod
     def retrieve_by_id(id: int) -> "IssueState":
