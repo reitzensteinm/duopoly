@@ -14,3 +14,4 @@
 * Always use the install package command when installing versions. Installing a package this way will modify requirements.txt, but ReplaceFile should not be used to modify it directly.
 * Always refer to files by relative paths like "a.txt". Never use Linux style "./a.txt"
 * Never call any functions or reference classes or any other type of code without knowing it exists. The resulting code should compile and run as is.
+* If you're asked to add a field with a default value, don't add it as part of the constructor.
