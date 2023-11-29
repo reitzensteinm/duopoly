@@ -158,11 +158,9 @@ def prepare_branch(issue: Issue, dry_run: bool) -> Project:
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
-    """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests.
+    """Processes a single issue; if errors are found, it creates a draft PR instead of a normal PR.
 
-    Checks the retry count before processing and resets it if the formatted prompt has changed. Skips the issue with a message if it exceeds max_issue_retries obtained from get_settings().
-    Increases the retry count after an open PR check if no open PR was found, and does not process the issue if the author is not marked as an admin,
-    if the issue is not open, or if there is already an open PR for the issue.
+    If a QualityException is raised from process_directory, it creates a draft pull request instead of throwing the exception.
 
     Params:
             issue (Issue): The issue to be processed.
@@ -198,7 +196,27 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     duopoly_path = os.path.join(target_dir, "duopoly.yaml")
     if os.path.exists(duopoly_path):
         settings.apply_settings(duopoly_path)
-    process_directory(formatted_prompt, target_dir)
+    try:
+        process_directory(formatted_prompt, target_dir)
+    except QualityException as e:
+        if not dry_run:
+            repo.commit_local_modifications(
+                issue.title, f'Prompt: "{formatted_prompt}"', target_dir
+            )
+            repo.push_local_branch_to_origin(get_branch_id(issue), target_dir)
+            if not repo.check_pull_request_title_exists(issue.repository, issue.title):
+                repo.create_pull_request(
+                    repo_name=issue.repository,
+                    branch_id=get_branch_id(issue),
+                    title=issue.title,
+                    body="This PR addresses issue #"
+                    + str(issue.number)
+                    + ". "
+                    + formatted_prompt,
+                    draft=True,
+                )
+        print(str(e))
+        return
     if not dry_run:
         repo.commit_local_modifications(
             issue.title, f'Prompt: "{formatted_prompt}"', target_dir
