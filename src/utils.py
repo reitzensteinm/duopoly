@@ -132,38 +132,34 @@ def synchronize_files_read(target_dir, old_files, updated_files):
         updated_files.pop(file_name, None)
 
 
-def run_with_timeout(function: Callable, timeout: float) -> Any:
+def run_with_timeout(timeout: float):
     """
-    Executes a callable function on a separate thread with a specified timeout.
+    Decorator that executes the decorated function on a separate thread with a specified timeout.
     Raises a TimeoutException if the call is not completed within the timeout period; returns the result otherwise.
 
     Args:
-            function (Callable): The function to be executed.
-            timeout (float): The time in seconds within which the function should complete.
+            timeout (float): The time in seconds within which the decorated function should complete.
 
     Returns:
-            Any: The result of the function if it completes in time.
-
-    Raises:
-            TimeoutException: If the function does not complete within the given timeout.
+            Callable: A wrapper function that runs the decorated function with the timeout mechanism.
     """
 
-    def wrapper(queue: Queue):
-        try:
-            result = function()
-            queue.put(result)
-        except Exception as e:
-            queue.put(e)
+    def decorator(function: Callable):
+        def wrapper(*args, **kwargs) -> Any:
+            queue = Queue()
 
-    queue = Queue()
-    thread = threading.Thread(target=wrapper, args=(queue,))
-    thread.start()
-    thread.join(timeout)
-    if thread.is_alive():
-        thread.join()  # Ensure resources are cleaned up
-        raise TimeoutException("Function call timed out.")
-    else:
-        result = queue.get()
-        if isinstance(result, Exception):
-            raise result
-        return result
+            def target():
+                queue.put(function(*args, **kwargs))
+
+            thread = threading.Thread(target=target)
+            thread.start()
+            thread.join(timeout)
+            if thread.is_alive():
+                thread.join()
+                raise TimeoutException("Function call timed out.")
+            else:
+                return queue.get()
+
+        return wrapper
+
+    return decorator
