@@ -1,5 +1,15 @@
 import os
+import threading
 from black import FileMode, format_str
+from typing import Callable, Any
+from queue import Queue
+from time import sleep
+
+
+class TimeoutException(Exception):
+    """Custom exception class to handle timeout situations."""
+
+    pass
 
 
 def read_file(path: str) -> str:
@@ -120,3 +130,40 @@ def synchronize_files_read(target_dir, old_files, updated_files):
     files_not_found = set(old_files.keys()) - set(updated_files.keys())
     for file_name in files_not_found:
         updated_files.pop(file_name, None)
+
+
+def run_with_timeout(function: Callable, timeout: float) -> Any:
+    """
+    Executes a callable function on a separate thread with a specified timeout.
+    Raises a TimeoutException if the call is not completed within the timeout period; returns the result otherwise.
+
+    Args:
+            function (Callable): The function to be executed.
+            timeout (float): The time in seconds within which the function should complete.
+
+    Returns:
+            Any: The result of the function if it completes in time.
+
+    Raises:
+            TimeoutException: If the function does not complete within the given timeout.
+    """
+
+    def wrapper(queue: Queue):
+        try:
+            result = function()
+            queue.put(result)
+        except Exception as e:
+            queue.put(e)
+
+    queue = Queue()
+    thread = threading.Thread(target=wrapper, args=(queue,))
+    thread.start()
+    thread.join(timeout)
+    if thread.is_alive():
+        thread.join()  # Ensure resources are cleaned up
+        raise TimeoutException("Function call timed out.")
+    else:
+        result = queue.get()
+        if isinstance(result, Exception):
+            raise result
+        return result
