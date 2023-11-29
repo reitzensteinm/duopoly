@@ -1,3 +1,4 @@
+from typing import Dict, Optional
 from utilities.cache import read, write
 
 
@@ -11,6 +12,17 @@ class IssueState:
             IssueState: An instance representing the issue state.
 
     """
+
+    initial_files: Optional[Dict[str, str]] = None
+    """The initial files property is a dictionary mapping filename to file contents, with a default value of None.
+
+	Args:
+	        None
+
+	Returns:
+	        Optional[Dict[str, str]]: A mapping of filenames to file contents or None.
+
+	"""
 
     def __init__(self, id: int):
         """Initialize the IssueState with an ID, a retry count set to zero, and an empty prompt.
