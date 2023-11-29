@@ -171,6 +171,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     Returns:
             None
     """
+    is_quality_exception = False
     if issue.author not in settings.ADMIN_USERS:
         return
     if not repo.is_issue_open(issue.repository, issue.number):
@@ -185,7 +186,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if issue_state.prompt != formatted_prompt:
         issue_state.retry_count = 0
         issue_state.prompt = formatted_prompt
-    issue_state.store()
+        issue_state.store()
     if issue_state.retry_count > settings_instance.max_issue_retries:
         print(
             f"\x1b[91mSkipping processing of issue {issue.number} due to too many attempts\x1b[0m"
@@ -198,19 +199,34 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     duopoly_path = os.path.join(target_dir, "duopoly.yaml")
     if os.path.exists(duopoly_path):
         settings.apply_settings(duopoly_path)
-    process_directory(formatted_prompt, target_dir)
+    try:
+        process_directory(formatted_prompt, target_dir)
+    except QualityException:
+        is_quality_exception = True
     if not dry_run:
         repo.commit_local_modifications(
             issue.title, f'Prompt: "{formatted_prompt}"', target_dir
         )
         repo.push_local_branch_to_origin(get_branch_id(issue), target_dir)
         if not repo.check_pull_request_title_exists(issue.repository, issue.title):
-            repo.create_pull_request(
-                repo_name=issue.repository,
-                branch_id=get_branch_id(issue),
-                title=issue.title,
-                body="This PR addresses issue #"
-                + str(issue.number)
-                + ". "
-                + formatted_prompt,
-            )
+            if is_quality_exception and settings_instance.quality_checks:
+                repo.create_pull_request(
+                    repo_name=issue.repository,
+                    branch_id=get_branch_id(issue),
+                    title=issue.title,
+                    body="This PR addresses issue #"
+                    + str(issue.number)
+                    + ". "
+                    + formatted_prompt,
+                    draft=True,
+                )
+            else:
+                repo.create_pull_request(
+                    repo_name=issue.repository,
+                    branch_id=get_branch_id(issue),
+                    title=issue.title,
+                    body="This PR addresses issue #"
+                    + str(issue.number)
+                    + ". "
+                    + formatted_prompt,
+                )
