@@ -34,6 +34,10 @@ from utilities.prompts import load_prompt
 from pipeline.issue_state import IssueState
 
 
+class QualityException(Exception):
+    """Exception raised when a quality check fails."""
+
+
 def check_result(old_files, new_files, prompt) -> bool:
     old_files_filtered = {
         k: v
@@ -92,6 +96,14 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
 
 
 def process_directory(prompt: str, target_dir: str) -> None:
+    """Processes the directory with the given prompt.
+
+    Raises a QualityException when either pylint or pytest fail.
+
+    Params:
+            prompt (str): The prompt describing the processing task.
+            target_dir (str): The path to the directory to process.
+    """
     apply_prompt_to_directory(prompt, target_dir)
     settings_instance = settings.get_settings()
     if settings_instance.quality_checks:
@@ -103,12 +115,12 @@ def process_directory(prompt: str, target_dir: str) -> None:
                     target_dir,
                 )
             elif pylint_result is not None and iteration == settings.PYLINT_RETRIES:
-                raise Exception("Pylint failed\n" + pylint_result)
+                raise QualityException("Pylint failed\n" + pylint_result)
             elif pylint_result is None:
                 break
         pytest_result = run_pytest(os.path.join(target_dir, "src"))
         if pytest_result is not None:
-            raise Exception("Pytest failed\n" + pytest_result)
+            raise QualityException("Pytest failed\n" + pytest_result)
 
 
 def get_target_dir(issue: Issue) -> str:
