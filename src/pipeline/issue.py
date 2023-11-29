@@ -24,6 +24,7 @@ from commands.loop import command_loop
 import repo
 import settings
 from settings import PYLINT_RETRIES
+from pipeline.project import Project
 from repo import Issue
 from tools.imports import imports
 from tools.search import search_tool
@@ -133,7 +134,7 @@ def get_branch_id(issue: Issue) -> str:
     return f"issue-{issue.id}"
 
 
-def prepare_branch(issue: Issue, dry_run: bool) -> str:
+def prepare_branch(issue: Issue, dry_run: bool) -> Project:
     """Sets up the local branch for processing an issue.
 
     Cloning and directory preparation are handled by the clone_repository function.
@@ -143,7 +144,7 @@ def prepare_branch(issue: Issue, dry_run: bool) -> str:
             dry_run (bool): Indicates whether the branch setup should actually be performed or not.
 
     Returns:
-            str: The path to the directory where the branch is set up.
+            Project: A Project instance with path set to the location where the branch is set up.
     """
     target_dir = get_target_dir(issue)
     repo.clone_repository(
@@ -153,7 +154,7 @@ def prepare_branch(issue: Issue, dry_run: bool) -> str:
     branch_id = get_branch_id(issue)
     if not dry_run:
         repo.switch_and_reset_branch(branch_id, target_dir)
-    return target_dir
+    return Project(path=target_dir)
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
@@ -192,7 +193,8 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         return
     issue_state.retry_count += 1
     issue_state.store()
-    target_dir = prepare_branch(issue, dry_run)
+    project_instance = prepare_branch(issue, dry_run)
+    target_dir = project_instance.path
     duopoly_path = os.path.join(target_dir, "duopoly.yaml")
     if os.path.exists(duopoly_path):
         settings.apply_settings(duopoly_path)
