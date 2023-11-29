@@ -4,6 +4,7 @@ from black import FileMode, format_str
 from typing import Callable, Any
 from queue import Queue
 from time import sleep
+from functools import wraps
 
 
 class TimeoutException(Exception):
@@ -167,3 +168,26 @@ def run_with_timeout(function: Callable, timeout: float) -> Any:
         if isinstance(result, Exception):
             raise result
         return result
+
+
+def timeout(seconds: float) -> Callable:
+    """
+    Decorator that executes the decorated function with a specified timeout period
+    using the run_with_timeout function. If the function execution exceeds the timeout period,
+    it raises a TimeoutException.
+
+    Args:
+        seconds (float): The number of seconds allocated as the timeout for the function execution.
+
+    Returns:
+        Callable: The wrapped function that will be executed with the specified timeout.
+    """
+
+    def decorator(function: Callable) -> Callable:
+        @wraps(function)
+        def wrapped(*args, **kwargs) -> Any:
+            return run_with_timeout(lambda: function(*args, **kwargs), seconds)
+
+        return wrapped
+
+    return decorator
