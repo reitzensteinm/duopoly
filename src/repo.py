@@ -53,10 +53,10 @@ def create_pull_request(repo_name: str, branch_id: str, title: str, body: str) -
     """Creates a pull request on GitHub with the specified details and requests reviews based on settings.
 
     Args:
-        repo_name (str): The name of the target repository.
-        branch_id (str): The id of the branch for which the pull request is created.
-        title (str): The title of the pull request.
-        body (str): The body description of the pull request.
+            repo_name (str): The name of the target repository.
+            branch_id (str): The id of the branch for which the pull request is created.
+            title (str): The title of the pull request.
+            body (str): The body description of the pull request.
     """
     from settings import get_settings
 
@@ -268,11 +268,11 @@ def list_files(target_directory: str, gitignore_path: str) -> List[str]:
     """Lists all the files in a directory that aren't excluded by a gitignore file.
 
     Args:
-        target_directory (str): The directory to search within.
-        gitignore_path (str): The path to .gitignore file to apply exclusions.
+            target_directory (str): The directory to search within.
+            gitignore_path (str): The path to .gitignore file to apply exclusions.
 
     Returns:
-        List[str]: List of file paths that are not ignored by .gitignore.
+            List[str]: List of file paths that are not ignored by .gitignore.
     """
     with open(gitignore_path, "r") as f:
         lines = f.readlines()
@@ -292,10 +292,10 @@ def repository_exists(repo_name: str) -> bool:
     """Check if a repository with the given name exists on GitHub.
 
     Args:
-        repo_name (str): The name of the repository to check.
+            repo_name (str): The name of the repository to check.
 
     Returns:
-        bool: True if the repository exists, False otherwise.
+            bool: True if the repository exists, False otherwise.
     """
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
@@ -310,8 +310,8 @@ def revert_commits(commit_hashes: List[str], target_dir: str = os.getcwd()) -> N
     """Reverts a list of commits in the specified repository in descending order based on their commit times.
 
     Args:
-        commit_hashes (List[str]): A list of commit SHA hashes to revert.
-        target_dir (str): The directory of the repository where the commits will be reverted.
+            commit_hashes (List[str]): A list of commit SHA hashes to revert.
+            target_dir (str): The directory of the repository where the commits will be reverted.
     """
     repo = Repo(target_dir)
     commits = [
@@ -331,10 +331,10 @@ def list_commit_titles_and_authors(target_dir: str = os.getcwd()) -> List[str]:
     """List commit titles and authors for all commits in a repository at the specified path.
 
     Args:
-        target_dir (str): Path to the repository. Defaults to the current working directory.
+            target_dir (str): Path to the repository. Defaults to the current working directory.
 
     Returns:
-        List[str]: A list of strings with each entry in the format 'Commit title - Author email'
+            List[str]: A list of strings with each entry in the format 'Commit title - Author email'
     """
     repo = Repo(target_dir)
     commit_info_list = []
@@ -371,11 +371,11 @@ def get_linked_issue(repo_name: str, pr_id: int) -> Optional[Issue]:
     """Retrieves the Issue linked to a given pull request in the specified repository.
 
     Args:
-        repo_name (str): The name of the repository containing the pull request.
-        pr_id (int): The unique identifier of the pull request.
+            repo_name (str): The name of the repository containing the pull request.
+            pr_id (int): The unique identifier of the pull request.
 
     Returns:
-        Optional[Issue]: The Issue object linked to the pull request, or None if no linked issue is found.
+            Optional[Issue]: The Issue object linked to the pull request, or None if no linked issue is found.
     """
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
@@ -400,3 +400,28 @@ def get_linked_issue(repo_name: str, pr_id: int) -> Optional[Issue]:
             author=issue.user.login,
         )
     return None
+
+
+def get_open_pr_comments(repo_name: str) -> List[IssueComment]:
+    """Retrieves comments on open pull requests for a specified GitHub repository.
+
+    Args:
+            repo_name (str): The name of the GitHub repository.
+
+    Returns:
+            List[IssueComment]: A list of IssueComment dataclass instances representing the comments on open pull requests.
+    """
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    open_prs = repo.get_pulls(state="open")
+    all_comments = []
+
+    for pr in open_prs:
+        comments = pr.get_comments()
+        for comment in comments:
+            all_comments.append(
+                IssueComment(username=comment.user.login, content=comment.body)
+            )
+
+    return all_comments
