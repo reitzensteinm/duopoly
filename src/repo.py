@@ -49,21 +49,26 @@ def push_local_branch_to_origin(branch_id: str, target_dir: str = os.getcwd()) -
     repo.git.push("origin", branch_id, force=True)
 
 
-def create_pull_request(repo_name: str, branch_id: str, title: str, body: str) -> None:
-    """Creates a pull request on GitHub with the specified details and requests reviews based on settings.
+def create_pull_request(
+    repo_name: str, branch_id: str, title: str, body: str, draft: bool = False
+) -> None:
+    """Creates a pull request on GitHub with the specified details, optionally as a draft, and requests reviews based on settings.
 
     Args:
             repo_name (str): The name of the target repository.
             branch_id (str): The id of the branch for which the pull request is created.
             title (str): The title of the pull request.
             body (str): The body description of the pull request.
+            draft (bool): If True, the pull request will be created as a draft. Defaults to False.
     """
     from settings import get_settings
 
     api_key = os.environ["GITHUB_API_KEY"]
     g = Github(api_key)
     repo = g.get_repo(repo_name)
-    pr = repo.create_pull(title=title, body=body, head=branch_id, base="main")
+    pr = repo.create_pull(
+        title=title, body=body, head=branch_id, base="main", draft=draft
+    )
     settings = get_settings()
     if settings.reviewers:
         pr.create_review_request(reviewers=settings.reviewers)
@@ -416,12 +421,10 @@ def get_open_pr_comments(repo_name: str) -> List[IssueComment]:
     repo = g.get_repo(repo_name)
     open_prs = repo.get_pulls(state="open")
     all_comments = []
-
     for pr in open_prs:
         comments = pr.get_comments()
         for comment in comments:
             all_comments.append(
                 IssueComment(username=comment.user.login, content=comment.body)
             )
-
     return all_comments
