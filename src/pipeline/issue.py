@@ -96,32 +96,32 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
     synchronize_files_write(target_dir, files, updated_files)
 
 
-def process_directory(prompt: str, target_dir: str) -> None:
-    """Processes the directory with the given prompt.
-
+def process_directory(prompt: str, target_dir: str) -> bool:
+    """Processes the directory with the given prompt and returns a status indicator.
     Raises a QualityException when either pylint or pytest fail.
+    If all checks pass, returns True indicating the creation of a regular PR;
+    if not, returns False to indicate a draft PR should be created.
 
-    Params:
+    Args:
             prompt (str): The prompt describing the processing task.
             target_dir (str): The path to the directory to process.
+
+    Returns:
+            bool: A boolean indicating whether a regular PR (True) or a draft PR (False) should be created.
     """
     apply_prompt_to_directory(prompt, target_dir)
     settings_instance = settings.get_settings()
-    if settings_instance.quality_checks:
-        for iteration in range(settings.PYLINT_RETRIES + 1):
-            pylint_result = run_pylint(os.path.join(target_dir, "src"))
-            if pylint_result is not None and iteration < settings.PYLINT_RETRIES:
-                apply_prompt_to_directory(
-                    f"Fix these errors identified by PyLint:\n{pylint_result}",
-                    target_dir,
-                )
-            elif pylint_result is not None and iteration == settings.PYLINT_RETRIES:
-                raise QualityException("Pylint failed\n" + pylint_result)
-            elif pylint_result is None:
-                break
+    quality_check_passed = True
+    try:
+        pylint_result = run_pylint(os.path.join(target_dir, "src"))
+        if pylint_result is not None:
+            quality_check_passed = False
         pytest_result = run_pytest(os.path.join(target_dir, "src"))
         if pytest_result is not None:
-            raise QualityException("Pytest failed\n" + pytest_result)
+            quality_check_passed = False
+    except QualityException:
+        quality_check_passed = False
+    return quality_check_passed
 
 
 def get_target_dir(issue: Issue) -> str:
@@ -140,11 +140,11 @@ def prepare_branch(issue: Issue, dry_run: bool) -> Project:
     Cloning and directory preparation are handled by the clone_repository function.
 
     Params:
-            issue (Issue): The issue object containing details required to prepare the branch.
-            dry_run (bool): Indicates whether the branch setup should actually be performed or not.
+        issue (Issue): The issue object containing details required to prepare the branch.
+        dry_run (bool): Indicates whether the branch setup should actually be performed or not.
 
     Returns:
-            Project: A Project instance with path set to the location where the branch is set up.
+        Project: A Project instance with path set to the location where the branch is set up.
     """
     target_dir = get_target_dir(issue)
     repo.clone_repository(
@@ -158,18 +158,16 @@ def prepare_branch(issue: Issue, dry_run: bool) -> Project:
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
-    """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests.
+    """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests if needed.
 
-    Checks the retry count before processing and resets it if the formatted prompt has changed. Skips the issue with a message if it exceeds max_issue_retries obtained from get_settings().
-    Increases the retry count after an open PR check if no open PR was found, and does not process the issue if the author is not marked as an admin,
-    if the issue is not open, or if there is already an open PR for the issue.
+    If a QualityException arises during processing, a draft pull request is created. Regular pull request is created if all checks pass.
 
     Params:
-            issue (Issue): The issue to be processed.
-            dry_run (bool): If true, does not conduct any writes or branch modifications.
+        issue (Issue): The issue to be processed.
+        dry_run (bool): Determines whether modifications should be written to the repository.
 
     Returns:
-            None
+        None
     """
     if issue.author not in settings.ADMIN_USERS:
         return
@@ -198,7 +196,7 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     duopoly_path = os.path.join(target_dir, "duopoly.yaml")
     if os.path.exists(duopoly_path):
         settings.apply_settings(duopoly_path)
-    process_directory(formatted_prompt, target_dir)
+    quality_check_passed = process_directory(formatted_prompt, target_dir)
     if not dry_run:
         repo.commit_local_modifications(
             issue.title, f'Prompt: "{formatted_prompt}"', target_dir
@@ -213,4 +211,5 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
                 + str(issue.number)
                 + ". "
                 + formatted_prompt,
+                draft=not quality_check_passed,
             )
