@@ -3,7 +3,7 @@ from typing import Optional, Dict
 
 
 class IssueState:
-    """Represents the state of an issue with a retry count and an associated prompt, as well as a record of initial file states.
+    """Represents the state of an issue with a retry count, an associated prompt, a record of initial file states, and an optional PR ID.
 
     Args:
             id (int): The identifier of the issue.
@@ -13,11 +13,11 @@ class IssueState:
 
     Attributes:
             initial_files (Optional[Dict[str, str]]): A mapping of filenames to their contents representing initial file states, or None if there are no initial files.
-
+            pr_id (Optional[int]): The identifier of the associated pull request, if any.
     """
 
     def __init__(self, id: int):
-        """Initialize the IssueState with an ID, a retry count set to zero, an empty prompt, and no initial files.
+        """Initialize the IssueState with an ID, a retry count set to zero, an empty prompt, no initial files, and no associated PR ID.
 
         Args:
                 id (int): The identifier of the issue.
@@ -27,6 +27,7 @@ class IssueState:
         self.retry_count: int = 0
         self.prompt: str = ""
         self.initial_files: Optional[Dict[str, str]] = None
+        self.pr_id: Optional[int] = None
 
     @staticmethod
     def retrieve_by_id(id: int) -> "IssueState":
@@ -37,7 +38,6 @@ class IssueState:
 
         Returns:
                 IssueState: The retrieved or newly created issue state.
-
         """
         try:
             return read(f"issue-{id}")
@@ -59,6 +59,5 @@ class IssueState:
 
         Returns:
                 str: The string representation of the issue state.
-
         """
         return str(self.__dict__)
