@@ -3,6 +3,7 @@ from threading import local
 import os
 from typing import Optional, Tuple
 from tracing.render import render_trace
+from tracing.pylint import Trace
 
 _thread_local = local()
 

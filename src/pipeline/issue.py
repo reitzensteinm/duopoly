@@ -28,7 +28,7 @@ from pipeline.project import Project
 from repo import Issue
 from tools.imports import imports
 from tools.search import search_tool
-from tools.pylint import run_pylint
+from tracing.pylint import run_pylint
 from tools.pytest import run_pytest
 from tools.advice import generate_advice
 from utilities.prompts import load_prompt
