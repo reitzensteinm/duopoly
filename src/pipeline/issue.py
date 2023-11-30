@@ -102,20 +102,20 @@ def process_directory(prompt: str, target_dir: str) -> None:
     Raises a QualityException when either pylint or pytest fail.
 
     Params:
-            prompt (str): The prompt describing the processing task.
-            target_dir (str): The path to the directory to process.
+                    prompt (str): The prompt describing the processing task.
+                    target_dir (str): The path to the directory to process.
     """
     apply_prompt_to_directory(prompt, target_dir)
     settings_instance = settings.get_settings()
     if settings_instance.quality_checks:
-        for iteration in range(settings.PYLINT_RETRIES + 1):
+        for iteration in range(PYLINT_RETRIES + 1):
             pylint_result = run_pylint(os.path.join(target_dir, "src"))
-            if pylint_result is not None and iteration < settings.PYLINT_RETRIES:
+            if pylint_result is not None and iteration < PYLINT_RETRIES:
                 apply_prompt_to_directory(
                     f"Fix these errors identified by PyLint:\n{pylint_result}",
                     target_dir,
                 )
-            elif pylint_result is not None and iteration == settings.PYLINT_RETRIES:
+            elif pylint_result is not None and iteration == PYLINT_RETRIES:
                 raise QualityException("Pylint failed\n" + pylint_result)
             elif pylint_result is None:
                 break
@@ -140,11 +140,11 @@ def prepare_branch(issue: Issue, dry_run: bool) -> Project:
     Cloning and directory preparation are handled by the clone_repository function.
 
     Params:
-            issue (Issue): The issue object containing details required to prepare the branch.
-            dry_run (bool): Indicates whether the branch setup should actually be performed or not.
+                    issue (Issue): The issue object containing details required to prepare the branch.
+                    dry_run (bool): Indicates whether the branch setup should actually be performed or not.
 
     Returns:
-            Project: A Project instance with path set to the location where the branch is set up.
+                    Project: A Project instance with path set to the location where the branch is set up.
     """
     target_dir = get_target_dir(issue)
     repo.clone_repository(
@@ -165,23 +165,26 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     if the issue is not open, or if there is already an open PR for the issue.
 
     Params:
-            issue (Issue): The issue to be processed.
-            dry_run (bool): If true, does not conduct any writes or branch modifications.
+                    issue (Issue): The issue to be processed.
+                    dry_run (bool): If true, does not conduct any writes or branch modifications.
 
     Returns:
-            None
+                    None
     """
     is_quality_exception = False
     if issue.author not in settings.ADMIN_USERS:
         return
     if not repo.is_issue_open(issue.repository, issue.number):
         return
-    if settings.CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
-        issue.repository, issue.title
+
+    settings_instance = settings.get_settings()
+
+    if (
+        settings_instance.check_open_pr
+        and repo.check_issue_has_open_pr_with_same_title(issue.repository, issue.title)
     ):
         return
     issue_state = IssueState.retrieve_by_id(issue.id)
-    settings_instance = settings.get_settings()
     formatted_prompt = f"Title: {issue.title}\nDescription: {issue.description}"
     if issue_state.prompt != formatted_prompt:
         issue_state.retry_count = 0
