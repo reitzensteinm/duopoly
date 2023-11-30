@@ -428,3 +428,22 @@ def get_open_pr_comments(repo_name: str) -> List[IssueComment]:
                 IssueComment(username=comment.user.login, content=comment.body)
             )
     return all_comments
+
+
+def add_comment_to_issue_or_pr(
+    repo_name: str, issue_or_pr_number: int, comment_text: str
+) -> None:
+    """Adds a comment to a specified issue or pull request within a GitHub repository.
+
+    Args:
+        repo_name (str): The name of the repository containing the issue or pull request.
+        issue_or_pr_number (int): The number of the issue or pull request to comment on.
+        comment_text (str): The text of the comment to be posted.
+
+    This function does not return a value.
+    """
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    issue = repo.get_issue(issue_or_pr_number)
+    issue.create_comment(comment_text)
