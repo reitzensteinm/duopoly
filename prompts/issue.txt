@@ -13,3 +13,5 @@ Never use a relative import that reaches into a parent directory, like ..cat.dog
 
 ### GOAL ###
 {{goal}}
+### YOUR ACTIONS ###
+{{your_actions}}
