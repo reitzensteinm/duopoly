@@ -1,5 +1,7 @@
 import copy
 import settings
+from rope.base.project import Project
+from rope.refactor.move import move_resource
 
 
 def move_file(file_mapping, old_path, new_path):
@@ -37,3 +39,17 @@ def fix_imports(file_string, old_namespace, new_namespace):
         if "import" in line:
             lines[i] = line.replace(old_namespace, new_namespace)
     return "\n".join(lines)
+
+
+def move_file_using_rope(project_directory: str, from_path: str, to_path: str) -> None:
+    """
+    Move a file from one path to another within a project using rope's move_resource function.
+    The 'project_directory' parameter is the root directory of the project.
+    The 'from_path' parameter is the relative path to the file that needs to be moved.
+    The 'to_path' parameter is the relative path where the file should be moved to.
+    This function does not return any value.
+    """
+    project = Project(project_directory)
+    resource = project.get_resource(from_path)
+    move_resource(project, resource, to_path)
+    project.close()
