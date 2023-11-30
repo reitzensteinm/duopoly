@@ -112,7 +112,13 @@ def command_loop(
     state.scratch = prompt
     state.last_command_instance = None
     exception_count = 0
-    while True:
+    max_loop_length = get_settings().max_loop_length
+    for i in range(max_loop_length):
+        if (
+            state.last_command_instance is not None
+            and state.last_command_instance.terminal
+        ):
+            break
         try:
             result, state = command_loop_iterate(state, system, command_classes)
             if result is not None:
