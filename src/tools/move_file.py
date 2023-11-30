@@ -1,5 +1,7 @@
 import copy
 import settings
+from rope.base.project import Project
+from rope.refactor.move import Move
 
 
 def move_file(file_mapping, old_path, new_path):
@@ -37,3 +39,22 @@ def fix_imports(file_string, old_namespace, new_namespace):
         if "import" in line:
             lines[i] = line.replace(old_namespace, new_namespace)
     return "\n".join(lines)
+
+
+def move_file_using_rope(project_dir: str, from_path: str, to_path: str) -> None:
+    """
+    Moves a Python file from one path to another within a project using the rope library for refactoring.
+    The function takes a project directory as well as the relative from and to paths of the file to be moved.
+    It performs refactoring that includes the update of import statements.
+    :param project_dir: The path to the base directory of the project.
+    :param from_path: The relative path (from the project directory) of the file to move.
+    :param to_path: The relative path (to the project directory) where the file should be moved to.
+    :return: Nothing, as the file move is a refactoring operation with no value returned.
+    """
+    # Create a rope project
+    rope_project = Project(project_dir)
+    # Perform the file move operation
+    move = Move(rope_project, from_path, to_path)
+    move.perform()
+    # Release resources used by rope project
+    rope_project.close()
