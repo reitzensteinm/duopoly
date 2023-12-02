@@ -1,5 +1,7 @@
 import copy
 import settings
+from rope.base.project import Project
+from rope.refactor.move import MoveGlobal
 
 
 def move_file(file_mapping, old_path, new_path):
@@ -37,3 +39,19 @@ def fix_imports(file_string, old_namespace, new_namespace):
         if "import" in line:
             lines[i] = line.replace(old_namespace, new_namespace)
     return "\n".join(lines)
+
+
+def move_file_using_rope(project_directory: str, from_path: str, to_path: str) -> None:
+    """
+    Moves a file from 'from_path' to 'to_path' within the project located at 'project_directory' using the rope library.
+    Args:
+        project_directory (str): The directory of the project where files are being moved.
+        from_path (str): The relative path to the file being moved.
+        to_path (str): The destination relative path for the file.
+    Returns:
+        None
+    """
+    project = Project(project_directory)
+    resource = project.get_file(from_path)
+    change = MoveGlobal(project, resource).get_changes(to_path)
+    project.do(change)
