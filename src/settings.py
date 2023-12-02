@@ -16,7 +16,7 @@ class Settings:
 
         This constructor sets up the Settings object with default values such as an empty list of reviewers (list),
         a maximum number of workers (int), maximum input characters (int), flags for use of tools (bool), and quality checks (bool),
-        and a maximum number of issue retries (int, defaulting to 2).
+        a maximum number of issue retries (int, defaulting to 2), and a check for open pull requests (bool, defaulting to True).
         Command line arguments can override these settings by call to apply_commandline_overrides at the end.
         """
         self.reviewers: List[str] = []
@@ -26,9 +26,10 @@ class Settings:
         self.quality_checks: bool = True
         self.max_issue_retries: int = 2
         self.max_loop_length: int = 15
-        """An integer specifying the maximum length for loops within the system.
+        self.check_open_pr: bool = True
+        """A boolean indicating whether to check for open pull requests before processing issues.
 
-		The default value is set to 15 and it determines how many times a loop can iterate before being terminated to prevent infinite looping.
+		The default value is set to True, meaning the system will check for existing open pull requests with the same title as the issue before processing.
 		"""
         self.apply_commandline_overrides()
 
@@ -103,5 +104,4 @@ CODE_PATH = "src"
 GITIGNORE_PATH = ".gitignore"
 ADMIN_USERS = ["reitzensteinm", "Zylatis", "atroche"]
 PYLINT_RETRIES = 0
-CHECK_OPEN_PR = True
 settings = Settings()

@@ -108,14 +108,14 @@ def process_directory(prompt: str, target_dir: str) -> None:
     apply_prompt_to_directory(prompt, target_dir)
     settings_instance = settings.get_settings()
     if settings_instance.quality_checks:
-        for iteration in range(settings.PYLINT_RETRIES + 1):
+        for iteration in range(PYLINT_RETRIES + 1):
             pylint_result = run_pylint(os.path.join(target_dir, "src"))
-            if pylint_result is not None and iteration < settings.PYLINT_RETRIES:
+            if pylint_result is not None and iteration < PYLINT_RETRIES:
                 apply_prompt_to_directory(
                     f"Fix these errors identified by PyLint:\n{pylint_result}",
                     target_dir,
                 )
-            elif pylint_result is not None and iteration == settings.PYLINT_RETRIES:
+            elif pylint_result is not None and iteration == PYLINT_RETRIES:
                 raise QualityException("Pylint failed\n" + pylint_result)
             elif pylint_result is None:
                 break
@@ -176,12 +176,14 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         return
     if not repo.is_issue_open(issue.repository, issue.number):
         return
-    if settings.CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
-        issue.repository, issue.title
+    settings_instance = settings.get_settings()
+    if (
+        settings_instance.check_open_pr
+        and repo.check_issue_has_open_pr_with_same_title(issue.repository, issue.title)
     ):
         return
     issue_state = IssueState.retrieve_by_id(issue.id)
-    settings_instance = settings.get_settings()
+
     formatted_prompt = f"Title: {issue.title}\nDescription: {issue.description}"
     if issue_state.prompt != formatted_prompt:
         issue_state.retry_count = 0
