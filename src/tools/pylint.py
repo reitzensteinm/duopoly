@@ -1,5 +1,7 @@
 import subprocess
 from typing import Optional
+from tracing.trace import trace
+from tracing.tags import SYSTEM
 
 
 def run_pylint(directory: str, warnings: bool = False) -> Optional[str]:
@@ -18,6 +20,7 @@ def run_pylint(directory: str, warnings: bool = False) -> Optional[str]:
         text=True,
     )
     if proc.returncode != 0:
+        trace(SYSTEM, proc.stdout)
         return proc.stdout.replace(directory, "src")
     else:
         return None
