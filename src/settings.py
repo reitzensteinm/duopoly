@@ -26,48 +26,12 @@ class Settings:
         self.quality_checks: bool = True
         self.max_issue_retries: int = 2
         self.max_loop_length: int = 15
-        """An integer specifying the maximum length for loops within the system.
+        self.check_open_pr: bool = True
+        """A boolean indicating if open pull requests should be checked by default.
 
-		The default value is set to 15 and it determines how many times a loop can iterate before being terminated to prevent infinite looping.
+		The default value is set to True and it specifies whether open pull requests should be automatically checked.
 		"""
         self.apply_commandline_overrides()
-
-    def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
-        """Load settings from a 'settings' subsection of a YAML file and apply command line overrides.
-
-        Args:
-                filepath (str): The path to the YAML settings file to load.
-
-        This method updates the instance with settings from the 'settings' subsection of the YAML file at `filepath` and applies overrides.
-        """
-        with open(filepath, "r") as yamlfile:
-            data = yaml.safe_load(yamlfile)
-        if "settings" in data:
-            settings_data = data["settings"]
-            if "reviewers" in settings_data:
-                self.reviewers = settings_data["reviewers"]
-            if (
-                "quality_checks" in settings_data
-                and settings_data["quality_checks"] is not None
-            ):
-                self.quality_checks = settings_data["quality_checks"]
-        self.apply_commandline_overrides()
-
-    def apply_commandline_overrides(self) -> None:
-        """Override settings based on parsed command line arguments.
-
-        Utilizes the global PARSED_ARGS to set settings for quality checks and use of tools, if specified.
-        """
-        global PARSED_ARGS
-        if PARSED_ARGS:
-            if (
-                "quality_checks" in PARSED_ARGS
-                and PARSED_ARGS["quality_checks"] is not None
-            ):
-                self.quality_checks = PARSED_ARGS.get(
-                    "quality_checks", self.quality_checks
-                )
-            self.use_tools = PARSED_ARGS.get("use_tools", self.use_tools)
 
 
 def get_settings() -> Settings:
@@ -103,5 +67,4 @@ CODE_PATH = "src"
 GITIGNORE_PATH = ".gitignore"
 ADMIN_USERS = ["reitzensteinm", "Zylatis", "atroche"]
 PYLINT_RETRIES = 0
-CHECK_OPEN_PR = True
 settings = Settings()
