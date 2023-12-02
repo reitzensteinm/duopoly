@@ -1,5 +1,7 @@
 import copy
 import settings
+from rope.base.project import Project
+from rope.refactor.move import move_resource
 
 
 def move_file(file_mapping, old_path, new_path):
@@ -25,15 +27,29 @@ def move_file(file_mapping, old_path, new_path):
     return file_mapping_copy
 
 
-def path_to_namespace(file_path):
+def path_to_namespace(file_path: str) -> str:
+    """Convert a file path to a Python namespace assuming it's a Python file within the code path."""
     if file_path.startswith(settings.CODE_PATH + "/") and file_path.endswith(".py"):
         file_path = file_path[len(settings.CODE_PATH) + 1 : -3]
     return file_path.replace("/", ".")
 
 
-def fix_imports(file_string, old_namespace, new_namespace):
+def fix_imports(file_string: str, old_namespace: str, new_namespace: str) -> str:
+    """Replace the old namespace with the new one in the given Python file content."""
     lines = file_string.split("\n")
     for i, line in enumerate(lines):
         if "import" in line:
             lines[i] = line.replace(old_namespace, new_namespace)
     return "\n".join(lines)
+
+
+def move_file_using_rope(project_directory: str, from_path: str, to_path: str) -> None:
+    """
+    Move a file from 'from_path' to 'to_path' within the 'project_directory' using the rope library's move_resource function.
+    The 'project_directory' is the root directory of the project, 'from_path' is the relative path to the file to move,
+    and 'to_path' is the destination relative path. This function modifies the file system and does not return a value.
+    """
+    project = Project(project_directory)
+    resource = project.get_resource(from_path)
+    move_resource(resource, to_path)
+    project.close()
