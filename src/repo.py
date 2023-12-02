@@ -447,3 +447,20 @@ def add_comment_to_issue_or_pr(
     repo = g.get_repo(repo_name)
     issue = repo.get_issue(issue_or_pr_number)
     issue.create_comment(comment_text)
+
+
+def add_emoji_reaction_to_comment(repo_name: str, comment_id: int, emoji: str) -> None:
+    """Gives an emoji reaction to a specific comment on an issue or pull request within a GitHub repository.
+
+    Args:
+        repo_name (str): The name of the repository containing the comment.
+        comment_id (int): The ID of the comment to react to.
+        emoji (str): The content of the emoji reaction.
+
+    This function does not return a value.
+    """
+    api_key = os.environ["GITHUB_API_KEY"]
+    g = Github(api_key)
+    repo = g.get_repo(repo_name)
+    comment = repo.get_comment(comment_id)
+    comment.create_reaction(emoji)
