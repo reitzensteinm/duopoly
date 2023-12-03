@@ -160,8 +160,8 @@ def prepare_branch(issue: Issue, dry_run: bool) -> Project:
 def process_issue(issue: Issue, dry_run: bool) -> None:
     """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests.
 
-    Checks the retry count before processing and resets it if the formatted prompt has changed. Skips the issue with a message if it exceeds max_issue_retries obtained from get_settings().
-    Increases the retry count after an open PR check if no open PR was found, and does not process the issue if the author is not marked as an admin,
+    Checks the retry count before processing and resets it if the formatted prompt has changed. Skips the issue with a message if it exceeds the max_issue_retries which is checked using settings_instance.
+    Increases the retry count after checking if there is no open PR, verified using settings_instance.check_open_pr, and does not process the issue if the author is not marked as an admin,
     if the issue is not open, or if there is already an open PR for the issue.
 
     Params:
@@ -176,12 +176,13 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         return
     if not repo.is_issue_open(issue.repository, issue.number):
         return
-    if settings.CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
-        issue.repository, issue.title
+    settings_instance = settings.get_settings()
+    if (
+        settings_instance.check_open_pr
+        and repo.check_issue_has_open_pr_with_same_title(issue.repository, issue.title)
     ):
         return
     issue_state = IssueState.retrieve_by_id(issue.id)
-    settings_instance = settings.get_settings()
     formatted_prompt = f"Title: {issue.title}\nDescription: {issue.description}"
     if issue_state.prompt != formatted_prompt:
         issue_state.retry_count = 0
