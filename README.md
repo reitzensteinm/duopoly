@@ -23,6 +23,7 @@ the [second commit](https://github.com/reitzensteinm/duopoly/commit/7646e1be5a28
 - [x] Quality steps, including feedback from reflection, PyTest, PyLint and MyPy
 - [x] Parallel execution
 - [x] HTML Report Generation
+- [x] Install packages and execute terminal commands
 - [ ] Respond to PR feedback
 - [ ] Evals framework to track performance over time
 - [ ] Precalculated code summarization for Retrieval Augmented Generation
