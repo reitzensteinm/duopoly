@@ -26,9 +26,10 @@ class Settings:
         self.quality_checks: bool = True
         self.max_issue_retries: int = 2
         self.max_loop_length: int = 15
-        """An integer specifying the maximum length for loops within the system.
+        self.check_open_pr: bool = True
+        """A boolean indicating whether to check for open pull requests for repositories.
 
-		The default value is set to 15 and it determines how many times a loop can iterate before being terminated to prevent infinite looping.
+		The default value is True, and it controls whether the system should check for open PRs when interacting with repositories.
 		"""
         self.apply_commandline_overrides()
 
@@ -36,7 +37,7 @@ class Settings:
         """Load settings from a 'settings' subsection of a YAML file and apply command line overrides.
 
         Args:
-                filepath (str): The path to the YAML settings file to load.
+                        filepath (str): The path to the YAML settings file to load.
 
         This method updates the instance with settings from the 'settings' subsection of the YAML file at `filepath` and applies overrides.
         """
@@ -74,7 +75,7 @@ def get_settings() -> Settings:
     """Retrieve the current thread-local Settings instance or the global instance if not set.
 
     Returns:
-        Settings: The current thread-local Settings instance or the global Settings instance.
+            Settings: The current thread-local Settings instance or the global Settings instance.
 
     This function fetches the Settings object associated with the thread-local storage.
     If it does not exist, it returns the global Settings instance.
@@ -88,7 +89,7 @@ def apply_settings(yaml_path: str) -> None:
     """Create a new Settings instance from a YAML file and store it in thread-local storage.
 
     Args:
-        yaml_path (str): The path to the YAML file from which to load settings.
+            yaml_path (str): The path to the YAML file from which to load settings.
 
     This function creates a new Settings instance, loads settings from the specified YAML file,
     and stores it in the thread-local storage.
@@ -103,5 +104,4 @@ CODE_PATH = "src"
 GITIGNORE_PATH = ".gitignore"
 ADMIN_USERS = ["reitzensteinm", "Zylatis", "atroche"]
 PYLINT_RETRIES = 0
-CHECK_OPEN_PR = True
 settings = Settings()
