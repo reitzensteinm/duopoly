@@ -66,7 +66,7 @@ OBJECTIVE:
     return command.verdict
 
 
-def apply_prompt_to_files(prompt: str, files: dict, target_dir: str = None) -> dict:
+def apply_prompt_to_files(prompt: str, files: dict, project: Project = None) -> dict:
     old_files = files
     advice = generate_advice(prompt)
     code_path = settings.CODE_PATH
@@ -80,46 +80,51 @@ def apply_prompt_to_files(prompt: str, files: dict, target_dir: str = None) -> d
     }
     prompt = load_prompt("issue", context)
     command, state = command_loop(
-        prompt, gpt.SYSTEM_COMMAND_FUNC, COMMANDS_GENERATE, files, target_dir=target_dir
+        prompt,
+        gpt.SYSTEM_COMMAND_FUNC,
+        COMMANDS_GENERATE,
+        files,
+        target_dir=project.path if project else None,
     )
     check_result(old_files, state.files, prompt)
     return state.files
 
 
-def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
+def apply_prompt_to_directory(prompt: str, project: Project) -> None:
     files = {
-        f: read_file(os.path.join(target_dir, f))
-        for f in repo.list_files(target_dir, settings.GITIGNORE_PATH)
-        if os.path.isfile(os.path.join(target_dir, f))
+        f: read_file(os.path.join(project.path, f))
+        for f in repo.list_files(project.path, settings.GITIGNORE_PATH)
+        if os.path.isfile(os.path.join(project.path, f))
     }
-    updated_files = apply_prompt_to_files(prompt, files, target_dir=target_dir)
-    synchronize_files_write(target_dir, files, updated_files)
+    updated_files = apply_prompt_to_files(prompt, files, project=project)
+    synchronize_files_write(project.path, files, updated_files)
 
 
-def process_directory(prompt: str, target_dir: str) -> None:
-    """Processes the directory with the given prompt.
+def process_directory(prompt: str, project: Project) -> None:
+    """Processes the directory of the specified Project with the provided prompt and conducts quality checks using pylint and pytest.
 
-    Raises a QualityException when either pylint or pytest fail.
+    Raises a QualityException if pylint or pytest fails after retry limits.
 
     Params:
-            prompt (str): The prompt describing the processing task.
-            target_dir (str): The path to the directory to process.
+    prompt (str): The prompt describing the processing task.
+    project (Project): The Project instance to be processed.
+
     """
-    apply_prompt_to_directory(prompt, target_dir)
+    apply_prompt_to_directory(prompt, project)
     settings_instance = settings.get_settings()
     if settings_instance.quality_checks:
-        for iteration in range(settings.PYLINT_RETRIES + 1):
-            pylint_result = run_pylint(os.path.join(target_dir, "src"))
-            if pylint_result is not None and iteration < settings.PYLINT_RETRIES:
+        for iteration in range(PYLINT_RETRIES + 1):
+            pylint_result = run_pylint(os.path.join(project.path, "src"))
+            if pylint_result is not None and iteration < PYLINT_RETRIES:
                 apply_prompt_to_directory(
                     f"Fix these errors identified by PyLint:\n{pylint_result}",
-                    target_dir,
+                    project,
                 )
-            elif pylint_result is not None and iteration == settings.PYLINT_RETRIES:
+            elif pylint_result is not None and iteration == PYLINT_RETRIES:
                 raise QualityException("Pylint failed\n" + pylint_result)
             elif pylint_result is None:
                 break
-        pytest_result = run_pytest(os.path.join(target_dir, "src"))
+        pytest_result = run_pytest(os.path.join(project.path, "src"))
         if pytest_result is not None:
             raise QualityException("Pytest failed\n" + pytest_result)
 
@@ -160,13 +165,11 @@ def prepare_branch(issue: Issue, dry_run: bool) -> Project:
 def process_issue(issue: Issue, dry_run: bool) -> None:
     """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests.
 
-    Checks the retry count before processing and resets it if the formatted prompt has changed. Skips the issue with a message if it exceeds max_issue_retries obtained from get_settings().
-    Increases the retry count after an open PR check if no open PR was found, and does not process the issue if the author is not marked as an admin,
-    if the issue is not open, or if there is already an open PR for the issue.
+    The function checks the retry count, and skips processing if max retries are exceeded, if the author is not an admin, the issue is not open, or if there is an open PR for the issue.
 
     Params:
             issue (Issue): The issue to be processed.
-            dry_run (bool): If true, does not conduct any writes or branch modifications.
+            dry_run (bool): If true, no writes or branch modifications are conducted.
 
     Returns:
             None
@@ -196,19 +199,15 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     issue_state.retry_count += 1
     issue_state.store()
     project_instance = prepare_branch(issue, dry_run)
-    target_dir = project_instance.path
-    duopoly_path = os.path.join(target_dir, "duopoly.yaml")
-    if os.path.exists(duopoly_path):
-        settings.apply_settings(duopoly_path)
     try:
-        process_directory(formatted_prompt, target_dir)
+        process_directory(formatted_prompt, project_instance)
     except QualityException:
         is_quality_exception = True
     if not dry_run:
         repo.commit_local_modifications(
-            issue.title, f'Prompt: "{formatted_prompt}"', target_dir
+            issue.title, f'Prompt: "{formatted_prompt}"', project_instance.path
         )
-        repo.push_local_branch_to_origin(get_branch_id(issue), target_dir)
+        repo.push_local_branch_to_origin(get_branch_id(issue), project_instance.path)
         if not repo.check_pull_request_title_exists(issue.repository, issue.title):
             if is_quality_exception and settings_instance.quality_checks:
                 repo.create_pull_request(
