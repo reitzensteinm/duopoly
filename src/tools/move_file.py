@@ -1,5 +1,7 @@
 import copy
 import settings
+from rope.base.project import Project
+from rope.refactor.rename import Rename
 
 
 def move_file(file_mapping, old_path, new_path):
@@ -37,3 +39,24 @@ def fix_imports(file_string, old_namespace, new_namespace):
         if "import" in line:
             lines[i] = line.replace(old_namespace, new_namespace)
     return "\n".join(lines)
+
+
+def move_file_using_rope(project_directory: str, from_path: str, to_path: str) -> None:
+    """Rename a file in a project using the rope library's Rename tool.
+
+    :param project_directory: The directory of the project containing the file.
+    :param from_path: The relative path to the file in the project to be moved.
+    :param to_path: The relative path to the destination in the project.
+    """
+    # Initialize the Rope project
+    project = Project(project_directory)
+
+    # Initialize the Rename refactoring with the file to be moved as a resource
+    resource = project.get_resource(from_path)
+    renamer = Rename(project, resource)
+
+    # Prepare changeset
+    changeset = renamer.get_changes(newname=to_path)
+
+    # Apply changes
+    project.do(changeset)
