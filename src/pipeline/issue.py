@@ -96,30 +96,31 @@ def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
     synchronize_files_write(target_dir, files, updated_files)
 
 
-def process_directory(prompt: str, target_dir: str) -> None:
-    """Processes the directory with the given prompt.
+def process_directory(project: Project) -> None:
+    """Processes the directory associated with the given Project instance.
 
     Raises a QualityException when either pylint or pytest fail.
 
-    Params:
-            prompt (str): The prompt describing the processing task.
-            target_dir (str): The path to the directory to process.
+    Args:
+            project (Project): The project instance to process.
+
+    Returns:
+            None
     """
-    apply_prompt_to_directory(prompt, target_dir)
     settings_instance = settings.get_settings()
     if settings_instance.quality_checks:
         for iteration in range(settings.PYLINT_RETRIES + 1):
-            pylint_result = run_pylint(os.path.join(target_dir, "src"))
+            pylint_result = run_pylint(os.path.join(project.path, "src"))
             if pylint_result is not None and iteration < settings.PYLINT_RETRIES:
                 apply_prompt_to_directory(
                     f"Fix these errors identified by PyLint:\n{pylint_result}",
-                    target_dir,
+                    project.path,
                 )
             elif pylint_result is not None and iteration == settings.PYLINT_RETRIES:
                 raise QualityException("Pylint failed\n" + pylint_result)
             elif pylint_result is None:
                 break
-        pytest_result = run_pytest(os.path.join(target_dir, "src"))
+        pytest_result = run_pytest(os.path.join(project.path, "src"))
         if pytest_result is not None:
             raise QualityException("Pytest failed\n" + pytest_result)
 
@@ -139,34 +140,32 @@ def prepare_branch(issue: Issue, dry_run: bool) -> Project:
 
     Cloning and directory preparation are handled by the clone_repository function.
 
-    Params:
+    Args:
             issue (Issue): The issue object containing details required to prepare the branch.
-            dry_run (bool): Indicates whether the branch setup should actually be performed or not.
+            dry_run (bool): Indicates whether the setup should be a dry run without actual changes.
 
     Returns:
             Project: A Project instance with path set to the location where the branch is set up.
     """
-    target_dir = get_target_dir(issue)
-    repo.clone_repository(
-        f"https://{os.environ['GITHUB_API_KEY']}@github.com/{issue.repository}.git",
-        target_dir,
-    )
     branch_id = get_branch_id(issue)
     if not dry_run:
+        target_dir = get_target_dir(issue)
+        repo.clone_repository(issue.repository, target_dir)
         repo.switch_and_reset_branch(branch_id, target_dir)
+    else:
+        target_dir = os.path.join("dry_run", branch_id)
     return Project(path=target_dir)
 
 
 def process_issue(issue: Issue, dry_run: bool) -> None:
-    """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests.
+    """Processes a single issue by setting up a branch, applying prompts, running checks, and creating PRs.
 
-    Checks the retry count before processing and resets it if the formatted prompt has changed. Skips the issue with a message if it exceeds max_issue_retries obtained from get_settings().
-    Increases the retry count after an open PR check if no open PR was found, and does not process the issue if the author is not marked as an admin,
-    if the issue is not open, or if there is already an open PR for the issue.
+    This function handles quality checks, retry counts, open PR checks, and ensures processing
+    only occurs for open issues and eligible authors.
 
-    Params:
+    Args:
             issue (Issue): The issue to be processed.
-            dry_run (bool): If true, does not conduct any writes or branch modifications.
+            dry_run (bool): If true, avoids making actual changes to branches or files.
 
     Returns:
             None
@@ -189,45 +188,19 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         issue_state.prompt = formatted_prompt
         issue_state.store()
     if issue_state.retry_count > settings_instance.max_issue_retries:
-        print(
-            f"\x1b[91mSkipping processing of issue {issue.number} due to too many attempts\x1b[0m"
-        )
         return
     issue_state.retry_count += 1
     issue_state.store()
-    project_instance = prepare_branch(issue, dry_run)
-    target_dir = project_instance.path
-    duopoly_path = os.path.join(target_dir, "duopoly.yaml")
-    if os.path.exists(duopoly_path):
-        settings.apply_settings(duopoly_path)
     try:
-        process_directory(formatted_prompt, target_dir)
+        process_directory(project=prepare_branch(issue, dry_run))
     except QualityException:
         is_quality_exception = True
-    if not dry_run:
+    if not dry_run and not is_quality_exception:
         repo.commit_local_modifications(
-            issue.title, f'Prompt: "{formatted_prompt}"', target_dir
+            issue.title, f'Prompt: "{formatted_prompt}"', project_instance.path
         )
-        repo.push_local_branch_to_origin(get_branch_id(issue), target_dir)
+        repo.push_local_branch_to_origin(get_branch_id(issue), project_instance.path)
         if not repo.check_pull_request_title_exists(issue.repository, issue.title):
-            if is_quality_exception and settings_instance.quality_checks:
-                repo.create_pull_request(
-                    repo_name=issue.repository,
-                    branch_id=get_branch_id(issue),
-                    title=issue.title,
-                    body="This PR addresses issue #"
-                    + str(issue.number)
-                    + ". "
-                    + formatted_prompt,
-                    draft=True,
-                )
-            else:
-                repo.create_pull_request(
-                    repo_name=issue.repository,
-                    branch_id=get_branch_id(issue),
-                    title=issue.title,
-                    body="This PR addresses issue #"
-                    + str(issue.number)
-                    + ". "
-                    + formatted_prompt,
-                )
+            repo.create_pull_request(
+                issue.repository, get_branch_id(issue), issue.title, formatted_prompt
+            )
