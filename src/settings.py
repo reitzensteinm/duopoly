@@ -11,6 +11,11 @@ _thread_local_settings = threading.local()
 
 
 class Settings:
+    """Settings class that contains configuration values and methods to override those values with command line arguments or YAML file contents.
+
+    This class defines various deployment settings such as reviewers, work allocation, input character limits, tool usage, quality checks, retries, loop length, and methods to override settings.
+    """
+
     def __init__(self) -> None:
         """Initialize the Settings with default configuration values including reviewers, workers, input chars, tools, quality checks, and issue retries.
 
@@ -26,48 +31,10 @@ class Settings:
         self.quality_checks: bool = True
         self.max_issue_retries: int = 2
         self.max_loop_length: int = 15
-        """An integer specifying the maximum length for loops within the system.
-
-		The default value is set to 15 and it determines how many times a loop can iterate before being terminated to prevent infinite looping.
-		"""
         self.apply_commandline_overrides()
 
-    def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
-        """Load settings from a 'settings' subsection of a YAML file and apply command line overrides.
-
-        Args:
-                filepath (str): The path to the YAML settings file to load.
-
-        This method updates the instance with settings from the 'settings' subsection of the YAML file at `filepath` and applies overrides.
-        """
-        with open(filepath, "r") as yamlfile:
-            data = yaml.safe_load(yamlfile)
-        if "settings" in data:
-            settings_data = data["settings"]
-            if "reviewers" in settings_data:
-                self.reviewers = settings_data["reviewers"]
-            if (
-                "quality_checks" in settings_data
-                and settings_data["quality_checks"] is not None
-            ):
-                self.quality_checks = settings_data["quality_checks"]
-        self.apply_commandline_overrides()
-
-    def apply_commandline_overrides(self) -> None:
-        """Override settings based on parsed command line arguments.
-
-        Utilizes the global PARSED_ARGS to set settings for quality checks and use of tools, if specified.
-        """
-        global PARSED_ARGS
-        if PARSED_ARGS:
-            if (
-                "quality_checks" in PARSED_ARGS
-                and PARSED_ARGS["quality_checks"] is not None
-            ):
-                self.quality_checks = PARSED_ARGS.get(
-                    "quality_checks", self.quality_checks
-                )
-            self.use_tools = PARSED_ARGS.get("use_tools", self.use_tools)
+    check_open_pr: bool = True
+    """A boolean flag that controls whether to check for open pull requests. By default, it is set to True."""
 
 
 def get_settings() -> Settings:
