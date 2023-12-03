@@ -117,8 +117,7 @@ def process_directory(prompt: str, project: Project) -> None:
             pylint_result = run_pylint(os.path.join(project.path, "src"))
             if pylint_result is not None and iteration < PYLINT_RETRIES:
                 apply_prompt_to_directory(
-                    f"Fix these errors identified by PyLint:\n{pylint_result}",
-                    project,
+                    f"Fix these errors identified by PyLint:\n{pylint_result}", project
                 )
             elif pylint_result is not None and iteration == PYLINT_RETRIES:
                 raise QualityException("Pylint failed\n" + pylint_result)
@@ -165,7 +164,7 @@ def prepare_branch(issue: Issue, dry_run: bool) -> Project:
 def process_issue(issue: Issue, dry_run: bool) -> None:
     """Processes a single issue by setting up a branch, applying prompts, running checks, and creating pull requests.
 
-    The function checks the retry count, and skips processing if max retries are exceeded, if the author is not an admin, the issue is not open, or if there is an open PR for the issue.
+    The function checks the retry count, and skips processing if max retries are exceeded, if the author is not an admin, the issue is not open, or if there is an open non-draft PR for the issue.
 
     Params:
             issue (Issue): The issue to be processed.
@@ -182,7 +181,9 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     settings_instance = settings.get_settings()
     if (
         settings_instance.check_open_pr
-        and repo.check_issue_has_open_pr_with_same_title(issue.repository, issue.title)
+        and repo.check_issue_has_open_pr_with_same_title(
+            issue.repository, issue.title, consider_drafts=False
+        )
     ):
         return
     issue_state = IssueState.retrieve_by_id(issue.id)

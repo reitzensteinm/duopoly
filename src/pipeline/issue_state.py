@@ -6,21 +6,21 @@ class IssueState:
     """Represents the state of an issue with a retry count, an associated prompt, a record of initial file states, and an optional PR ID.
 
     Args:
-            id (int): The identifier of the issue.
+                    id (int): The identifier of the issue.
 
     Returns:
-            IssueState: An instance representing the issue state.
+                    IssueState: An instance representing the issue state.
 
     Attributes:
-            initial_files (Optional[Dict[str, str]]): A mapping of filenames to their contents representing initial file states, or None if there are no initial files.
-            pr_id (Optional[int]): The identifier of the associated pull request, if any.
+                    initial_files (Optional[Dict[str, str]]): A mapping of filenames to their contents representing initial file states, or None if there are no initial files.
+                    pr_id (Optional[int]): The identifier of the associated pull request, if any.
     """
 
     def __init__(self, id: int):
         """Initialize the IssueState with an ID, a retry count set to zero, an empty prompt, no initial files, and no associated PR ID.
 
         Args:
-                id (int): The identifier of the issue.
+                        id (int): The identifier of the issue.
 
         """
         self.id = id
@@ -34,10 +34,10 @@ class IssueState:
         """Retrieve the issue state by id directly if it exists, or create and store a new one if not found.
 
         Args:
-                id (int): The identifier of the issue.
+                        id (int): The identifier of the issue.
 
         Returns:
-                IssueState: The retrieved or newly created issue state.
+                        IssueState: The retrieved or newly created issue state.
         """
         try:
             return read(f"issue-{id}")
@@ -50,7 +50,7 @@ class IssueState:
         """Store the current issue state.
 
         Returns:
-                None
+                        None
         """
         write(f"issue-{self.id}", self)
 
@@ -58,6 +58,6 @@ class IssueState:
         """Return a string representation of the issue state.
 
         Returns:
-                str: The string representation of the issue state.
+                        str: The string representation of the issue state.
         """
         return str(self.__dict__)
