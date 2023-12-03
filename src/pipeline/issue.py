@@ -86,40 +86,40 @@ def apply_prompt_to_files(prompt: str, files: dict, target_dir: str = None) -> d
     return state.files
 
 
-def apply_prompt_to_directory(prompt: str, target_dir: str) -> None:
+def apply_prompt_to_directory(prompt: str, project_path: str) -> None:
     files = {
-        f: read_file(os.path.join(target_dir, f))
-        for f in repo.list_files(target_dir, settings.GITIGNORE_PATH)
-        if os.path.isfile(os.path.join(target_dir, f))
+        f: read_file(os.path.join(project_path, f))
+        for f in repo.list_files(project_path, settings.GITIGNORE_PATH)
+        if os.path.isfile(os.path.join(project_path, f))
     }
-    updated_files = apply_prompt_to_files(prompt, files, target_dir=target_dir)
-    synchronize_files_write(target_dir, files, updated_files)
+    updated_files = apply_prompt_to_files(prompt, files, target_dir=project_path)
+    synchronize_files_write(project_path, files, updated_files)
 
 
-def process_directory(prompt: str, target_dir: str) -> None:
+def process_directory(prompt: str, project: Project) -> None:
     """Processes the directory with the given prompt.
 
     Raises a QualityException when either pylint or pytest fail.
 
     Params:
             prompt (str): The prompt describing the processing task.
-            target_dir (str): The path to the directory to process.
+            project (Project): The Project object representing the directory to process.
     """
-    apply_prompt_to_directory(prompt, target_dir)
+    apply_prompt_to_directory(prompt, project.path)
     settings_instance = settings.get_settings()
     if settings_instance.quality_checks:
         for iteration in range(settings.PYLINT_RETRIES + 1):
-            pylint_result = run_pylint(os.path.join(target_dir, "src"))
+            pylint_result = run_pylint(os.path.join(project.path, "src"))
             if pylint_result is not None and iteration < settings.PYLINT_RETRIES:
                 apply_prompt_to_directory(
                     f"Fix these errors identified by PyLint:\n{pylint_result}",
-                    target_dir,
+                    project.path,
                 )
             elif pylint_result is not None and iteration == settings.PYLINT_RETRIES:
                 raise QualityException("Pylint failed\n" + pylint_result)
             elif pylint_result is None:
                 break
-        pytest_result = run_pytest(os.path.join(target_dir, "src"))
+        pytest_result = run_pytest(os.path.join(project.path, "src"))
         if pytest_result is not None:
             raise QualityException("Pytest failed\n" + pytest_result)
 
@@ -196,19 +196,15 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     issue_state.retry_count += 1
     issue_state.store()
     project_instance = prepare_branch(issue, dry_run)
-    target_dir = project_instance.path
-    duopoly_path = os.path.join(target_dir, "duopoly.yaml")
-    if os.path.exists(duopoly_path):
-        settings.apply_settings(duopoly_path)
     try:
-        process_directory(formatted_prompt, target_dir)
+        process_directory(formatted_prompt, project_instance)
     except QualityException:
         is_quality_exception = True
     if not dry_run:
         repo.commit_local_modifications(
-            issue.title, f'Prompt: "{formatted_prompt}"', target_dir
+            issue.title, f'Prompt: "{formatted_prompt}"', project_instance.path
         )
-        repo.push_local_branch_to_origin(get_branch_id(issue), target_dir)
+        repo.push_local_branch_to_origin(get_branch_id(issue), project_instance.path)
         if not repo.check_pull_request_title_exists(issue.repository, issue.title):
             if is_quality_exception and settings_instance.quality_checks:
                 repo.create_pull_request(
