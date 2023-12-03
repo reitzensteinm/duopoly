@@ -176,12 +176,13 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
         return
     if not repo.is_issue_open(issue.repository, issue.number):
         return
-    if settings.CHECK_OPEN_PR and repo.check_issue_has_open_pr_with_same_title(
-        issue.repository, issue.title
+    settings_instance = settings.get_settings()
+    if (
+        settings_instance.check_open_pr
+        and repo.check_issue_has_open_pr_with_same_title(issue.repository, issue.title)
     ):
         return
     issue_state = IssueState.retrieve_by_id(issue.id)
-    settings_instance = settings.get_settings()
     formatted_prompt = f"Title: {issue.title}\nDescription: {issue.description}"
     if issue_state.prompt != formatted_prompt:
         issue_state.retry_count = 0
