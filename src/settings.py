@@ -12,11 +12,11 @@ _thread_local_settings = threading.local()
 
 class Settings:
     def __init__(self) -> None:
-        """Initialize the Settings with default configuration values including reviewers, workers, input chars, tools, quality checks, and issue retries.
+        """Initialize the Settings with default configuration values including reviewers, workers, input chars, tools, quality checks, issue retries, and check for open PRs.
 
         This constructor sets up the Settings object with default values such as an empty list of reviewers (list),
-        a maximum number of workers (int), maximum input characters (int), flags for use of tools (bool), and quality checks (bool),
-        and a maximum number of issue retries (int, defaulting to 2).
+        a maximum number of workers (int), maximum input characters (int), flags for use of tools (bool), quality checks (bool),
+        a maximum number of issue retries (int, defaulting to 2), and a boolean to check for open PRs (bool), defaulting to True.
         Command line arguments can override these settings by call to apply_commandline_overrides at the end.
         """
         self.reviewers: List[str] = []
@@ -26,9 +26,10 @@ class Settings:
         self.quality_checks: bool = True
         self.max_issue_retries: int = 2
         self.max_loop_length: int = 15
-        """An integer specifying the maximum length for loops within the system.
+        self.check_open_pr: bool = True
+        """A boolean indicating if the system should check for open pull requests.
 
-		The default value is set to 15 and it determines how many times a loop can iterate before being terminated to prevent infinite looping.
+		The default value is set to True to enable checking of open pull requests by default.
 		"""
         self.apply_commandline_overrides()
 
@@ -56,7 +57,7 @@ class Settings:
     def apply_commandline_overrides(self) -> None:
         """Override settings based on parsed command line arguments.
 
-        Utilizes the global PARSED_ARGS to set settings for quality checks and use of tools, if specified.
+        Utilizes the global PARSED_ARGS to set settings for quality checks, use of tools, and checking of open PRs, if specified.
         """
         global PARSED_ARGS
         if PARSED_ARGS:
@@ -66,6 +67,13 @@ class Settings:
             ):
                 self.quality_checks = PARSED_ARGS.get(
                     "quality_checks", self.quality_checks
+                )
+            if (
+                "check_open_pr" in PARSED_ARGS
+                and PARSED_ARGS["check_open_pr"] is not None
+            ):
+                self.check_open_pr = PARSED_ARGS.get(
+                    "check_open_pr", self.check_open_pr
                 )
             self.use_tools = PARSED_ARGS.get("use_tools", self.use_tools)
 
