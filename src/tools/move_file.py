@@ -1,5 +1,25 @@
 import copy
+from rope.base.project import Project
+from rope.base.resources import File
+from rope.refactor.move import Move
 import settings
+
+
+def move_file_using_rope(project_directory: str, from_path: str, to_path: str) -> None:
+    """
+    Move and rename a file in a given project directory using rope's project and resource system.
+
+    Arguments:
+    - project_directory: A string representing the absolute path to the project directory.
+    - from_path: A string with the relative path from the project's root to the file being moved.
+    - to_path: A string representing the new relative path for the file within the project.
+    Returns:
+    - None: The function performs file operation and does not return any value.
+    """
+    project = Project(project_directory)
+    resource = File(project, from_path)
+    change = Move(project, resource, to_path).get_changes()
+    project.do(change)
 
 
 def move_file(file_mapping, old_path, new_path):
