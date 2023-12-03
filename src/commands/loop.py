@@ -112,7 +112,7 @@ def command_loop(
     state.scratch = prompt
     state.last_command_instance = None
     exception_count = 0
-    max_loop_length = get_settings().max_loop_length
+    max_loop_length = 20
     for i in range(max_loop_length):
         if (
             state.last_command_instance is not None
