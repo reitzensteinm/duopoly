@@ -9,7 +9,7 @@ from utilities.prompts import load_prompt
 from settings import get_settings
 
 GPT_3_5 = "gpt-3.5-turbo-1106"
-GPT_4 = "gpt-4-1106-preview"
+GPT_4 = "gpt-4o-2024-05-13"
 SYSTEM_CHECK_FUNC = load_prompt("check")
 SYSTEM_COMMAND_FUNC = load_prompt("command")
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
@@ -39,7 +39,7 @@ def gpt_query(
     if len(message) > settings.max_input_chars:
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
-        raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
+        raise ValueError(f"Invalid model specified. Must be '{GPT_4}' or '{GPT_3_5}'.")
     trace(GPT_INPUT, message)
     retries = 2
     backoff = 1
@@ -102,7 +102,7 @@ def gpt_query_tools(
     message: A str representing the user message to be sent to the GPT model.
     system: A str representing the system's part of the conversation.
     functions: A list of functions to be sent to the GPT model.
-    model: A str representing the GPT model to be used. Defaults to 'gpt-4'.
+    model: A str representing the GPT model to be used. Defaults to GPT_4.
 
     Returns:
     A list of function calls made by the GPT model.
@@ -112,7 +112,7 @@ def gpt_query_tools(
     if len(message) > settings.max_input_chars:
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
-        raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
+        raise ValueError(f"Invalid model specified. Must be '{GPT_4}' or '{GPT_3_5}'.")
     trace(GPT_INPUT, message)
     retries = 2
     backoff = 1
