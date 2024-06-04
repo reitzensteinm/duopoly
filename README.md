@@ -6,15 +6,15 @@ the [second commit](https://github.com/reitzensteinm/duopoly/commit/7646e1be5a28
 ### Aims
 
 1) Be a virtual developer. All interaction happens over GitHub issues, Slack, etc.
-2) Rapidly achieve liftoff. No human code allowed. 🚀🚀🚀
+2) Rapid route to liftoff. No human code allowed. 🚀🚀🚀
 
 ### Status
 
 🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100% commits AI written last month  
-🟩🟩🟩🟩🟩🟩🟩🟩🟩🟥 98% commits AI written last three months  
-🟩🟩🟩🟩🟩🟩🟩🟩🟥🟥 85% commits AI written all time  
+🟩🟩🟩🟩🟩🟩🟩🟩🟩🟩 100% commits AI written last three months  
+🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 82% commits AI written all time  
 
-**Last human commit: 10th September, 2023**
+**Last human commit: 04th December, 2023**
 
 💰 OpenAI GPT-4 Turbo Cost: Approximately $2 per commit
 
