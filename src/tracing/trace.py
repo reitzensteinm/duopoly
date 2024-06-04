@@ -23,24 +23,25 @@ class Trace:
         self.name = f"{current_time}_{name}"
         self.trace_data = []
 
-    def add_trace_data(self, tag, trace, tokens: Optional[Tuple[int, int]] = None):
+    def add_trace_data(
+        self, tag: str, trace: str, tokens: Optional[Tuple[int, int]] = None
+    ) -> None:
         """
-        Add trace data and write the HTML representation to a file encoded in UTF-8.
+        Add trace data to the list of traces and write the HTML representation to a file encoded in UTF-8, skipping characters that cannot be represented in the encoding.
 
-        Attributes:
-                tag: A string tag to categorize the trace.
-                trace: The actual trace message as a string.
-                tokens: An optional Tuple[int, int] representing start and end tokens.
-
-        Returns:
-                None
+        The 'tag' argument represents a string tag to categorize the trace.
+        The 'trace' argument is the actual trace message as a string.
+        The 'tokens' argument is an optional Tuple[int, int] representing start and end tokens.
+        The method returns None.
         """
         if self.name == "":
             return
         self.trace_data.append(TraceData(tag, trace, tokens))
         html_trace = render_trace(self)
         os.makedirs("traces", exist_ok=True)
-        with open(f"traces/{self.name}.html", "w", encoding="utf-8") as f:
+        with open(
+            f"traces/{self.name}.html", "w", encoding="utf-8", errors="ignore"
+        ) as f:
             f.write(html_trace)
 
 
@@ -60,7 +61,9 @@ class TraceNotFound(Exception):
     pass
 
 
-def trace(tag, trace_string, tokens: Optional[Tuple[int, int]] = None):
+def trace(
+    tag: str, trace_string: str, tokens: Optional[Tuple[int, int]] = None
+) -> None:
     current_trace = get_trace()
     if current_trace is None:
         raise TraceNotFound("No active trace found")
