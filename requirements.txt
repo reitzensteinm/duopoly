@@ -7,7 +7,7 @@ astor==0.8.1
 astroid==3.0.1
 async-timeout==4.0.2
 attrs==23.1.0
-black==23.3.0
+black==24.4.2
 certifi==2023.11.17
 cffi==1.15.1
 charset-normalizer==3.1.0
@@ -26,7 +26,7 @@ GitPython==3.1.43
 h11==0.14.0
 httpcore==1.0.1
 httpx==0.25.1
-idna==3.4
+idna==3.7
 iniconfig==2.0.0
 isort==5.12.0
 Jinja2==3.1.4
@@ -62,7 +62,7 @@ tabulate==0.9.0
 termcolor==2.3.0
 tomli==2.0.1
 tomlkit==0.11.8
-tqdm==4.65.0
+tqdm==4.66.4
 typing_extensions==4.12.1
 urllib3==2.1.0
 wrapt==1.15.0
