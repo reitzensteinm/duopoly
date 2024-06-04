@@ -9,7 +9,7 @@ from utilities.prompts import load_prompt
 from settings import get_settings
 
 GPT_3_5 = "gpt-3.5-turbo-1106"
-GPT_4 = "gpt-4-1106-preview"
+GPT_4 = "gpt-4o-2024-05-13"
 SYSTEM_CHECK_FUNC = load_prompt("check")
 SYSTEM_COMMAND_FUNC = load_prompt("command")
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
