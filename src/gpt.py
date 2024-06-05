@@ -178,4 +178,25 @@ def cached_gpt_query(
     model: str = GPT_4,
     require_function: bool = True,
 ) -> str:
-    return gpt_query(message, system, functions, model, require_function)
+    """
+    Utilize the cached result when making a GPT query with the same parameters, or perform the query if not cached.
+
+    Arguments:
+    message: A str representing the user message.
+    system: A str representing the system's part of the conversation.
+    functions: Optional; A list of dict representing the accessible functions.
+    model: A str representing the GPT model to be used. Defaults to GPT_4.
+    require_function: A bool indicating whether a function response is needed. Defaults to True.
+
+    Returns:
+    A string representing either the function call result or the conversation content returned by the GPT model.
+    """
+    function_calls = gpt_query_tools(message, system, functions or [], model)
+    if require_function and not function_calls:
+        cprint(
+            "Requested a function call but none was returned by the GPT model.", "red"
+        )
+        raise Exception("No function call was returned from the GPT model.")
+    return (
+        " ".join([func["content"] for func in function_calls]) if function_calls else ""
+    )
