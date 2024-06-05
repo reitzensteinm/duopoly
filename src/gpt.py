@@ -3,13 +3,14 @@ from openai import OpenAI
 import time
 from termcolor import cprint
 from tracing.trace import trace
+from typing import Optional, List
 from tracing.tags import GPT_INPUT, GPT_OUTPUT
 from utilities.cache import memoize
 from utilities.prompts import load_prompt
 from settings import get_settings
 
 GPT_3_5 = "gpt-3.5-turbo-1106"
-GPT_4 = "gpt-4-1106-preview"
+GPT_4 = "gpt-4o-2024-05-13"
 SYSTEM_CHECK_FUNC = load_prompt("check")
 SYSTEM_COMMAND_FUNC = load_prompt("command")
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
@@ -18,28 +19,30 @@ client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 def gpt_query(
     message: str,
     system: str,
-    functions=None,
+    functions: Optional[List[dict]] = None,
     model: str = GPT_4,
     require_function: bool = True,
 ) -> str:
     """
-    Get a response from the GPT model based on the input message and system state.
+    Execute a gpt query with specified message, system state, functions, model, and requirement for functions.
 
     Arguments:
     message: A str representing the input message for the GPT model.
-    system: A str representing the system state input for the GPT model.
-    functions: Optional; A list of dict representing the functions that can be used within the GPT model.
-    model: A str representing the model to be used. Defaults to GPT_4.
-    require_function: A bool indicating whether a function response is required. Defaults to True.
+    system: A str representing the system state input.
+    functions: Optional; List of dict representing callable functions.
+    model: A str representing the chosen GPT model. Defaults to GPT_4.
+    require_function: A bool indicating the necessity of function response.
 
     Returns:
-    str: A string representing the GPT model's output or function call result.
+    A str representing the outcome of the GPT model query.
     """
     settings = get_settings()
     if len(message) > settings.max_input_chars:
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
-        raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
+        raise ValueError(
+            "Invalid model specified. Must be 'gpt-4o-2024-05-13' or 'gpt-3.5-turbo-1106'."
+        )
     trace(GPT_INPUT, message)
     retries = 2
     backoff = 1
@@ -93,26 +96,28 @@ def gpt_query(
 
 
 def gpt_query_tools(
-    message: str, system: str, functions: list, model: str = GPT_4
-) -> list:
+    message: str, system: str, functions: List[dict], model: str = GPT_4
+) -> List[dict]:
     """
-    This function makes a query to the GPT model with specific system messages and function calls, then returns the function calls made by the model.
+    Perform a gpt query with tools and return a list of tool calls made by the model.
 
     Arguments:
-    message: A str representing the user message to be sent to the GPT model.
-    system: A str representing the system's part of the conversation.
-    functions: A list of functions to be sent to the GPT model.
-    model: A str representing the GPT model to be used. Defaults to 'gpt-4'.
+    message: A str with the user's input message.
+    system: A str for the system part of the conversation.
+    functions: A list of dict for functions included in the query.
+    model: A str indicating the GPT model to use.
 
     Returns:
-    A list of function calls made by the GPT model.
+    A list of dictionaries with the tool calls returned by the model.
     """
     settings = get_settings()
     tools = [{"type": "function", "function": f} for f in functions]
     if len(message) > settings.max_input_chars:
         raise ValueError("Input exceeds maximum allowed character count")
     if model not in [GPT_4, GPT_3_5]:
-        raise ValueError("Invalid model specified. Must be 'gpt-4' or 'gpt-3.5-turbo'.")
+        raise ValueError(
+            "Invalid model specified. Must be 'gpt-4o-2024-05-13' or 'gpt-3.5-turbo-1106'."
+        )
     trace(GPT_INPUT, message)
     retries = 2
     backoff = 1
@@ -148,21 +153,24 @@ def gpt_query_tools(
                 raise e
             time.sleep(backoff)
             backoff *= 2
-    function_calls = [call.function for call in tool_calls]
-    trace(GPT_OUTPUT, function_calls, (tokens_in, tokens_out))
-    cprint(f"Function calls result: {function_calls}", "cyan")
-    return function_calls
+    tool_results = [
+        {"function": call.function, "result": call.result} for call in tool_calls
+    ]
+    trace(GPT_OUTPUT, tool_results, (tokens_in, tokens_out))
+    cprint(f"Function calls result: {tool_results}", "cyan")
+    return tool_results
 
 
-@memoize
-def calculate_text_embedding(text: str) -> list:
-    """Calculate text embedding using OpenAI embedding model for the input text.
+@memoizem
+def calculate_text_embedding(text: str) -> List[float]:
+    """
+    Calculate text embedding using OpenAI's Ada model for given text.
 
     Arguments:
-    text: A str representing the input text to calculate embeddings for.
+    text: A str representing the text to be embedded.
 
     Returns:
-    list: A list representing the numerical embedding of the input text.
+    A list of floats depicting the textual embedding.
     """
     embedding_result = client.embeddings.create(
         model="text-embedding-ada-002", input=text
@@ -174,8 +182,21 @@ def calculate_text_embedding(text: str) -> list:
 def cached_gpt_query(
     message: str,
     system: str,
-    functions=None,
+    functions: Optional[List[dict]] = None,
     model: str = GPT_4,
     require_function: bool = True,
 ) -> str:
+    """
+    Cache a gpt query to avoid duplicate computation on repeated calls with identical arguments.
+
+    Arguments:
+    message: A str for the message input.
+    system: A str for the system state.
+    functions: Optional; dictates functions that are passed to the query.
+    model: A str for the selected GPT model.
+    require_function: A bool for whether the function's response is required.
+
+    Returns:
+    A str with the result of the cached GPT query.
+    """
     return gpt_query(message, system, functions, model, require_function)
