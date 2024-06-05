@@ -15,6 +15,7 @@ class TraceData:
 
 
 class Trace:
+
     def __init__(self, name: str):
         from datetime import datetime
 
@@ -28,8 +29,8 @@ class Trace:
         self.trace_data.append(TraceData(tag, trace, tokens))
         html_trace = render_trace(self)
         os.makedirs("traces", exist_ok=True)
-        with open(f"traces/{self.name}.html", "w") as f:
-            f.write(html_trace)
+        with open(f"traces/{self.name}.html", "wb") as f:
+            f.write(html_trace.encode("utf-8"))
 
 
 def create_trace(name: str):
