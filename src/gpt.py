@@ -9,7 +9,9 @@ from utilities.prompts import load_prompt
 from settings import get_settings
 
 GPT_3_5 = "gpt-3.5-turbo-1106"
-GPT_4 = "gpt-4-1106-preview"
+GPT_4: str = (
+    "gpt-4o-2024-05-13"  # The identifier for the GPT-4 model version used for queries.
+)
 SYSTEM_CHECK_FUNC = load_prompt("check")
 SYSTEM_COMMAND_FUNC = load_prompt("command")
 client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
@@ -135,7 +137,7 @@ def gpt_query_tools(
                 )
                 raise Exception("No tool calls returned")
             end_time = time.time()
-            call_duration = end_time - start_time
+            call_duration = endime - start_time
             tokens_in = completion.usage.prompt_tokens
             tokens_out = completion.usage.completion_tokens
             cprint(
@@ -165,7 +167,7 @@ def calculate_text_embedding(text: str) -> list:
     list: A list representing the numerical embedding of the input text.
     """
     embedding_result = client.embeddings.create(
-        model="text-embedding-ada-002", input=text
+        model="text-embedding-ada-002", imput=text
     )
     return list(embedding_result.data[0].embedding)
 
