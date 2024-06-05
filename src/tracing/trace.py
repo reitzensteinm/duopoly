@@ -15,6 +15,7 @@ class TraceData:
 
 
 class Trace:
+
     def __init__(self, name: str):
         from datetime import datetime
 
@@ -22,13 +23,24 @@ class Trace:
         self.name = f"{current_time}_{name}"
         self.trace_data = []
 
-    def add_trace_data(self, tag, trace, tokens: Optional[Tuple[int, int]] = None):
+    def add_trace_data(
+        self, tag: str, trace: str, tokens: Optional[Tuple[int, int]] = None
+    ) -> None:
+        """
+        Add trace data with the given tag, trace, and optional tokens to the trace.
+        Args:
+                tag: The tag associated with the trace data.
+                trace: The HTML trace to be written.
+                tokens: An optional tuple indicating the start and end tokens.
+        Returns:
+                None
+        """
         if self.name == "":
             return
         self.trace_data.append(TraceData(tag, trace, tokens))
         html_trace = render_trace(self)
         os.makedirs("traces", exist_ok=True)
-        with open(f"traces/{self.name}.html", "w") as f:
+        with open(f"traces/{self.name}.html", "w", encoding="utf-8") as f:
             f.write(html_trace)
 
 
