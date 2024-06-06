@@ -12,11 +12,12 @@ _thread_local_settings = threading.local()
 
 class Settings:
     def __init__(self) -> None:
-        """Initialize the Settings with default configuration values including reviewers, workers, input chars, tools, quality checks, issue retries, and check for open PRs.
+        """Initialize the Settings with default configuration values including reviewers, workers, input chars, tools, quality checks, issue retries, check for open PRs, and admin users.
 
         This constructor sets up the Settings object with default values such as an empty list of reviewers (list),
         a maximum number of workers (int), maximum input characters (int), flags for use of tools (bool), quality checks (bool),
-        a maximum number of issue retries (int, defaulting to 2), and a boolean to check for open PRs (bool), defaulting to True.
+        a maximum number of issue retries (int, defaulting to 2), a boolean to check for open PRs (bool), defaulting to True,
+        and a list of admin users (list of str).
         Command line arguments can override these settings by call to apply_commandline_overrides at the end.
         """
         self.reviewers: List[str] = []
@@ -31,6 +32,7 @@ class Settings:
 
 		The default value is set to True to enable checking of open pull requests by default.
 		"""
+        self.admin_users: List[str] = ADMIN_USERS
         self.apply_commandline_overrides()
 
     def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
