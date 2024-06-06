@@ -22,7 +22,7 @@ class Settings:
         self.reviewers: List[str] = []
         self.max_workers: int = 10
         self.max_input_chars: int = 48000
-        self.use_tools: bool = False
+        self.use_tools: bool = True
         self.quality_checks: bool = True
         self.max_issue_retries: int = 2
         self.max_loop_length: int = 15
