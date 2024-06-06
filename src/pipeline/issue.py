@@ -145,11 +145,11 @@ def prepare_branch(issue: Issue, dry_run: bool) -> Project:
     Cloning and directory preparation are handled by the clone_repository function.
 
     Params:
-            issue (Issue): The issue object containing details required to prepare the branch.
-            dry_run (bool): Indicates whether the branch setup should actually be performed or not.
+                    issue (Issue): The issue object containing details required to prepare the branch.
+                    dry_run (bool): Indicates whether the branch setup should actually be performed or not.
 
     Returns:
-            Project: A Project instance with path set to the location where the branch is set up.
+                    Project: A Project instance with path set to the location where the branch is set up.
     """
     target_dir = get_target_dir(issue)
     repo.clone_repository(
@@ -168,14 +168,14 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
     The function checks the retry count, and skips processing if max retries are exceeded, if the author is not an admin, the issue is not open, or if there is an open PR for the issue.
 
     Params:
-            issue (Issue): The issue to be processed.
-            dry_run (bool): If true, no writes or branch modifications are conducted.
+                    issue (Issue): The issue to be processed.
+                    dry_run (bool): If true, no writes or branch modifications are conducted.
 
     Returns:
-            None
+                    None
     """
     is_quality_exception = False
-    if issue.author not in settings.ADMIN_USERS:
+    if issue.author not in settings.get_settings().admin_users:
         return
     if not repo.is_issue_open(issue.repository, issue.number):
         return
