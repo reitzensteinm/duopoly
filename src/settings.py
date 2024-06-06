@@ -29,10 +29,10 @@ class Settings:
         self.max_loop_length: int = 15
         self.check_open_pr: bool = True
         """A boolean indicating if the system should check for open pull requests.
-
+		
 		The default value is set to True to enable checking of open pull requests by default.
 		"""
-        self.admin_users: List[str] = ADMIN_USERS
+        self.admin_users: List[str] = []
         self.apply_commandline_overrides()
 
     def load_from_yaml(self, filepath: str = "duopoly.yaml") -> None:
@@ -111,6 +111,5 @@ def apply_settings(yaml_path: str) -> None:
 REPOSITORY_PATH = ["reitzensteinm/duopoly", "reitzensteinm/duopoly-website"]
 CODE_PATH = "src"
 GITIGNORE_PATH = ".gitignore"
-ADMIN_USERS = ["reitzensteinm", "Zylatis", "atroche"]
 PYLINT_RETRIES = 0
 settings = Settings()

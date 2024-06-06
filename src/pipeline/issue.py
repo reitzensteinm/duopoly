@@ -117,8 +117,7 @@ def process_directory(prompt: str, project: Project) -> None:
             pylint_result = run_pylint(os.path.join(project.path, "src"))
             if pylint_result is not None and iteration < PYLINT_RETRIES:
                 apply_prompt_to_directory(
-                    f"Fix these errors identified by PyLint:\n{pylint_result}",
-                    project,
+                    f"Fix these errors identified by PyLint:\n{pylint_result}", project
                 )
             elif pylint_result is not None and iteration == PYLINT_RETRIES:
                 raise QualityException("Pylint failed\n" + pylint_result)
@@ -175,11 +174,11 @@ def process_issue(issue: Issue, dry_run: bool) -> None:
             None
     """
     is_quality_exception = False
-    if issue.author not in settings.ADMIN_USERS:
+    settings_instance = settings.get_settings()
+    if issue.author not in settings_instance.admin_users:
         return
     if not repo.is_issue_open(issue.repository, issue.number):
         return
-    settings_instance = settings.get_settings()
     if (
         settings_instance.check_open_pr
         and repo.check_issue_has_open_pr_with_same_title(issue.repository, issue.title)
