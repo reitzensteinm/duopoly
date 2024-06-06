@@ -39,7 +39,7 @@ class Settings:
         """Load settings from a 'settings' subsection of a YAML file and apply command line overrides.
 
         Args:
-                filepath (str): The path to the YAML settings file to load.
+            filepath (str): The path to the YAML settings file to load.
 
         This method updates the instance with settings from the 'settings' subsection of the YAML file at `filepath` and applies overrides.
         """
